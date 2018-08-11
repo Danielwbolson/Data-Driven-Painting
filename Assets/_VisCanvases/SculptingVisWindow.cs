@@ -302,6 +302,10 @@ public class SculptingVisWindow : EditorWindow
             return;
         }
             
+        if(!Application.isPlaying) {
+            GUILayout.Label("For the time being, please run the scene to make changes.");
+            return;
+        }
         if (_columns == null) _columns = new Rect[7];
 
 
