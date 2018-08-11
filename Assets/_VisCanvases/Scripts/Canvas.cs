@@ -77,7 +77,7 @@ namespace SculptingVis {
             print(isGrabbing ? "grabbing!" : "releaseing!");
         }
         public void SetMaterialProperties(Material canvasMaterial) {
-            canvasMaterial.SetVector("_Color", _color);
+            canvasMaterial.SetVector("_CanvasColor", _color);
             canvasMaterial.SetMatrix("_CanvasInverse", transform.worldToLocalMatrix);
             canvasMaterial.SetMatrix("_CanvasInnerSceneInverse", GetInnerSceneTransformMatrix().inverse);
             canvasMaterial.SetMatrix("_CanvasInnerScene", GetInnerSceneTransformMatrix());
@@ -93,6 +93,10 @@ namespace SculptingVis {
             BoxCollider boxCollider = GetComponent<BoxCollider>();
             boxCollider.center = _bounds.center;
             boxCollider.size = _bounds.size;
+        }
+
+        public void SetBounds(Vector3 extents) {
+            _bounds.extents = extents;
         }
 
         public Matrix4x4 GetBoundsTransformMatrix() {
@@ -153,8 +157,8 @@ namespace SculptingVis {
                 _innerSceneTransform.localScale = M.GetScale();
                 //_innerSceneTransform = _innerSceneTransform.inverse;
             }
-
-            Graphics.DrawMesh(_areaMesh, GetBoundsTransformMatrix(), _areaMaterial, 0);
+            if(_areaMesh && _areaMaterial)
+                Graphics.DrawMesh(_areaMesh, GetBoundsTransformMatrix(), _areaMaterial, 0);
 
             Matrix4x4[] cornerTransforms = new Matrix4x4[8];
             for (int i = 0; i < 8; i++) {
