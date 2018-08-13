@@ -332,6 +332,7 @@ public class SculptingVisWindow : EditorWindow
             _socketHooks.Clear();
             _sockets.Clear();
             GetStyleController().Reset();
+            _columns = null;
         }
         if (GUILayout.Button("Report"))
         {
