@@ -72,9 +72,10 @@ namespace SculptingVis {
 		public bool IsAssigned() {
 			return _inputVariable != null;
 		}
-		public Variable GetInput() {
+		public override Object GetInput() {
 			return _inputVariable;
 		}
+
 		public void Bind(Material material,int instanceID, int timestep) {
 			string slot = /*IsAnchor()?"Anchor":*/ (""+ GetSlot());
 			material.SetVector("_VariableDefaultValue_" + slot,new Vector3(0,0,1));
@@ -94,7 +95,7 @@ namespace SculptingVis {
 
 		public Variable GetAnchorVariable() {
 			if(_anchorVariable == null) return null;
-			return _anchorVariable.GetInput();
+			return (Variable)_anchorVariable.GetInput();
 		}
 
 		public override bool DoesAccept(StyleSocket incoming) {

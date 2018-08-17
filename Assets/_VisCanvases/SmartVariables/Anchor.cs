@@ -15,6 +15,26 @@ namespace SculptingVis.SmartData {
             _dataset = dataset;
         }
 
+        public Anchor Init() {
+			AddSubmodule((new StyleSocket()).Init("",this,false,true,this));
+			// AddSubmodule((new StyleSocket()).Init("Hook for deriving",this,false,true,_variable));
+
+            return this;
+        }
+
+        public override int GetNumberOfSubmodules() {
+			return base.GetNumberOfSubmodules() +  GetDataStrategy().GetNumberOfSubmodules();
+		}
+
+		public override StyleModule GetSubmodule(int i) {
+            if(i < base.GetNumberOfSubmodules()) {
+                return base.GetSubmodule(i);
+            } else 
+                return GetDataStrategy().GetSubmodule(i-base.GetNumberOfSubmodules());
+		}
+
+
+
         SmartData.DataStrategy _dataStrategy;
 
         public void SetDataStrategy(SmartData.DataStrategy strategy) {

@@ -13,7 +13,7 @@ namespace SculptingVis
             if(_sourceVariableSocket.GetInput() == null) return;
             if(_pointDataset == null) {
                 _pointDataset = PointDataset.CreateInstance<PointDataset>();
-                _pointDataset.Init(_sourceVariableSocket.GetInput(), (Range<int>)_sampleCount.GetInput(), 0, 0);
+                _pointDataset.Init((Variable)(_sourceVariableSocket.GetInput()), (Range<int>)_sampleCount.GetInput(), 0, 0);
                 _pointDataset.LoadDataset();
                 _variable = _pointDataset.GetAnchor();
                 _generatedVariableSocket.SetSourceObject(_variable);
@@ -27,7 +27,7 @@ namespace SculptingVis
                 
                 int seed = (Range<int>)_sampleSeed.GetInput();
                 UnityEngine.Random.seed = (seed);
-                Bounds b = _sourceVariableSocket.GetInput().GetBounds();
+                Bounds b = ((Variable)_sourceVariableSocket.GetInput()).GetBounds();
                 List<Vector3> vs = new List<Vector3>();
                 for(int i = 0; i < (Range<int>)_sampleCount.GetInput(); i++) {
                     Vector3 v = new Vector3(UnityEngine.Random.Range(b.min.x,b.max.x),UnityEngine.Random.Range(b.min.y,b.max.y),UnityEngine.Random.Range(b.min.z,b.max.z)); 
@@ -65,8 +65,8 @@ namespace SculptingVis
             _generatedVariableSocket = (new StyleSocket()).Init("", this, false, true, _variable);
 
             AddSubmodule(_generatedVariableSocket);
-            _derivableVariableSocket = (new StyleSocket()).Init("Hook for deriving", this, false, true, _variable);
-            AddSubmodule(_generatedVariableSocket);
+            // _derivableVariableSocket = (new StyleSocket()).Init("Hook for deriving", this, false, true, _variable);
+            // AddSubmodule(_generatedVariableSocket);
 
 
             _sourceVariableSocket = new VariableSocket();

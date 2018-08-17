@@ -15,7 +15,10 @@ namespace SculptingVis.SmartData {
             _dataset = dataset;
         }
         public int components;
-        
+        public Variable Init() {
+			AddSubmodule((new StyleSocket()).Init("",this,false,true,this));
+            return this;
+        }
         SmartData.Dataset _dataset;
 
         public void SetDataset(SmartData.Dataset dataset) {

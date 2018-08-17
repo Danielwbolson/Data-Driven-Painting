@@ -47,21 +47,21 @@ namespace SculptingVis
             dataset.SetName("Test Dataset");
 
 
-            SmartData.Variable anchoredVariable = new SmartData.AnchoredVariable(dataset);
+            SmartData.Variable anchoredVariable = new SmartData.AnchoredVariable(dataset).Init();
             anchoredVariable.SetName("Anchored Variable A");
 
-            SmartData.Variable anchoredVariable2 = new SmartData.AnchoredVariable(dataset);
+            SmartData.Variable anchoredVariable2 = new SmartData.AnchoredVariable(dataset).Init();
             anchoredVariable2.SetName("Anchored Variable B");
 
 
-            SmartData.Variable continuousVariable = new SmartData.ContinuousVariable(dataset);
+            SmartData.Variable continuousVariable = new SmartData.ContinuousVariable(dataset).Init();
             continuousVariable.SetName("Continuous Variable A");
 
             dataset.AddVariable(anchoredVariable);
             dataset.AddVariable(anchoredVariable2);
             dataset.AddVariable(continuousVariable);
 
-            SmartData.Anchor anchor = new SmartData.Anchor(dataset);
+            SmartData.Anchor anchor = new SmartData.Anchor(dataset).Init();
             anchor.SetName( "Original Anchor");
             SmartData.VTKPointDataStrategy vtkStrat = new SmartData.VTKPointDataStrategy();
             vtkStrat.SetDatasetFile(contourData);
@@ -70,7 +70,7 @@ namespace SculptingVis
 
             dataset.SetSourceAnchor(anchor);
 
-            SmartData.Anchor anchor2 = new SmartData.Anchor(dataset);
+            SmartData.Anchor anchor2 = new SmartData.Anchor(dataset).Init();
             // anchor2.SetNumberOfPoints(3);
             anchor2.SetName( "Derived Anchor");
             SmartData.RandomSubsetPointDataStrategy strat = (new SmartData.RandomSubsetPointDataStrategy()).Init(dataset.GetSourceAnchor());

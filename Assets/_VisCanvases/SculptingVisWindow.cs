@@ -45,6 +45,27 @@ public class SculptingVisWindow : EditorWindow
         return Vector4.Dot(terms, powers);
     }
 
+    void DrawWire(Rect startRect, Vector2 endPos) {
+        if(startRect.center.x < endPos.x) {
+            Vector2 startPos = startRect.center+Vector2.right*startRect.width/2;
+            DrawWire(startPos,Vector2.right,endPos,Vector2.left);
+        } else {
+            Vector2 startPos = startRect.center+Vector2.left*startRect.width/2;
+            DrawWire(startPos,Vector2.left,endPos,Vector2.right);    
+        }
+    }
+
+    void DrawWire(Rect startRect, Rect endRect) {
+        if(startRect.center.x < endRect.center.x) {
+            Vector2 startPos = startRect.center+Vector2.right*startRect.width/2;
+            Vector2 endPos = endRect.center+Vector2.left*endRect.width/2;
+            DrawWire(startPos,Vector2.right,endPos,Vector2.left);
+        } else {
+            Vector2 startPos = startRect.center+Vector2.left*startRect.width/2;
+            Vector2 endPos = endRect.center+Vector2.right*endRect.width/2;
+            DrawWire(startPos,Vector2.left,endPos,Vector2.right);    
+        }
+    }
     void DrawWire(Vector2 startPosition, Vector2 endPosition)
     {
 
@@ -189,53 +210,48 @@ public class SculptingVisWindow : EditorWindow
                 inputHookLeft = true;
             if (socket.GetModule() is StyleCustomVariable && socket.IsOutput() && socket.GetLabel() != "")
                 inputHookRight = true;
-          
-            EditorGUILayout.BeginHorizontal();
-            if (inputHookLeft)
-                DrawSocketHook(socket, nest);
-            else
-                GUILayoutUtility.GetRect(new GUIContent(""), socket.IsOutput() ? EditorStyles.radioButton : EditorStyles.miniButton);
 
-            GUILayout.Label(socket.GetLabel());
-            if(socket is StyleTypeSocket<Range<int>>) {
-                int A = ((Range<int>)socket.GetInput()).value;
-                ((Range<int>)socket.GetInput()).value = EditorGUILayout.IntSlider(((Range<int>)socket.GetInput()).value,((Range<int>)socket.GetInput()).lowerBound,((Range<int>)socket.GetInput()).upperBound);
-                if(A != ((Range<int>)socket.GetInput()).value)
-                    socket.GetModule().UpdateModule();
-            }
 
-            if(socket is StyleTypeSocket<Range<float>>) {
-                float A = ((Range<float>)socket.GetInput()).value;
-                ((Range<float>)socket.GetInput()).value = EditorGUILayout.Slider(((Range<float>)socket.GetInput()).value,((Range<float>)socket.GetInput()).lowerBound,((Range<float>)socket.GetInput()).upperBound);
-                if(A != ((Range<float>)socket.GetInput()).value)
-                    socket.GetModule().UpdateModule();
-            }
-            if(socket is StyleTypeSocket<Range<bool>>) {
-                bool A = ((Range<bool>)socket.GetInput()).value;
-                ((Range<bool>)socket.GetInput()).value = EditorGUILayout.Toggle(((Range<bool>)socket.GetInput()).value);
-                if(A != ((Range<bool>)socket.GetInput()).value)
-                    socket.GetModule().UpdateModule();
-            }
+            BeginSocketHook(socket,nest);
 
-            if(socket is StyleTypeSocket<Objectify<Color>>) {
-                Color A = ((Objectify<Color>)socket.GetInput()).value;
-                ((Objectify<Color>)socket.GetInput()).value = EditorGUILayout.ColorField(A);
-                if(A != ((Objectify<Color>)socket.GetInput()).value) {
-                    socket.GetModule().UpdateModule();
+
+            
+                GUILayout.Label(socket.GetLabel());
+                if(socket is StyleTypeSocket<Range<int>>) {
+                    int A = ((Range<int>)socket.GetInput()).value;
+                    ((Range<int>)socket.GetInput()).value = EditorGUILayout.IntSlider(((Range<int>)socket.GetInput()).value,((Range<int>)socket.GetInput()).lowerBound,((Range<int>)socket.GetInput()).upperBound);
+                    if(A != ((Range<int>)socket.GetInput()).value)
+                        socket.GetModule().UpdateModule();
                 }
-            }
+
+                if(socket is StyleTypeSocket<Range<float>>) {
+                    float A = ((Range<float>)socket.GetInput()).value;
+                    ((Range<float>)socket.GetInput()).value = EditorGUILayout.Slider(((Range<float>)socket.GetInput()).value,((Range<float>)socket.GetInput()).lowerBound,((Range<float>)socket.GetInput()).upperBound);
+                    if(A != ((Range<float>)socket.GetInput()).value)
+                        socket.GetModule().UpdateModule();
+                }
+                if(socket is StyleTypeSocket<Range<bool>>) {
+                    bool A = ((Range<bool>)socket.GetInput()).value;
+                    ((Range<bool>)socket.GetInput()).value = EditorGUILayout.Toggle(((Range<bool>)socket.GetInput()).value);
+                    if(A != ((Range<bool>)socket.GetInput()).value)
+                        socket.GetModule().UpdateModule();
+                }
+
+                if(socket is StyleTypeSocket<Objectify<Color>>) {
+                    Color A = ((Objectify<Color>)socket.GetInput()).value;
+                    ((Objectify<Color>)socket.GetInput()).value = EditorGUILayout.ColorField(A);
+                    if(A != ((Objectify<Color>)socket.GetInput()).value) {
+                        socket.GetModule().UpdateModule();
+                    }
+                }
 
 
-            GUILayout.FlexibleSpace();
-            if (inputHookRight)
-                DrawSocketHook(socket, nest);
-            else
-                GUILayoutUtility.GetRect(new GUIContent(""), socket.IsOutput() ? EditorStyles.radioButton : EditorStyles.miniButton);
+                GUILayout.FlexibleSpace();
+                EndSocketHook(socket,nest);
 
-            EditorGUILayout.EndHorizontal();
-            //GUILayout.FlexibleSpace();
+
     }
-    void DrawStyleModule(StyleModule module, Rect nest, bool showInputs = true, bool showOutputs = true)
+    void DrawStyleModule(StyleModule module, Rect nest, bool foldup, bool showInputs = true, bool showOutputs = true)
     {
         // if(module is SculptingVis.SmartData.Dataset) {
         //     DrawDatasetModule((SculptingVis.SmartData.Dataset)module, nest, showInputs, showOutputs);
@@ -262,39 +278,45 @@ public class SculptingVisWindow : EditorWindow
 
         GUILayout.BeginVertical("box");
         GUILayout.BeginHorizontal();
+        if(labelOutputHook)
+            BeginSocketHook((StyleSocket)module.GetSubmodule(submodule_index),nest);
 
+        // if (labelOutputHookLeft && module.GetSubmodule(submodule_index) is StyleSocket)
+        // {
+        //     if (labelOutputHook) DrawSocketHook((StyleSocket)module.GetSubmodule(submodule_index++), nest);
 
-        if (labelOutputHookLeft && module.GetSubmodule(submodule_index) is StyleSocket)
-        {
-            if (labelOutputHook) DrawSocketHook((StyleSocket)module.GetSubmodule(submodule_index++), nest);
+        // }
 
-        }
-
-        if (labelOutputHookRight) {
+        // if (labelOutputHookRight) {
             
-            if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
-                GetStyleController().RemoveModule(module);
-            }
-        } 
+        //     if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
+        //         GetStyleController().RemoveModule(module);
+        //     }
+        // } 
 
         // Draw Module Label
-        GUILayout.Label(module.GetLabel(),GUILayout.ExpandWidth(true));
+        float x = EditorGUIUtility.fieldWidth;
+        EditorGUIUtility.fieldWidth = 10;
+        if(module.GetNumberOfSubmodules() >(labelOutputHook?1:0) )
+            GetFoldoutStates()[""+module.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(module.GetHashCode()+""),GUIContent.none, false);
+        EditorGUIUtility.fieldWidth = x;
 
+        GUILayout.Label(module.GetLabel());
+        GUILayout.FlexibleSpace();
 
         // End Draw Module label
         if(!labelOutputHook) GUILayout.FlexibleSpace();
 
-        if (!labelOutputHookRight) {
-            if(labelOutputHook)            GUILayout.FlexibleSpace();
+        // if (!labelOutputHookRight) {
+            // if(labelOutputHook)            GUILayout.FlexibleSpace();
 
             if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
                 GetStyleController().RemoveModule(module);
             }
-        } 
+        // } 
 
         if(module is StyleVisualElement) {
             if(true) {
-                GUILayout.FlexibleSpace();
                 Texture t = ((StyleVisualElement)module).GetVisualElement().GetPreviewImage();
                 float aspectRatio = ((StyleVisualElement)module).GetVisualElement().GetPreviewImageAspectRatio();
                 Rect r = GUILayoutUtility.GetRect(30*aspectRatio,30);
@@ -307,37 +329,100 @@ public class SculptingVisWindow : EditorWindow
         }
 
 
-        if (labelOutputHookRight)
-        {
-            StyleModule submod = module.GetSubmodule(submodule_index++);
-            if(submod is StyleSocket) {
-                StyleSocket socket = (StyleSocket)submod;
-                if (labelOutputHook) DrawSocketHook(socket, nest);
-            }
-        }
+        // if (labelOutputHookRight)
+        // {
+        //     StyleModule submod = module.GetSubmodule(submodule_index++);
+        //     if(submod is StyleSocket) {
+        //         StyleSocket socket = (StyleSocket)submod;
+        //         if (labelOutputHook) DrawSocketHook(socket, nest);
+        //     }
+        // }
 
         GUILayout.EndHorizontal();
 
+        if(labelOutputHook)
+            EndSocketHook((StyleSocket)module.GetSubmodule(submodule_index++),nest);
+
+        if(GetFoldoutState(module.GetHashCode()+"")) {
+            for (; submodule_index < module.GetNumberOfSubmodules(); submodule_index++)
+            {
+                StyleModule submod = module.GetSubmodule(submodule_index);
+                if(submod is StyleSocket) {
+                    StyleSocket socket = (StyleSocket)submod;
+                    DrawSocket(socket,nest,showInputs,showOutputs);
+                }
+                else {
+                    DrawStyleModule(submod,nest,true,true,true);
+                }
 
 
-        for (; submodule_index < module.GetNumberOfSubmodules(); submodule_index++)
-        {
-            StyleModule submod = module.GetSubmodule(submodule_index);
-            if(submod is StyleSocket) {
-                StyleSocket socket = (StyleSocket)submod;
-                DrawSocket(socket,nest,showInputs,showOutputs);
+
             }
-            else {
-                DrawStyleModule(submod,nest,true,true);
-            }
-
-
-
         }
+
+
+
         GUILayout.EndVertical();
     }
 
     void DrawSocketHook(StyleSocket socket, Rect nest)
+    {
+        // if (socket != null)
+        // {
+            bool disabled = false;
+            if (activeSource != null && !socket.DoesAccept(activeSource))
+                disabled = true;
+
+            EditorGUI.BeginDisabledGroup(disabled);
+            //GUILayout.Label(socket.GetUniqueIdentifier());
+            GUILayout.Box("", socket.IsOutput() ? EditorStyles.radioButton : EditorStyles.miniButton);
+            EditorGUI.EndDisabledGroup();
+            if (Event.current.type == EventType.Repaint)
+            {
+                Rect hook = GUILayoutUtility.GetLastRect();
+                hook.position += nest.position;
+                _socketHooks[socket.GetUniqueIdentifier()] = hook;
+                _sockets[socket.GetUniqueIdentifier()] = socket;
+            }
+
+            //Debug.Log("_socketHooks[" + module.GetSockets()[i] + "] = " + hook);
+        // }
+
+    }
+    Dictionary<string, EditorGUILayout.HorizontalScope> _horzScopes;
+    Dictionary<string,EditorGUILayout.HorizontalScope > GetHorizontalScopes() {
+        if(_horzScopes == null) _horzScopes = new Dictionary<string, EditorGUILayout.HorizontalScope>();
+        return _horzScopes;
+    }
+    void BeginSocketHook(StyleSocket socket,Rect nest)  {
+         bool disabled = false;
+        if (activeSource != null && !socket.DoesAccept(activeSource))
+            disabled = true;
+        EditorGUI.BeginDisabledGroup(disabled);
+
+              Texture2D buttonBg = GUI.skin.button.normal.background;
+            if (socket.GetInput() == null && socket.GetOutput() == null)  //set active based on condition
+                GUI.skin.button.normal.background = GUI.skin.button.active.background;
+
+        GetHorizontalScopes()[socket.GetUniqueIdentifier()] =  new EditorGUILayout.HorizontalScope("button");
+        GUI.skin.button.normal.background = buttonBg;
+
+    }
+
+    void EndSocketHook(StyleSocket socket, Rect nest) {
+        if (Event.current.type == EventType.Repaint)
+        {
+            Rect hook = GetHorizontalScopes()[socket.GetUniqueIdentifier()].rect;
+            hook.position += nest.position;
+            _socketHooks[socket.GetUniqueIdentifier()] = hook;
+            _sockets[socket.GetUniqueIdentifier()] = socket;
+
+        }
+        GetHorizontalScopes()[socket.GetUniqueIdentifier()].Dispose();
+        EditorGUI.EndDisabledGroup();
+
+    }
+    void MakeSocketHook(StyleSocket socket, Rect hookRect, Rect nest)
     {
         // if (socket != null)
         // {
@@ -617,7 +702,7 @@ public class SculptingVisWindow : EditorWindow
                 {
                     // Rect scrollRect = columns[i];
                     // scrollRect.position -= _scrollPositions["VisualElements"];
-                    DrawStyleModule(GetStyleController().GetVisualElements()[m], scrollView);
+                    DrawStyleModule(GetStyleController().GetVisualElements()[m], scrollView, false);
                 }
 
 
@@ -640,7 +725,7 @@ public class SculptingVisWindow : EditorWindow
                 {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Layers"];
-                    DrawStyleModule(GetStyleController().GetLayers()[m], scrollRect);
+                    DrawStyleModule(GetStyleController().GetLayers()[m], scrollRect, false);
                 }
 
                 
@@ -675,20 +760,20 @@ public class SculptingVisWindow : EditorWindow
                 {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
-                    DrawStyleModule(GetStyleController().GetVariables()[m], scrollRect);
+                    DrawStyleModule(GetStyleController().GetVariables()[m], scrollRect, false);
                 }
 
                 for (int m = 0; m < GetStyleController().GetUserVariables().Count; m++)
                 {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
-                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false, true);
+                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false,false, true);
                 }
 
                 for(int m = 0; m < GetStyleController().GetDatasets().Count;m++) {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
-                    DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false, true);
+                    DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false,false, true);
          
                 }
                 GUILayout.EndScrollView();
@@ -710,7 +795,7 @@ public class SculptingVisWindow : EditorWindow
                 {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["CustomVariables"];
-                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect,true,false);
+                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect,false,true,false);
                 }
 
 
@@ -754,6 +839,7 @@ public class SculptingVisWindow : EditorWindow
                     if (_socketHooks[socket].Contains(evt.mousePosition) && _sockets[socket].IsOutput())
                     {
                         activeSource = _sockets[socket];
+                        Debug.Log(activeSource.GetLabel() + " clicked");
                         break;
                     }
 
@@ -761,6 +847,8 @@ public class SculptingVisWindow : EditorWindow
                     if (_socketHooks[socket].Contains(evt.mousePosition) && _sockets[socket].IsInput())
                     {
                         GetStyleController().ClearSocket(_sockets[socket]);
+                        if(activeSource != null) Debug.Log(activeSource.GetLabel() + " cleared");
+
                         break;
                     }
                 }
@@ -782,6 +870,8 @@ public class SculptingVisWindow : EditorWindow
                         if (_socketHooks[socket].Contains(evt.mousePosition))
                         {
                             StyleSocket receiving = _sockets[socket];
+                            Debug.Log(receiving.GetLabel() + " receiving");
+
                             if (receiving.DoesAccept(activeSource))
                             {
                                 StyleLink link = new StyleLink();
@@ -810,14 +900,14 @@ public class SculptingVisWindow : EditorWindow
         {
             StyleLink link = GetStyleController().GetLinks()[i];
             if (_socketHooks.ContainsKey(link.GetSource().GetUniqueIdentifier()) && _socketHooks.ContainsKey(link.GetDestination().GetUniqueIdentifier()))
-                DrawWire(_socketHooks[link.GetSource().GetUniqueIdentifier()].center, Vector2.right, _socketHooks[link.GetDestination().GetUniqueIdentifier()].center, Vector2.left);
+                DrawWire(_socketHooks[link.GetSource().GetUniqueIdentifier()], _socketHooks[link.GetDestination().GetUniqueIdentifier()]);
 
         }
 
         if (activeSource != null)
         {
             if (_socketHooks.ContainsKey(activeSource.GetUniqueIdentifier()))
-                DrawWire(_socketHooks[activeSource.GetUniqueIdentifier()].center, Vector2.right, evt.mousePosition, Vector2.left);
+                DrawWire(_socketHooks[activeSource.GetUniqueIdentifier()], evt.mousePosition);
 
         }
     }

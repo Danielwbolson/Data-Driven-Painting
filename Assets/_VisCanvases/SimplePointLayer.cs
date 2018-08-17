@@ -92,14 +92,14 @@ public class SimplePointLayer : Layer {
 		return _anchorVariable != null && _anchorVariable.IsAssigned();
 	}
 	public override Bounds GetBounds() {
-		return _anchorVariable.GetInput().GetBounds();
+		return ((Variable)_anchorVariable.GetInput()).GetBounds();
 	}
 
 
 	ComputeBuffer cellAndPointIndexBuffer;
 	public override void DrawLayer(Canvas canvas) {
 		if(_anchorVariable == null || !_anchorVariable.IsAssigned()) return;
-		Datastream stream = _anchorVariable.GetInput().GetStream(null,0,0);
+		Datastream stream = ((Variable)_anchorVariable.GetInput()).GetStream(null,0,0);
 
 
 		// Indirect args

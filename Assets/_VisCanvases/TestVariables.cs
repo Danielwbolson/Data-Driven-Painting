@@ -349,7 +349,7 @@ public class TestVariablesrEditor : Editor
                     }
                     else
                     {
-                        GUILayout.Label(socket.GetName() + "[" + socket.GetInput().GetName() + "]");
+                        GUILayout.Label(socket.GetName() + "[" + ((Variable)socket.GetInput()).GetName() + "]");
 
 
 
@@ -358,9 +358,9 @@ public class TestVariablesrEditor : Editor
 
                     float lower = 0.25f;
                     float upper = 0.75f;
-                    if (socket.IsAssigned() && socket.GetInput().GetComponents() == 1)
+                    if (socket.IsAssigned() && ((Variable)socket.GetInput()).GetComponents() == 1)
                     {
-                        EditorGUILayout.MinMaxSlider(ref socket.LowerBound, ref socket.UpperBound, socket.GetInput().GetMin().x, socket.GetInput().GetMax().x, GUILayout.Width(100));
+                        EditorGUILayout.MinMaxSlider(ref socket.LowerBound, ref socket.UpperBound, ((Variable)socket.GetInput()).GetMin().x, ((Variable)socket.GetInput()).GetMax().x, GUILayout.Width(100));
                         Debug.Log(socket.LowerBound + " - " + socket.UpperBound);
                     }
                     else

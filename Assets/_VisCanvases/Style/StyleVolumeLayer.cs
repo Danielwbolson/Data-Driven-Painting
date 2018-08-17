@@ -35,13 +35,13 @@ namespace SculptingVis
         }
         public override Bounds GetBounds()
         {
-            return _volumeVariable.GetInput().GetBounds();
+            return ((Variable)_volumeVariable.GetInput()).GetBounds();
         }
 
         public override void DrawLayer(Canvas canvas)
         {
             if (_volumeVariable == null || !_volumeVariable.IsAssigned()) return;
-            Datastream stream = _volumeVariable.GetInput().GetStream(null, 0, 0);
+            Datastream stream = ((Variable)_volumeVariable.GetInput()).GetStream(null, 0, 0);
 
 
 
