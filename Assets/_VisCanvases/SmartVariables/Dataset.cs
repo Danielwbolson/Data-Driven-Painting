@@ -13,6 +13,10 @@ namespace SculptingVis.SmartData {
     [System.Serializable]
     public class Dataset : SmartDataObject {
         
+        public override string GetLabel() {
+			return this + "";
+		}
+
         [SerializeField]
         List<SmartData.Anchor> _anchors; 
 
@@ -30,6 +34,25 @@ namespace SculptingVis.SmartData {
         Dictionary<SmartData.Anchor,SmartData.Datastream> _anchorStreams;
 
 
+		public override int GetNumberOfSubmodules() {
+			return GetAnchors().Count + GetAnchoredVariables().Count + GetContinuousVariables().Count;
+		}
+
+		public override StyleModule GetSubmodule(int i) {
+            if(i < GetAnchors().Count) 
+                return GetAnchors()[i];
+            else if(i-GetAnchors().Count < GetAnchoredVariables().Count)
+                return GetAnchoredVariables()[i-GetAnchors().Count ];
+            else if(i-GetAnchors().Count-GetAnchoredVariables().Count < GetContinuousVariables().Count)
+                return GetContinuousVariables()[i-GetAnchors().Count-GetAnchoredVariables().Count];
+			return null;
+		}
+		public override void AddSubmodule(StyleModule module) {
+            if(module is Anchor) 
+		 	    AddAnchor((Anchor)module);
+            else if (module is Variable) 
+                AddVariable((Variable)module);
+		}
 
         public void SetSourceAnchor(SmartData.Anchor sourceAnchor) {
             _sourceAnchor = sourceAnchor;

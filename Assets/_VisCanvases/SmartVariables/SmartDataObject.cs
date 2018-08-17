@@ -12,6 +12,9 @@ namespace SculptingVis.SmartData{
 		public void SetName(string name) {
 			_name = name;
 		}
+		public override string GetLabel() {
+			return GetName();
+		}
         public override string ToString() {
             return "(" + base.ToString() +") " + GetName();
         }

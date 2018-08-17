@@ -86,9 +86,8 @@ namespace SculptingVis
 
             anchor2.TriggerUpdate();
 
-            StyleDataset datasetModule = ScriptableObject.CreateInstance<StyleDataset>();
-            datasetModule.SetDataset(dataset);
-            GetDatasets().Add(datasetModule);
+            // SmartData.Dataset datasetModule = ScriptableObject.CreateInstance<SmartData.Dataset>();
+            GetDatasets().Add(dataset);
 
 
 
@@ -135,7 +134,7 @@ namespace SculptingVis
 
 
         [SerializeField]
-        List<StyleDataset> _datasets;
+        List<SmartData.Dataset> _datasets;
         
         [SerializeField]
         List<StyleLink> _links;
@@ -261,9 +260,9 @@ namespace SculptingVis
             return _variables;
         }
 
-        public List<StyleDataset> GetDatasets()
+        public List<SmartData.Dataset> GetDatasets()
         {
-            if (_datasets == null) _datasets = new List<StyleDataset>();
+            if (_datasets == null) _datasets = new List<SmartData.Dataset>();
 
             return _datasets;
         }
@@ -297,7 +296,7 @@ namespace SculptingVis
         void Update()
         {
             foreach(var dataset in GetDatasets()) {
-                dataset.GetDataset().Update();
+                dataset.Update();
             }
         }
 

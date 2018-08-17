@@ -56,7 +56,7 @@ namespace SculptingVis{
 		// 	GetSockets().Add(socket);
 		// }
 
-
+	
 		public virtual string GetLabel() {
 			return "Module";
 		}

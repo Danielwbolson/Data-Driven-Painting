@@ -118,11 +118,11 @@ public class SculptingVisWindow : EditorWindow
         return GetFoldoutStates()[id];
     }
 
-    void DrawDatasetModule(StyleDataset module, Rect next, bool showInputs= true, bool showOutputs = true) {
+    void DrawDatasetModule(SculptingVis.SmartData.Dataset module, Rect next, bool showInputs= true, bool showOutputs = true) {
 
         GUILayout.BeginVertical("box");
         GUILayout.BeginHorizontal();
-        GUILayout.Label(module.GetDataset().GetName());
+        GUILayout.Label(module.GetLabel());
 
         GUILayout.EndHorizontal();
 
@@ -130,13 +130,13 @@ public class SculptingVisWindow : EditorWindow
         GUILayout.BeginVertical("box");
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label(module.GetDataset().GetSourceAnchor().GetName() +" (" + module.GetDataset().GetSourceAnchor().GetNumberOfPoints() + " points)");
+        GUILayout.Label(module.GetSourceAnchor().GetLabel() +" (" + module.GetSourceAnchor().GetNumberOfPoints() + " points)");
         GUILayout.EndHorizontal();
 
-        foreach(var anchor in module.GetDataset().GetAnchors()) {
-            if(anchor != module.GetDataset().GetSourceAnchor()) {
+        foreach(var anchor in module.GetAnchors()) {
+            if(anchor != module.GetSourceAnchor()) {
                 GUILayout.BeginHorizontal();
-                GetFoldoutStates()[""+anchor.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(anchor.GetHashCode()+""), anchor.GetName() +" (" + anchor.GetNumberOfPoints() + " points)");
+                GetFoldoutStates()[""+anchor.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(anchor.GetHashCode()+""), anchor.GetLabel() +" (" + anchor.GetNumberOfPoints() + " points)");
                 GUILayout.Button("-",GUILayout.Width(20));
                 GUILayout.EndHorizontal();
 
@@ -153,18 +153,18 @@ public class SculptingVisWindow : EditorWindow
         GUILayout.EndVertical();
 
 
-        foreach(var anchoredVar in module.GetDataset().GetAnchoredVariables()) {
+        foreach(var anchoredVar in module.GetAnchoredVariables()) {
             if(anchoredVar != null) {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(anchoredVar.GetName());
+                GUILayout.Label(anchoredVar.GetLabel());
                 GUILayout.EndHorizontal();
             }
         }
 
-        foreach(var continuousVar in module.GetDataset().GetContinuousVariables()) {
+        foreach(var continuousVar in module.GetContinuousVariables()) {
             if(continuousVar != null) {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(continuousVar.GetName());
+                GUILayout.Label(continuousVar.GetLabel());
                 GUILayout.EndHorizontal();
             }
         }
@@ -237,11 +237,11 @@ public class SculptingVisWindow : EditorWindow
     }
     void DrawStyleModule(StyleModule module, Rect nest, bool showInputs = true, bool showOutputs = true)
     {
-        if(module is StyleDataset) {
-            DrawDatasetModule((StyleDataset)module, nest, showInputs, showOutputs);
-            return;
-        }
-        int socket_index = 0;
+        // if(module is SculptingVis.SmartData.Dataset) {
+        //     DrawDatasetModule((SculptingVis.SmartData.Dataset)module, nest, showInputs, showOutputs);
+        //     return;
+        // }
+        int submodule_index = 0;
         bool labelOutputHook = false;
         bool labelOutputHookLeft = false;
         bool labelOutputHookRight = false;
@@ -264,9 +264,9 @@ public class SculptingVisWindow : EditorWindow
         GUILayout.BeginHorizontal();
 
 
-        if (labelOutputHookLeft && module.GetSubmodule(socket_index) is StyleSocket)
+        if (labelOutputHookLeft && module.GetSubmodule(submodule_index) is StyleSocket)
         {
-            if (labelOutputHook) DrawSocketHook((StyleSocket)module.GetSubmodule(socket_index++), nest);
+            if (labelOutputHook) DrawSocketHook((StyleSocket)module.GetSubmodule(submodule_index++), nest);
 
         }
 
@@ -309,7 +309,7 @@ public class SculptingVisWindow : EditorWindow
 
         if (labelOutputHookRight)
         {
-            StyleModule submod = module.GetSubmodule(socket_index++);
+            StyleModule submod = module.GetSubmodule(submodule_index++);
             if(submod is StyleSocket) {
                 StyleSocket socket = (StyleSocket)submod;
                 if (labelOutputHook) DrawSocketHook(socket, nest);
@@ -320,12 +320,15 @@ public class SculptingVisWindow : EditorWindow
 
 
 
-        for (; socket_index < module.GetNumberOfSubmodules(); socket_index++)
+        for (; submodule_index < module.GetNumberOfSubmodules(); submodule_index++)
         {
-            StyleModule submod = module.GetSubmodule(socket_index);
+            StyleModule submod = module.GetSubmodule(submodule_index);
             if(submod is StyleSocket) {
                 StyleSocket socket = (StyleSocket)submod;
                 DrawSocket(socket,nest,showInputs,showOutputs);
+            }
+            else {
+                DrawStyleModule(submod,nest,true,true);
             }
 
 
