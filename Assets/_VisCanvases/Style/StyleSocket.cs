@@ -6,13 +6,13 @@ namespace SculptingVis {
 
 	
 	[System.Serializable]
-	public class StyleSocket {
-		public System.Guid InstanceID {get; private set;}
-		// Other properties, etc.
+	public class StyleSocket : StyleModule {
 
-
-			
-
+		public override string GetLabel() {
+			return _label;	
+		}
+		[SerializeField]
+		protected string _label;
 
 		[SerializeField]
 		StyleModule _module;
@@ -30,8 +30,7 @@ namespace SculptingVis {
 		[SerializeField]
 		protected Object _defaultInput;
 
-		[SerializeField]
-		string _label;
+
 
 		[SerializeField]
 		List<StyleLink> _links;
@@ -72,13 +71,6 @@ namespace SculptingVis {
 		}
 		public virtual Object GetInput() {
 			return _input!=null? _input : _defaultInput;
-		}
-		public virtual string GetUniqueIdentifier() {
-			return InstanceID + "";
-		}
-
-		public virtual string GetLabel() {
-			return _label;	
 		}
 
 		public bool IsOutput() {

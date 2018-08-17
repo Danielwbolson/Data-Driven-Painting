@@ -108,102 +108,86 @@ public class SculptingVisWindow : EditorWindow
     Vector2Int activeLink;
 
     StyleSocket activeSource = null;
-    void DrawStyleModule(StyleModule module, Rect nest, bool showInputs = true, bool showOutputs = true)
-    {
-        int socket_index = 0;
-        bool labelOutputHook = false;
-        bool labelOutputHookLeft = false;
-        bool labelOutputHookRight = false;
-        if (showOutputs && module.GetNumberOfSockets() > 0 && module.GetSocket(0).IsOutput())
-        {
-            labelOutputHook = true;
-            StyleSocket socket = module.GetSocket(0);
-            // Temporary inspection to see which column it's in, and which it's going to
-            if (module is StyleVisualElement)
-            {
-                if (socket.GetOutput() is VisualElement)
-                    labelOutputHookRight = true;
-            }
-            else if (module is StyleVariable && socket.GetLabel() == "")
-                labelOutputHookLeft = true;
+    Dictionary<string,bool> _foldoutStates;
+    public Dictionary<string,bool> GetFoldoutStates() {
+        if(_foldoutStates == null) _foldoutStates = new Dictionary<string, bool>();
+        return _foldoutStates;
+    }
+    public bool GetFoldoutState(string id) {
+        if(!GetFoldoutStates().ContainsKey(id)) GetFoldoutStates()[id] = false;
+        return GetFoldoutStates()[id];
+    }
 
-        }
+    void DrawDatasetModule(StyleDataset module, Rect next, bool showInputs= true, bool showOutputs = true) {
 
         GUILayout.BeginVertical("box");
         GUILayout.BeginHorizontal();
-
-
-        if (labelOutputHookLeft)
-        {
-            if (labelOutputHook) DrawSocketHook(module.GetSocket(socket_index++), nest);
-
-        }
-
-        if (labelOutputHookRight) {
-            
-            if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
-                GetStyleController().RemoveModule(module);
-            }
-        } 
-
-        // Draw Module Label
-        GUILayout.Label(module.GetLabel(),GUILayout.ExpandWidth(true));
-
-
-        // End Draw Module label
-        if(!labelOutputHook) GUILayout.FlexibleSpace();
-
-        if (!labelOutputHookRight) {
-            if(labelOutputHook)            GUILayout.FlexibleSpace();
-
-            if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
-                GetStyleController().RemoveModule(module);
-            }
-        } 
-
-        if(module is StyleVisualElement) {
-            if(true) {
-                GUILayout.FlexibleSpace();
-                Texture t = ((StyleVisualElement)module).GetVisualElement().GetPreviewImage();
-                float aspectRatio = ((StyleVisualElement)module).GetVisualElement().GetPreviewImageAspectRatio();
-                Rect r = GUILayoutUtility.GetRect(30*aspectRatio,30);
-
-                GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio);
-
-            }
-
-
-        }
-
-
-        if (labelOutputHookRight)
-        {
-            if (labelOutputHook) DrawSocketHook(module.GetSocket(socket_index++), nest);
-        }
+        GUILayout.Label(module.GetDataset().GetName());
 
         GUILayout.EndHorizontal();
 
 
+        GUILayout.BeginVertical("box");
 
-        for (; socket_index < module.GetNumberOfSockets(); socket_index++)
-        {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(module.GetDataset().GetSourceAnchor().GetName() +" (" + module.GetDataset().GetSourceAnchor().GetNumberOfPoints() + " points)");
+        GUILayout.EndHorizontal();
 
-            StyleSocket socket = module.GetSocket(socket_index);
-            if (socket.IsInput() && !showInputs) continue;
-            if (socket.IsOutput() && !showOutputs) continue;
+        foreach(var anchor in module.GetDataset().GetAnchors()) {
+            if(anchor != module.GetDataset().GetSourceAnchor()) {
+                GUILayout.BeginHorizontal();
+                GetFoldoutStates()[""+anchor.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(anchor.GetHashCode()+""), anchor.GetName() +" (" + anchor.GetNumberOfPoints() + " points)");
+                GUILayout.Button("-",GUILayout.Width(20));
+                GUILayout.EndHorizontal();
+
+                if(GetFoldoutState(anchor.GetHashCode()+"")) {
+                    GUILayout.BeginVertical();
+                    for(int i = 0; i < anchor.GetDataStrategy().GetNumberOfSubmodules(); i++) {
+                        if(anchor.GetDataStrategy().GetSubmodule(i) is StyleSocket)
+                        DrawSocket((StyleSocket)anchor.GetDataStrategy().GetSubmodule(i),next,true,true);
+                    }
+                    GUILayout.EndVertical();
+                }
+            }
+        }
+        GUILayout.EndVertical();
+
+
+        foreach(var anchoredVar in module.GetDataset().GetAnchoredVariables()) {
+            if(anchoredVar != null) {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(anchoredVar.GetName());
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        foreach(var continuousVar in module.GetDataset().GetContinuousVariables()) {
+            if(continuousVar != null) {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(continuousVar.GetName());
+                GUILayout.EndHorizontal();
+            }
+        }
+        GUILayout.EndVertical();
+    }
+
+
+    void DrawSocket(StyleSocket socket, Rect nest, bool showInputs = true, bool showOutputs = true) {
+            if (socket.IsInput() && !showInputs) return;
+            if (socket.IsOutput() && !showOutputs) return;
 
             bool inputHookLeft = false;
             bool inputHookRight = false;
-            if (module is StyleLayer && socket is StyleTypeSocket)
+            if (socket.GetModule() is StyleLayer && socket is StyleTypeSocket)
                 inputHookLeft = true;
-            else if (module is StyleLayer && socket is VariableSocket)
+            else if (socket.GetModule() is StyleLayer && socket is VariableSocket)
                 inputHookRight = true;
-            else if(module is StyleDataVariable && socket.GetLabel() != "") {
+            else if(socket.GetModule() is StyleDataVariable && socket.GetLabel() != "") {
                 inputHookRight = true;
             }
-            if (module is StyleCustomVariable && socket.IsInput())
+            if (socket.GetModule() is StyleCustomVariable && socket.IsInput())
                 inputHookLeft = true;
-            if (module is StyleCustomVariable && socket.IsOutput() && socket.GetLabel() != "")
+            if (socket.GetModule() is StyleCustomVariable && socket.IsOutput() && socket.GetLabel() != "")
                 inputHookRight = true;
           
             EditorGUILayout.BeginHorizontal();
@@ -250,6 +234,100 @@ public class SculptingVisWindow : EditorWindow
 
             EditorGUILayout.EndHorizontal();
             //GUILayout.FlexibleSpace();
+    }
+    void DrawStyleModule(StyleModule module, Rect nest, bool showInputs = true, bool showOutputs = true)
+    {
+        if(module is StyleDataset) {
+            DrawDatasetModule((StyleDataset)module, nest, showInputs, showOutputs);
+            return;
+        }
+        int socket_index = 0;
+        bool labelOutputHook = false;
+        bool labelOutputHookLeft = false;
+        bool labelOutputHookRight = false;
+        if (showOutputs && module.GetNumberOfSubmodules() > 0 && module.GetSubmodule(0) is StyleSocket && ((StyleSocket)module.GetSubmodule(0)).IsOutput())
+        {
+            labelOutputHook = true;
+            StyleSocket socket = ((StyleSocket) module.GetSubmodule(0));
+            // Temporary inspection to see which column it's in, and which it's going to
+            if (module is StyleVisualElement)
+            {
+                if (socket.GetOutput() is VisualElement)
+                    labelOutputHookRight = true;
+            }
+            else if (module is StyleVariable && socket.GetLabel() == "")
+                labelOutputHookLeft = true;
+
+        }
+
+        GUILayout.BeginVertical("box");
+        GUILayout.BeginHorizontal();
+
+
+        if (labelOutputHookLeft && module.GetSubmodule(socket_index) is StyleSocket)
+        {
+            if (labelOutputHook) DrawSocketHook((StyleSocket)module.GetSubmodule(socket_index++), nest);
+
+        }
+
+        if (labelOutputHookRight) {
+            
+            if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
+                GetStyleController().RemoveModule(module);
+            }
+        } 
+
+        // Draw Module Label
+        GUILayout.Label(module.GetLabel(),GUILayout.ExpandWidth(true));
+
+
+        // End Draw Module label
+        if(!labelOutputHook) GUILayout.FlexibleSpace();
+
+        if (!labelOutputHookRight) {
+            if(labelOutputHook)            GUILayout.FlexibleSpace();
+
+            if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
+                GetStyleController().RemoveModule(module);
+            }
+        } 
+
+        if(module is StyleVisualElement) {
+            if(true) {
+                GUILayout.FlexibleSpace();
+                Texture t = ((StyleVisualElement)module).GetVisualElement().GetPreviewImage();
+                float aspectRatio = ((StyleVisualElement)module).GetVisualElement().GetPreviewImageAspectRatio();
+                Rect r = GUILayoutUtility.GetRect(30*aspectRatio,30);
+
+                GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio);
+
+            }
+
+
+        }
+
+
+        if (labelOutputHookRight)
+        {
+            StyleModule submod = module.GetSubmodule(socket_index++);
+            if(submod is StyleSocket) {
+                StyleSocket socket = (StyleSocket)submod;
+                if (labelOutputHook) DrawSocketHook(socket, nest);
+            }
+        }
+
+        GUILayout.EndHorizontal();
+
+
+
+        for (; socket_index < module.GetNumberOfSubmodules(); socket_index++)
+        {
+            StyleModule submod = module.GetSubmodule(socket_index);
+            if(submod is StyleSocket) {
+                StyleSocket socket = (StyleSocket)submod;
+                DrawSocket(socket,nest,showInputs,showOutputs);
+            }
+
 
 
         }
@@ -258,8 +336,8 @@ public class SculptingVisWindow : EditorWindow
 
     void DrawSocketHook(StyleSocket socket, Rect nest)
     {
-        if (socket != null)
-        {
+        // if (socket != null)
+        // {
             bool disabled = false;
             if (activeSource != null && !socket.DoesAccept(activeSource))
                 disabled = true;
@@ -277,7 +355,7 @@ public class SculptingVisWindow : EditorWindow
             }
 
             //Debug.Log("_socketHooks[" + module.GetSockets()[i] + "] = " + hook);
-        }
+        // }
 
     }
     Rect[] _columns;
@@ -602,6 +680,13 @@ public class SculptingVisWindow : EditorWindow
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false, true);
+                }
+
+                for(int m = 0; m < GetStyleController().GetDatasets().Count;m++) {
+                    Rect scrollRect = _columns[i];
+                    scrollRect.position -= _scrollPositions["Variables"];
+                    DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false, true);
+         
                 }
                 GUILayout.EndScrollView();
                 GUILayout.EndArea();

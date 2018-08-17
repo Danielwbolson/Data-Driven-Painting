@@ -152,8 +152,11 @@ namespace SculptingVis
         }
 
 
-        public override StyleLayer CopyLayer(StyleLayer toCopy)
+        public override StyleLayer CopyLayer(StyleLayer toCopy = null)
         {
+              if(toCopy == null)
+                toCopy = new StyleSimpleGlyphLayer();
+                
             if (toCopy != null && toCopy is StyleSimpleGlyphLayer)
             {
                 _pointMaterial = ((StyleSimpleGlyphLayer)toCopy)._pointMaterial;
@@ -183,7 +186,7 @@ namespace SculptingVis
 
             _opacityThresholdInput = (new StyleTypeSocket<Range<float>>()).Init("Opacity threshold", this);
             _opacityThresholdInput.SetDefaultInputObject((new Range<float>(0, 1, 0.5f)));
-            AddSocket(_opacityThresholdInput);
+            AddSubmodule(_opacityThresholdInput);
 
 
             _directionVariable = new VariableSocket();
@@ -191,50 +194,50 @@ namespace SculptingVis
 	        _directionVariable.SetAnchorVariableSocket(_anchorVariable);
 			_directionVariable.RequireVector();
 
-            AddSocket(_anchorVariable);
-            AddSocket(_colorVariable);
-            AddSocket(_opacityVariable);
-            AddSocket(_directionVariable);
+            AddSubmodule(_anchorVariable);
+            AddSubmodule(_colorVariable);
+            AddSubmodule(_opacityVariable);
+            AddSubmodule(_directionVariable);
 
             _maxGlyphs = (new StyleTypeSocket<Range<int>>()).Init("Max glyphs", this);
             _maxGlyphs.SetDefaultInputObject((new Range<int>(0, 60000, 1000)));
-            AddSocket(_maxGlyphs);
+            AddSubmodule(_maxGlyphs);
 
             _colorMapInput = (new StyleTypeSocket<Colormap> ()).Init("Color map",this);
             _glyphInput = (new StyleTypeSocket<Glyph> ()).Init("Glyph",this);
 
-			AddSocket(_colorMapInput);
-			AddSocket(_glyphInput);
+			AddSubmodule(_colorMapInput);
+			AddSubmodule(_glyphInput);
 
             _lodLevel = (new StyleTypeSocket<Range<int>>()).Init("Glyph LOD", this);
             _lodLevel.SetDefaultInputObject((new Range<int>(0, 2,2)));
-            AddSocket(_lodLevel);
+            AddSubmodule(_lodLevel);
 
 
             _glyphScaleInput = (new StyleTypeSocket<Range<float>>()).Init("Glyph scale", this);
             _glyphScaleInput.SetDefaultInputObject((new Range<float>(0, 10,1)));
-            AddSocket(_glyphScaleInput);
+            AddSubmodule(_glyphScaleInput);
 
 
             _useMeshInput = (new StyleTypeSocket<Range<bool>>()).Init("Use mesh", this);
             _useMeshInput.SetDefaultInputObject((new Range<bool>(false, true,true)));
-            AddSocket(_useMeshInput);
+            AddSubmodule(_useMeshInput);
 
             _useThumbnailInput = (new StyleTypeSocket<Range<bool>>()).Init("Use thumbnail", this);
             _useThumbnailInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
-            AddSocket(_useThumbnailInput);
+            AddSubmodule(_useThumbnailInput);
 
             _faceCameraInput = (new StyleTypeSocket<Range<bool>>()).Init("FaceCamera", this);
             _faceCameraInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
-            AddSocket(_faceCameraInput);
+            AddSubmodule(_faceCameraInput);
 
             _opacityMultiplierInput = (new StyleTypeSocket<Range<float>>()).Init("Opacity mult", this);
             _opacityMultiplierInput.SetDefaultInputObject((new Range<float>(0,10,1)));
-            AddSocket(_opacityMultiplierInput);
+            AddSubmodule(_opacityMultiplierInput);
 
             _colorInput = (new StyleTypeSocket<Objectify<Color>>()).Init("GlyphColor", this);
             _colorInput.SetDefaultInputObject(new Objectify< Color>(Color.white));
-            AddSocket(_colorInput);
+            AddSubmodule(_colorInput);
 
 
 

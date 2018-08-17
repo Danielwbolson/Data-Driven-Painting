@@ -45,11 +45,11 @@ namespace SculptingVis{
 
 			VariableSocket anchor = new VariableSocket().Init("Anchor",this,1);
 			anchor.SetAnchorVariableSocket(null);
-			AddSocket(anchor);
+			AddSubmodule(anchor);
 			VariableSocket vs = new VariableSocket().Init("Data",this,1);
 			vs.RequireScalar();
 			vs.SetAnchorVariableSocket(anchor);
-			AddSocket(vs);
+			AddSubmodule(vs);
 
             return this;
         }

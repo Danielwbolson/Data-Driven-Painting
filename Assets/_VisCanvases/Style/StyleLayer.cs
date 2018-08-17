@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SculptingVis
 {
-    public class StyleLayer : StyleModule
+    public abstract class StyleLayer : StyleModule
     {
         [HideInInspector]
         public bool _toggled = true;
@@ -50,7 +50,7 @@ namespace SculptingVis
             Material canvasMaterial;
 
             if (!_canvasMaterials.ContainsKey(canvas) || _canvasMaterials[canvas] == null)
-                canvasMaterial = (_canvasMaterials[canvas] = Instantiate(layerMaterial));
+                canvasMaterial = (_canvasMaterials[canvas] = GameObject.Instantiate(layerMaterial));
             else
                 canvasMaterial = _canvasMaterials[canvas];
 
@@ -59,9 +59,7 @@ namespace SculptingVis
             return canvasMaterial;
         }
 
-        public virtual StyleLayer CopyLayer(StyleLayer toCopy) {
-            return this;
-        }
+        public abstract StyleLayer CopyLayer(StyleLayer toCopy=null);
 
     }
 }

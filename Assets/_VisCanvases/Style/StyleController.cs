@@ -9,7 +9,11 @@ namespace SculptingVis
     public class StyleController : MonoBehaviour
     {
 
+        
         public void Report() {
+
+
+
             // for(int i = 0; i < _links.Count; i++) {
             //     Debug.Log("Link[" + i + "] : " + _links[i].GetSource().GetOutput().GetInstanceID()+ "->" + _links[i].GetDestination().GetInput());
             // }
@@ -22,6 +26,7 @@ namespace SculptingVis
 
             GetLayers().Clear();
             GetVariables().Clear();
+            GetDatasets().Clear();
             GetVisualElements().Clear();
             GetUserVariables().Clear();
             while(GetCanvases().Count > 0)
@@ -34,6 +39,57 @@ namespace SculptingVis
 
 
 
+            VTKFileAsset contourData = new VTKFileAsset();
+            contourData.SetPath("/Users/sethjohnson/NSF-Sculpting-Vis-Platform/unity/VisualizationPlatform/Assets/StreamingAssets/example_data/VTK/contour.vtp");
+
+            Debug.Log(contourData.GetDataset().GetClassName());           
+            SmartData.Dataset dataset = new SmartData.Dataset();
+            dataset.SetName("Test Dataset");
+
+
+            SmartData.Variable anchoredVariable = new SmartData.AnchoredVariable(dataset);
+            anchoredVariable.SetName("Anchored Variable A");
+
+            SmartData.Variable anchoredVariable2 = new SmartData.AnchoredVariable(dataset);
+            anchoredVariable2.SetName("Anchored Variable B");
+
+
+            SmartData.Variable continuousVariable = new SmartData.ContinuousVariable(dataset);
+            continuousVariable.SetName("Continuous Variable A");
+
+            dataset.AddVariable(anchoredVariable);
+            dataset.AddVariable(anchoredVariable2);
+            dataset.AddVariable(continuousVariable);
+
+            SmartData.Anchor anchor = new SmartData.Anchor(dataset);
+            anchor.SetName( "Original Anchor");
+            SmartData.VTKPointDataStrategy vtkStrat = new SmartData.VTKPointDataStrategy();
+            vtkStrat.SetDatasetFile(contourData);
+
+            anchor.SetDataStrategy(vtkStrat);
+
+            dataset.SetSourceAnchor(anchor);
+
+            SmartData.Anchor anchor2 = new SmartData.Anchor(dataset);
+            // anchor2.SetNumberOfPoints(3);
+            anchor2.SetName( "Derived Anchor");
+            SmartData.RandomSubsetPointDataStrategy strat = (new SmartData.RandomSubsetPointDataStrategy()).Init(dataset.GetSourceAnchor());
+
+            anchor2.SetDataStrategy(strat);
+
+            dataset.AddAnchor(anchor);
+            dataset.AddAnchor(anchor2);
+
+            SmartData.Datastream ds = dataset.GetDatastream( anchoredVariable2,anchor);
+
+            Debug.Log(ds);
+
+            anchor2.TriggerUpdate();
+
+            StyleDataset datasetModule = ScriptableObject.CreateInstance<StyleDataset>();
+            datasetModule.SetDataset(dataset);
+            GetDatasets().Add(datasetModule);
+
 
 
             // _variables.Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init());
@@ -44,6 +100,18 @@ namespace SculptingVis
         }
 
 
+        [SerializeField]
+        Dictionary<string,FileAsset> _files;
+
+        public FileAsset GetFile(string path) {
+            if(_files == null) _files = new Dictionary<string, FileAsset>();
+            if(!_files.ContainsKey(path)) {
+                return null;
+            }
+            return _files[path];
+        }
+        
+        
 		[SerializeField] 
 		List<StyleLayer> _layerTypes;
 
@@ -66,6 +134,9 @@ namespace SculptingVis
         List<StyleModule> _variables;
 
 
+        [SerializeField]
+        List<StyleDataset> _datasets;
+        
         [SerializeField]
         List<StyleLink> _links;
 
@@ -189,6 +260,13 @@ namespace SculptingVis
 
             return _variables;
         }
+
+        public List<StyleDataset> GetDatasets()
+        {
+            if (_datasets == null) _datasets = new List<StyleDataset>();
+
+            return _datasets;
+        }
         // Use this for initialization
         void Start()
         {
@@ -200,22 +278,27 @@ namespace SculptingVis
         }
 
 		public void UpdateModuleLinks(StyleModule module) {
-			for(int i = 0; i < module.GetNumberOfSockets(); i++) {
-				StyleSocket socket = module.GetSocket(i);
-				StyleLink link;
-				if((link = GetLinkByDestination(socket))!=null){
-					if(!link.GetDestination().DoesAccept(link.GetSource())) {
-						RemoveLink(link);
-					}
+			for(int i = 0; i < module.GetNumberOfSubmodules(); i++) {
+                if( module.GetSubmodule(i) is StyleSocket) {
+                    StyleSocket socket = (StyleSocket)module.GetSubmodule(i);
+                    StyleLink link;
+                    if((link = GetLinkByDestination(socket))!=null){
+                        if(!link.GetDestination().DoesAccept(link.GetSource())) {
+                            RemoveLink(link);
+                        }
 
-				}
+                    }
+                }
+			
 			}
 		}
 
         // Update is called once per frame
         void Update()
         {
-
+            foreach(var dataset in GetDatasets()) {
+                dataset.GetDataset().Update();
+            }
         }
 
         public void LoadData(string path)
@@ -382,9 +465,13 @@ namespace SculptingVis
             }
 
 
-			for(int i = 0; i < module.GetNumberOfSockets(); i++) {
-				StyleSocket socket = module.GetSocket(i);
-				ClearSocket(socket);
+			for(int i = 0; i < module.GetNumberOfSubmodules(); i++) {
+                if(module.GetSubmodule(i) is StyleSocket) {
+                    StyleSocket socket = (StyleSocket)module.GetSubmodule(i);
+				    ClearSocket(socket);
+                } else {
+                   RemoveModule(module.GetSubmodule(i));  
+                }
 				
 			}
 

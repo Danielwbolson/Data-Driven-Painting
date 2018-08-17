@@ -86,15 +86,15 @@ namespace SculptingVis
 			_volumeVariable.RequireScalar();
 
 
-            AddSocket(_volumeVariable);
+            AddSubmodule(_volumeVariable);
 			_colorMapInput = (new StyleTypeSocket<Colormap> ()).Init("Color map",this);
             _opacityMapInput = (new StyleTypeSocket<Colormap> ()).Init("Opacity map",this);
             _opacityMultiplierInput = (new StyleTypeSocket<Range<float>> ()).Init("Opacity multiplier",this);
             _opacityMultiplierInput.SetDefaultInputObject((new Range<float>(0, 1,1f)));
 
-			AddSocket(_colorMapInput);
-			AddSocket(_opacityMapInput);
-			AddSocket(_opacityMultiplierInput);
+			AddSubmodule(_colorMapInput);
+			AddSubmodule(_opacityMapInput);
+			AddSubmodule(_opacityMultiplierInput);
 
             return this;
 

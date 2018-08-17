@@ -64,23 +64,23 @@ namespace SculptingVis
             _variable = null;
             _generatedVariableSocket = (new StyleSocket()).Init("", this, false, true, _variable);
 
-            AddSocket(_generatedVariableSocket);
+            AddSubmodule(_generatedVariableSocket);
             _derivableVariableSocket = (new StyleSocket()).Init("Hook for deriving", this, false, true, _variable);
-            AddSocket(_generatedVariableSocket);
+            AddSubmodule(_generatedVariableSocket);
 
 
             _sourceVariableSocket = new VariableSocket();
             _sourceVariableSocket.Init("Domain", this);
-            AddSocket(_sourceVariableSocket);
+            AddSubmodule(_sourceVariableSocket);
 
             _sampleCount = (new StyleTypeSocket<Range<int>>()).Init("Number of samples", this);
             _sampleCount.SetDefaultInputObject((new Range<int>(1, 100000,1000)));
-            AddSocket(_sampleCount);
+            AddSubmodule(_sampleCount);
 
 
             _sampleSeed = (new StyleTypeSocket<Range<int>>()).Init("SampleSeed", this);
             _sampleSeed.SetDefaultInputObject((new Range<int>(1, 10)));
-            AddSocket(_sampleSeed);
+            AddSubmodule(_sampleSeed);
 
             return this;
         }

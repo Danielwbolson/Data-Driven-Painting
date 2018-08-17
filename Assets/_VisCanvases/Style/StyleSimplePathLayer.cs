@@ -113,16 +113,16 @@ namespace SculptingVis
 	        _opacityVariable.SetAnchorVariableSocket(_anchorVariable);
 			_opacityVariable.RequireScalar();
 
-            AddSocket(_anchorVariable);
-            AddSocket(_colorVariable);
-            AddSocket(_opacityVariable);
+            AddSubmodule(_anchorVariable);
+            AddSubmodule(_colorVariable);
+            AddSubmodule(_opacityVariable);
 			_colorMapInput = (new StyleTypeSocket<Colormap>()).Init("Color map",this);
-			AddSocket(_colorMapInput);
+			AddSubmodule(_colorMapInput);
 
 
             _maxPaths = (new StyleTypeSocket<Range<int>>()).Init("Max paths", this);
             _maxPaths.SetDefaultInputObject(new Range<int>(1, 50000, 1000));
-            AddSocket(_maxPaths);
+            AddSubmodule(_maxPaths);
 
             return this;
 

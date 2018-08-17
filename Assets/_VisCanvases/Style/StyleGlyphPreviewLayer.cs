@@ -70,8 +70,11 @@ namespace SculptingVis
         }
 
 
-        public override StyleLayer CopyLayer(StyleLayer toCopy)
+        public override StyleLayer CopyLayer(StyleLayer toCopy = null)
         {
+            if(toCopy == null)
+                toCopy = new StyleGlyphPreviewLayer();
+
             if (toCopy != null && toCopy is StyleGlyphPreviewLayer)
             {
                 _glyphMaterial = ((StyleGlyphPreviewLayer)toCopy)._glyphMaterial;
@@ -85,26 +88,26 @@ namespace SculptingVis
         {
           
 			_glyphInput = (new StyleTypeSocket<Glyph>()).Init("Glyph",this);
-			AddSocket(_glyphInput);
+			AddSubmodule(_glyphInput);
 
 			_lodLevel = (new StyleTypeSocket<Range<int>>()).Init("Glyph LOD",this);
             _lodLevel.SetDefaultInputObject((new Range<int>(0,2)));
-			AddSocket(_lodLevel);
+			AddSubmodule(_lodLevel);
 
 			_transformVerts = (new StyleTypeSocket<Range<bool>>()).Init("Use GlyphTransform on verts",this);
             _transformVerts.SetDefaultInputObject((new Range<bool>(false,true,true)));
-			AddSocket(_transformVerts);
+			AddSubmodule(_transformVerts);
 
 
             _transformNormals = (new StyleTypeSocket<Range<bool>>()).Init("Use GlyphTransform on norms",this);
             _transformNormals.SetDefaultInputObject((new Range<bool>(false,true,true)));
-			AddSocket(_transformNormals);
+			AddSubmodule(_transformNormals);
 
 
 
             _transformTangents = (new StyleTypeSocket<Range<bool>>()).Init("Use GlyphTransform on tangents",this);
             _transformTangents.SetDefaultInputObject((new Range<bool>(false,true,true)));
-			AddSocket(_transformTangents);
+			AddSubmodule(_transformTangents);
 
             return this;
 
