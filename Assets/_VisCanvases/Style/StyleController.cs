@@ -31,11 +31,11 @@ namespace SculptingVis
             GetUserVariables().Clear();
             while(GetCanvases().Count > 0)
                 RemoveCanvas(GetCanvases()[GetCanvases().Count-1]);
+            //AddCanvas();
             AddCanvas();
-            AddCanvas();
-            GetCanvases()[0].SetBounds(new Vector3(5,4,5));
-            GetCanvases()[0].gameObject.transform.SetPositionAndRotation(new Vector3(0,0,15),Quaternion.identity);
-
+            //GetCanvases()[0].SetBounds(new Vector3(5,4,5));
+           // GetCanvases()[0].gameObject.transform.SetPositionAndRotation(new Vector3(0,0,15),Quaternion.identity);
+            /*
 
 
 
@@ -95,6 +95,8 @@ namespace SculptingVis
             // _variables.Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init());
             // _variables.Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init());
             // _variables.Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init());
+
+            */
 
         }
 

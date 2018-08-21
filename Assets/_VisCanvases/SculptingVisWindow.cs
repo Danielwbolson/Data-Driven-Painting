@@ -401,11 +401,15 @@ public class SculptingVisWindow : EditorWindow
         EditorGUI.BeginDisabledGroup(disabled);
 
               Texture2D buttonBg = GUI.skin.button.normal.background;
-            if (socket.GetInput() == null && socket.GetOutput() == null)  //set active based on condition
+              Texture2D[] buttonBGs = (Texture2D[])GUI.skin.button.normal.scaledBackgrounds.Clone();
+            if (socket.GetInput() == null && socket.GetOutput() == null){  //set active based on condition
                 GUI.skin.button.normal.background = GUI.skin.button.active.background;
+                GUI.skin.button.normal.scaledBackgrounds = (Texture2D[])GUI.skin.button.active.scaledBackgrounds.Clone();
+            }
 
         GetHorizontalScopes()[socket.GetUniqueIdentifier()] =  new EditorGUILayout.HorizontalScope("button");
         GUI.skin.button.normal.background = buttonBg;
+        GUI.skin.button.normal.scaledBackgrounds = buttonBGs;
 
     }
 

@@ -75,15 +75,10 @@ namespace SculptingVis {
 				DirectoryInfo[] directoryInfo = info.GetDirectories();
 
 				// First let's iterate through the root of this package,
-				// looking for thumbnail image and the OBJ
+				// looking for the OBJ files
 				foreach (var file in fileInfo){
 
-					// The only PNG we expect on this level is the thumbnail...
-					if(file.Extension.ToUpper() == ".PNG") {
-						Texture2D loadedImage = new Texture2D(1,1);
-						loadedImage.LoadImage(File.ReadAllBytes(file.FullName));
-						glyph._thumbnail = loadedImage;					
-					}
+				
 
 					// An OBJ should contain the actual meshes of our glyph. 
 					// We could additionally handle individual OBJ's for 
@@ -114,6 +109,33 @@ namespace SculptingVis {
 					for(int t = 0; t < glyph._normalMaps.Length;t++) {
 						glyph._normalMaps[t] = DefaultNormalMap();
 					}
+				}
+
+
+
+				// Second, let's iterate through the root of this package
+				// looking for thumbnail image and the possible LOD textures.
+				foreach (var file in fileInfo){
+
+
+					// Expect each LOD normal map to start with "LOD" followed by an integer. 
+					if (file.Extension.ToUpper() == ".PNG" && file.Name.ToUpper().StartsWith("LOD")) {
+						string number = Path.GetFileNameWithoutExtension(file.FullName).Substring(3); 
+						int level = int.Parse(number);
+
+						// Load the normalMap in and stick it in the list in reverse order.
+						Texture2D normalMap = new Texture2D(1, 1);
+						normalMap.LoadImage(File.ReadAllBytes(file.FullName));
+						glyph._normalMaps[level] = normalMap;
+
+					}
+					// The only PNG we expect on this level is the thumbnail...
+					else if(file.Extension.ToUpper() == ".PNG") {
+						Texture2D loadedImage = new Texture2D(1,1);
+						loadedImage.LoadImage(File.ReadAllBytes(file.FullName));
+						glyph._thumbnail = loadedImage;					
+					}
+
 				}
 
 				// The only sub directory we expect right now is the normal maps, 

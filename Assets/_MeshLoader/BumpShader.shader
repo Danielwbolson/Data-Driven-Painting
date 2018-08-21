@@ -88,6 +88,7 @@
             o.Normal = UnpackNormal(map1);
             o.Albedo.rgb = c.rgb; //IN.uv_BumpMap;
             //o.Albedo.rgb = o.Normal;
+            //o.Albedo
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = _Color.a;
