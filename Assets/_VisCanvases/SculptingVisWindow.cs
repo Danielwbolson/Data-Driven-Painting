@@ -135,7 +135,7 @@ public class SculptingVisWindow : EditorWindow
         return _foldoutStates;
     }
     public bool GetFoldoutState(string id) {
-        if(!GetFoldoutStates().ContainsKey(id)) GetFoldoutStates()[id] = false;
+        if(!GetFoldoutStates().ContainsKey(id)) GetFoldoutStates()[id] = true;
         return GetFoldoutStates()[id];
     }
 
@@ -206,9 +206,9 @@ public class SculptingVisWindow : EditorWindow
             else if(socket.GetModule() is StyleDataVariable && socket.GetLabel() != "") {
                 inputHookRight = true;
             }
-            if (socket.GetModule() is StyleCustomVariable && socket.IsInput())
+            if (socket.GetModule() is StyleCustomDataset && socket.IsInput())
                 inputHookLeft = true;
-            if (socket.GetModule() is StyleCustomVariable && socket.IsOutput() && socket.GetLabel() != "")
+            if (socket.GetModule() is StyleCustomDataset && socket.IsOutput() && socket.GetLabel() != "")
                 inputHookRight = true;
 
 
@@ -352,7 +352,7 @@ public class SculptingVisWindow : EditorWindow
                     DrawSocket(socket,nest,showInputs,showOutputs);
                 }
                 else {
-                    DrawStyleModule(submod,nest,true,true,true);
+                    DrawStyleModule(submod,nest,true,showInputs,showOutputs);
                 }
 
 
@@ -771,15 +771,23 @@ public class SculptingVisWindow : EditorWindow
                 {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
-                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false,false, true);
+                    DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false);
                 }
 
                 for(int m = 0; m < GetStyleController().GetDatasets().Count;m++) {
                     Rect scrollRect = _columns[i];
                     scrollRect.position -= _scrollPositions["Variables"];
-                    DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false,false, true);
+                    DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false,false,true);
          
                 }
+
+                for(int m = 0; m < GetStyleController().GetCustomDatasets().Count;m++) {
+                    Rect scrollRect = _columns[i];
+                    scrollRect.position -= _scrollPositions["Variables"];
+                    DrawStyleModule(GetStyleController().GetCustomDatasets()[m], scrollRect, false,false, true);
+         
+                }
+
                 GUILayout.EndScrollView();
                 GUILayout.EndArea();
 
@@ -802,17 +810,22 @@ public class SculptingVisWindow : EditorWindow
                     DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect,false,true,false);
                 }
 
-
+                for(int m = 0; m < GetStyleController().GetCustomDatasets().Count;m++) {
+                    Rect scrollRect = _columns[i];
+                    scrollRect.position -= _scrollPositions["Variables"];
+                    DrawStyleModule(GetStyleController().GetCustomDatasets()[m], scrollRect, false,true, false);
+         
+                }
 
                 EditorGUILayout.BeginHorizontal();
 
                 GUILayout.Label("Create CustomVariable: ");
-                string[] l = GetStyleController().GetCustomVariableTypes();
-                int selected = GetStyleController().GetCustomVariableTypeToCreate();
+                string[] l = GetStyleController().GetCustomDatasetTypes();
+                int selected = GetStyleController().GetCustomDatasetTypeToCreate();
                 GetStyleController().SetCustomVariableTypeToCreate(EditorGUILayout.Popup(selected, l));
 
                 if (GUILayout.Button("+", EditorStyles.miniButton, GUILayout.MaxWidth(20)))
-                    GetStyleController().CreateCustomVariable();
+                    GetStyleController().CreateCustomDataset();
 
                 EditorGUILayout.EndHorizontal();
 

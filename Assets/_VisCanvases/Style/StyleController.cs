@@ -27,6 +27,8 @@ namespace SculptingVis
             GetLayers().Clear();
             GetVariables().Clear();
             GetDatasets().Clear();
+            GetCustomDatasets().Clear();
+
             GetVisualElements().Clear();
             GetUserVariables().Clear();
             while(GetCanvases().Count > 0)
@@ -117,7 +119,7 @@ namespace SculptingVis
 		List<StyleLayer> _layerTypes;
 
         [SerializeField]
-        List<StyleVariable> _variableTypes;
+        List<StyleDataset> _customDatasetTypes;
 
         [SerializeField]
         List<StyleModule> _visualElements;
@@ -137,7 +139,10 @@ namespace SculptingVis
 
         [SerializeField]
         List<SmartData.Dataset> _datasets;
-        
+
+        [SerializeField]
+        List<StyleDataset> _customDatasets;
+
         [SerializeField]
         List<StyleLink> _links;
 
@@ -268,6 +273,13 @@ namespace SculptingVis
 
             return _datasets;
         }
+
+        public List<StyleDataset> GetCustomDatasets()
+        {
+            if (_customDatasets == null) _customDatasets = new List<StyleDataset>();
+
+            return _customDatasets;
+        }
         // Use this for initialization
         void Start()
         {
@@ -300,6 +312,10 @@ namespace SculptingVis
             foreach(var dataset in GetDatasets()) {
                 dataset.Update();
             }
+
+            // foreach(var dataset in GetCustomDatasets()) {
+            //     dataset.UpdateModule();
+            // }
         }
 
         public void LoadData(string path)
@@ -409,31 +425,35 @@ namespace SculptingVis
 
 
 
-        int _selectedCustomVariableTypeIndex = 0;
+        int _selectedCustomDatasetTypeIndex = 0;
         public void SetCustomVariableTypeToCreate(int variableType)
         {
-            _selectedCustomVariableTypeIndex = variableType;
+            _selectedCustomDatasetTypeIndex = variableType;
         }
-        public int GetCustomVariableTypeToCreate()
+        public int GetCustomDatasetTypeToCreate()
         {
-            return _selectedCustomVariableTypeIndex;
+            return _selectedCustomDatasetTypeIndex;
         }
-        public string[] GetCustomVariableTypes()
+        public string[] GetCustomDatasetTypes()
         {
-            string[] variableTypes = new string[_variableTypes.Count];
-            for (int i = 0; i < _variableTypes.Count; i++)
+            string[] datasetTypes = new string[_customDatasetTypes.Count];
+            for (int i = 0; i < _customDatasetTypes.Count; i++)
             {
-                variableTypes[i] = _variableTypes[i].GetLabel();
+                datasetTypes[i] = _customDatasetTypes[i].GetLabel();
             }
-            return variableTypes;
+            return datasetTypes;
         }
-        public void CreateCustomVariable()
+        public void CreateCustomDataset()
         {
             //_layers.Add(ScriptableObject.CreateInstance<StyleTestLayer>().Init());
-            string type = _variableTypes[GetCustomVariableTypeToCreate()].GetType().ToString();
-            StyleVariable variable = (((StyleVariable)ScriptableObject.CreateInstance(type)).CopyVariable(_variableTypes[GetCustomVariableTypeToCreate()]));
-            GetUserVariableController().AddVariable(variable);
+            string type = _customDatasetTypes[GetCustomDatasetTypeToCreate()].GetType().ToString();
+            StyleDataset dataset = (((StyleDataset)ScriptableObject.CreateInstance(type)).CopyDataset(_customDatasetTypes[GetCustomDatasetTypeToCreate()]));
+            GetCustomDatasets().Add(dataset);
         }
+        
+
+
+
 
 
         [SerializeField] Canvas _CanvasPrefab;
@@ -461,8 +481,8 @@ namespace SculptingVis
 				GetLayers().Remove((StyleLayer)module);
 			} else if(module is StyleDataVariable) {
 				GetVariables().Remove(module);
-			} else if(module is StyleCustomVariable) {
-                GetUserVariables().Remove((StyleVariable)module);
+			} else if(module is StyleCustomDataset) {
+                GetCustomDatasets().Remove((StyleCustomDataset)module);
             }
 
 

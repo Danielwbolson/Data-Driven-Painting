@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace SculptingVis
 {
-    public class StyleCustomVariable : StyleVariable
+    public class StyleCustomDataset : StyleDataset
     {
 
-        public StyleCustomVariable Init()
+        public StyleCustomDataset Init()
         {
             return this;
         }
@@ -15,7 +15,7 @@ namespace SculptingVis
 
         public override string GetLabel()
         {
-            return "Custom Variable";
+            return "Custom Dataset";
         }
 
 

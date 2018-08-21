@@ -8,6 +8,10 @@ namespace SculptingVis{
 		protected Variable _variable;
 
 
+        public void SetVariable(Variable v) {
+            _variable = v;
+        }
+
         
 		public override string GetLabel() {
 			return _variable + "";
