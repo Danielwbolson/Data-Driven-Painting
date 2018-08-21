@@ -26,7 +26,7 @@ namespace SculptingVis
             if(ch is PointAnchorDatastreamChannel) {
                 
                 int seed = (Range<int>)_sampleSeed.GetInput();
-                UnityEngine.Random.seed = (seed);
+                Random.InitState(seed);
                 Bounds b = ((Variable)_sourceVariableSocket.GetInput()).GetBounds();
                 List<Vector3> vs = new List<Vector3>();
                 for(int i = 0; i < (Range<int>)_sampleCount.GetInput(); i++) {
@@ -34,6 +34,7 @@ namespace SculptingVis
                     vs.Add(v);
                 }
                 ((PointAnchorDatastreamChannel)ch).SetPoints(vs);
+                ((PointAnchorDatastreamChannel)ch).SetSeed(seed);
             }
             Debug.Log("Has " + stream.GetNumberOfElements());
             base.UpdateModule();

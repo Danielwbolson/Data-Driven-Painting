@@ -32,7 +32,7 @@ namespace SculptingVis{
 
         public override StyleLayer CopyLayer(StyleLayer toCopy) {
 			if(toCopy != null && toCopy is StyleTestLayer) {
-				_boxMaterial = ((StyleTestLayer)toCopy)._boxMaterial;
+				_boxMaterial = new Material(((StyleTestLayer)toCopy)._boxMaterial);
 				_boxMesh = ((StyleTestLayer)toCopy)._boxMesh;
 				_boxBounds = ((StyleTestLayer)toCopy)._boxBounds;
 			}

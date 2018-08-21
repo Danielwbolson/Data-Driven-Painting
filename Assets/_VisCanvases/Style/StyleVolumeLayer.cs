@@ -66,7 +66,7 @@ namespace SculptingVis
         {
             if (toCopy != null && toCopy is StyleVolumeLayer)
             {
-                _volumeMaterial = ((StyleVolumeLayer)toCopy)._volumeMaterial;
+                _volumeMaterial = new Material(((StyleVolumeLayer)toCopy)._volumeMaterial);
 
 
                 _volumeCubeMesh = ((StyleVolumeLayer)toCopy)._volumeCubeMesh;

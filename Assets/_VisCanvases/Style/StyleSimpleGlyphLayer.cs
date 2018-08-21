@@ -159,7 +159,7 @@ namespace SculptingVis
                 
             if (toCopy != null && toCopy is StyleSimpleGlyphLayer)
             {
-                _pointMaterial = ((StyleSimpleGlyphLayer)toCopy)._pointMaterial;
+                _pointMaterial = new Material(((StyleSimpleGlyphLayer)toCopy)._pointMaterial);
                 instanceCount = ((StyleSimpleGlyphLayer)toCopy).instanceCount;
                 _billboardMesh = ((StyleSimpleGlyphLayer)toCopy)._billboardMesh;
 

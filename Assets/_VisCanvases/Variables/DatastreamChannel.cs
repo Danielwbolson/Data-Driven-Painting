@@ -4,10 +4,9 @@ using UnityEngine;
 
 
 namespace SculptingVis {
-public abstract class DatastreamChannel : ScriptableObject {
-    public abstract int GetNumberOfElements();
-    public abstract int GetNumberOfComponents();
+    public abstract class DatastreamChannel : ScriptableObject {
+        public abstract int GetNumberOfElements();
+        public abstract int GetNumberOfComponents();
 
-
-}
+    }
 }

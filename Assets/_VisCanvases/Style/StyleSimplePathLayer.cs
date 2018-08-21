@@ -90,7 +90,7 @@ namespace SculptingVis
         {
             if (toCopy != null && toCopy is StyleSimplePathLayer)
             {
-                _lineMaterial = ((StyleSimplePathLayer)toCopy)._lineMaterial;
+                _lineMaterial = new Material(((StyleSimplePathLayer)toCopy)._lineMaterial);
                 LineCount = ((StyleSimplePathLayer)toCopy).LineCount;
 
             }

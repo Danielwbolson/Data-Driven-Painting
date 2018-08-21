@@ -77,7 +77,7 @@ namespace SculptingVis
 
             if (toCopy != null && toCopy is StyleGlyphPreviewLayer)
             {
-                _glyphMaterial = ((StyleGlyphPreviewLayer)toCopy)._glyphMaterial;
+                _glyphMaterial = new Material(((StyleGlyphPreviewLayer)toCopy)._glyphMaterial);
 
             }
 

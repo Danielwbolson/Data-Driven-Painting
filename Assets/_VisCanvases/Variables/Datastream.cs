@@ -5,226 +5,225 @@ using System.Runtime.InteropServices;
 using System;
 
 namespace SculptingVis {
-public class Datastream : ScriptableObject {
-    [SerializeField]
-    DatastreamChannel _rootChannel;
+    public class Datastream : ScriptableObject {
+        [SerializeField]
+        DatastreamChannel _rootChannel;
 
-    [SerializeField]
-    DataVariable _owner;
+        [SerializeField]
+        DataVariable _owner;
 
-    DataVariable GetVariable() {
-        return _owner;
-    }
-    public void Init(DataVariable owner, DatastreamChannel rootChannel) {
-        _owner = owner;
-        _rootChannel = rootChannel;
-
-        if(_rootChannel is VTKAnchorDatastreamChannel) {
-
+        DataVariable GetVariable() {
+            return _owner;
         }
-        if(_rootChannel.GetNumberOfComponents() > 1) {
+        public void Init(DataVariable owner, DatastreamChannel rootChannel) {
+            _owner = owner;
+            _rootChannel = rootChannel;
 
-        }
-    }
+            if (_rootChannel is VTKAnchorDatastreamChannel) {
 
-    public DatastreamChannel GetRootChannel() {
-        return _rootChannel;
-    } 
-    public int GetNumberOfElements() {
-        return _rootChannel.GetNumberOfElements();
-    }
-
-    public int GetNumberOfComponents() {
-        return _rootChannel.GetNumberOfComponents();
-    }
-
-    Mesh [] _meshes;
-
-    Vector2Int [] _topologyArray;
-    Vector2Int [] _topologyCellInfoArray;
-    bool needsRefresh = true;
-
-    public void RecalculateArrays() {
-        RecalculateToplogyArray();
-        RecalculateTopologyCellInfoArray();
-    }
-    protected void RecalculateTopologyCellInfoArray() {
-        if(_rootChannel is VTKAnchorDatastreamChannel)  {
-            VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
-            VTK.vtkDataSet ds = vc.GetVTKDataSet();
-            
-            if(_owner.GetVariableType() != DataDimensionType.Volume) {
-                VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
-                
-                List<Vector2Int> topologyCellInfo = new List<Vector2Int>();
-                
-
-                VTK.vtkIdList idlist =VTK.vtkIdList.New();
-                int index = 0;
-                for(int c = 0; c < numcells; c++) {
-                    pd.GetCellPoints(c,idlist);
-                    int idCount = (int)idlist.GetNumberOfIds();
-                    int INITIAL_INDEX = index;
-                    index += idCount;
-                    int FINAL_INDEX = index;
-                    topologyCellInfo.Add(new Vector2Int(INITIAL_INDEX,FINAL_INDEX));
-
-                }
-
-            _topologyCellInfoArray = topologyCellInfo.ToArray();
             }
-            
-        } else if(_rootChannel is PointAnchorDatastreamChannel) {
-            List<Vector2Int> topologyCellInfo = new List<Vector2Int>();
-            topologyCellInfo.Add(new Vector2Int(0,((PointAnchorDatastreamChannel)_rootChannel).GetPoints().Count));
-            _topologyCellInfoArray = topologyCellInfo.ToArray();
+            if (_rootChannel.GetNumberOfComponents() > 1) {
 
-        }
-
-    }
-    public Vector2Int [] GetTopologyCellInfoArray() {
-        if(_topologyCellInfoArray == null ) {
-             RecalculateTopologyCellInfoArray();
-        }
-        return _topologyCellInfoArray;
-    }
-
-    protected void RecalculateToplogyArray() {
-        if(_rootChannel is VTKAnchorDatastreamChannel)  {
-            VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
-            VTK.vtkDataSet ds = vc.GetVTKDataSet();
-            
-            if(_owner.GetVariableType() != DataDimensionType.Volume) {
-                VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
-
-
-                List<Vector2Int> topology = new List<Vector2Int>();
-                
-
-                VTK.vtkIdList idlist =VTK.vtkIdList.New();
-                double [] p = new double[3];
-                for(int c = 0; c < numcells; c++) {
-                    pd.GetCellPoints(c,idlist);
-                
-                    int idCount = (int)idlist.GetNumberOfIds();
-                    for(int i = 0; i < idCount; i++) {
-                        int id = (int)idlist.GetId(i);
-                        topology.Add(new Vector2Int((int)c,id));
-                    }
-                }
-
-            _topologyArray = topology.ToArray();
             }
-            
-        } 
-
-        if(_rootChannel is PointAnchorDatastreamChannel) {
-            
-            List<Vector2Int> topology = new List<Vector2Int>();
-
-            for(int i = 0; i < ((PointAnchorDatastreamChannel)_rootChannel).GetPoints().Count;i++){
-                topology.Add(new Vector2Int(0,i));        
-            }
-            _topologyArray = topology.ToArray();
-            
         }
 
-    }
-    public Vector2Int [] GetTopologyArray() {
-        if(_topologyArray==null) {
-           RecalculateToplogyArray();
-
+        public DatastreamChannel GetRootChannel() {
+            return _rootChannel;
+        }
+        public int GetNumberOfElements() {
+            return _rootChannel.GetNumberOfElements();
         }
 
-      
-        return _topologyArray;
-    }
+        public int GetNumberOfComponents() {
+            return _rootChannel.GetNumberOfComponents();
+        }
 
-    public Mesh[] GetMeshes() {
-        if(_meshes == null) {
-            int numMeshes = 1;
+        Mesh[] _meshes;
 
-            if(_rootChannel is VTKAnchorDatastreamChannel)  {
+        Vector2Int[] _topologyArray;
+        Vector2Int[] _topologyCellInfoArray;
+        bool needsRefresh = true;
+
+        public void RecalculateArrays() {
+            RecalculateToplogyArray();
+            RecalculateTopologyCellInfoArray();
+        }
+        protected void RecalculateTopologyCellInfoArray() {
+            if (_rootChannel is VTKAnchorDatastreamChannel) {
                 VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
                 VTK.vtkDataSet ds = vc.GetVTKDataSet();
-                
-                if(_owner.GetVariableType() == DataDimensionType.Path) {
+
+                if (_owner.GetVariableType() != DataDimensionType.Volume) {
                     VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                    VTK.vtkCellArray ca = VTK.vtkPolyData.SafeDownCast(ds).GetLines();
-                    int numcells = (int)ca.GetNumberOfCells();
+                    int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
 
-                    List<Vector3> points = new List<Vector3>();
-                    List<Vector2> tex = new List<Vector2>();
-                    List<int> indices = new List<int>();
+                    List<Vector2Int> topologyCellInfo = new List<Vector2Int>();
+
+
+                    VTK.vtkIdList idlist = VTK.vtkIdList.New();
                     int index = 0;
-                    _meshes = new Mesh[ pd.GetNumberOfLines()];
+                    for (int c = 0; c < numcells; c++) {
+                        pd.GetCellPoints(c, idlist);
+                        int idCount = (int)idlist.GetNumberOfIds();
+                        int INITIAL_INDEX = index;
+                        index += idCount;
+                        int FINAL_INDEX = index;
+                        topologyCellInfo.Add(new Vector2Int(INITIAL_INDEX, FINAL_INDEX));
+
+                    }
+
+                    _topologyCellInfoArray = topologyCellInfo.ToArray();
+                }
+
+            } else if (_rootChannel is PointAnchorDatastreamChannel) {
+                List<Vector2Int> topologyCellInfo = new List<Vector2Int>();
+                topologyCellInfo.Add(new Vector2Int(0, ((PointAnchorDatastreamChannel)_rootChannel).GetPoints().Count));
+                _topologyCellInfoArray = topologyCellInfo.ToArray();
+
+            }
+
+        }
+        public Vector2Int[] GetTopologyCellInfoArray() {
+            if (_topologyCellInfoArray == null) {
+                RecalculateTopologyCellInfoArray();
+            }
+            return _topologyCellInfoArray;
+        }
+
+        protected void RecalculateToplogyArray() {
+            if (_rootChannel is VTKAnchorDatastreamChannel) {
+                VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
+                VTK.vtkDataSet ds = vc.GetVTKDataSet();
+
+                if (_owner.GetVariableType() != DataDimensionType.Volume) {
+                    VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
+                    int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
 
 
-                    // pd.GetLines().InitTraversal();
-                    VTK.vtkIdList idlist =VTK.vtkIdList.New();
-                    // while(pd.GetLines().GetNextCell(idlist) != 0) {
-                    //     Debug.Log("Line has" + idlist.GetNumberOfIds() + " points");
-                    //     for(long i = 0; i < idlist.GetNumberOfIds(); i++) {
-                    //         double [] p = new double[3];
-                    //         pd.GetPoint(i,p);
-                    //         points.Add(pd.GetPoints().GetPoint(i));
-                    //         indices.Add(index++);
-                    //     }
-                    // }
-                    // Debug.Log(index);
-                    for(long c = 0; c < pd.GetNumberOfCells(); c++) {
- 
-                        pd.GetCellPoints(c,idlist);
-                        
+                    List<Vector2Int> topology = new List<Vector2Int>();
+
+
+                    VTK.vtkIdList idlist = VTK.vtkIdList.New();
+                    double[] p = new double[3];
+                    for (int c = 0; c < numcells; c++) {
+                        pd.GetCellPoints(c, idlist);
 
                         int idCount = (int)idlist.GetNumberOfIds();
-                        for(int i = 0; i < idCount; i++) {
+                        for (int i = 0; i < idCount; i++) {
                             int id = (int)idlist.GetId(i);
-                            double [] p = new double[3];
-                            pd.GetPoint(id,p);
-                            points.Add(pd.GetPoints().GetPoint(id));
-                            //Debug.Log(c + " " + i + " " + id + " " + " " + index + " " + p[0] + "," + p[1] + "," + p[2]);
-                            tex.Add(new Vector2(c,id));
+                            topology.Add(new Vector2Int((int)c, id));
+                        }
+                    }
+
+                    _topologyArray = topology.ToArray();
+                }
+
+            }
+
+            if (_rootChannel is PointAnchorDatastreamChannel) {
+
+                List<Vector2Int> topology = new List<Vector2Int>();
+
+                for (int i = 0; i < ((PointAnchorDatastreamChannel)_rootChannel).GetPoints().Count; i++) {
+                    topology.Add(new Vector2Int(0, i));
+                }
+                _topologyArray = topology.ToArray();
+
+            }
+
+        }
+        public Vector2Int[] GetTopologyArray() {
+            if (_topologyArray == null) {
+                RecalculateToplogyArray();
+
+            }
 
 
-                            indices.Add(index);
-                            index++;
-                            
+            return _topologyArray;
+        }
+
+        public Mesh[] GetMeshes() {
+            if (_meshes == null) {
+                int numMeshes = 1;
+
+                if (_rootChannel is VTKAnchorDatastreamChannel) {
+                    VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
+                    VTK.vtkDataSet ds = vc.GetVTKDataSet();
+
+                    if (_owner.GetVariableType() == DataDimensionType.Path) {
+                        VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
+                        VTK.vtkCellArray ca = VTK.vtkPolyData.SafeDownCast(ds).GetLines();
+                        int numcells = (int)ca.GetNumberOfCells();
+
+                        List<Vector3> points = new List<Vector3>();
+                        List<Vector2> tex = new List<Vector2>();
+                        List<int> indices = new List<int>();
+                        int index = 0;
+                        _meshes = new Mesh[pd.GetNumberOfLines()];
+
+
+                        // pd.GetLines().InitTraversal();
+                        VTK.vtkIdList idlist = VTK.vtkIdList.New();
+                        // while(pd.GetLines().GetNextCell(idlist) != 0) {
+                        //     Debug.Log("Line has" + idlist.GetNumberOfIds() + " points");
+                        //     for(long i = 0; i < idlist.GetNumberOfIds(); i++) {
+                        //         double [] p = new double[3];
+                        //         pd.GetPoint(i,p);
+                        //         points.Add(pd.GetPoints().GetPoint(i));
+                        //         indices.Add(index++);
+                        //     }
+                        // }
+                        // Debug.Log(index);
+                        for (long c = 0; c < pd.GetNumberOfCells(); c++) {
+
+                            pd.GetCellPoints(c, idlist);
+
+
+                            int idCount = (int)idlist.GetNumberOfIds();
+                            for (int i = 0; i < idCount; i++) {
+                                int id = (int)idlist.GetId(i);
+                                double[] p = new double[3];
+                                pd.GetPoint(id, p);
+                                points.Add(pd.GetPoints().GetPoint(id));
+                                //Debug.Log(c + " " + i + " " + id + " " + " " + index + " " + p[0] + "," + p[1] + "," + p[2]);
+                                tex.Add(new Vector2(c, id));
+
+
+                                indices.Add(index);
+                                index++;
+
+
+                            }
+
+                            Mesh m = new Mesh();
+                            m.vertices = (points.ToArray());
+                            m.uv = tex.ToArray();
+                            m.SetIndices(indices.ToArray(), MeshTopology.LineStrip, 0);
+
+                            _meshes[c] = m;
+                            points.Clear();
+                            indices.Clear();
+                            tex.Clear();
+                            index = 0;
 
                         }
 
-                    Mesh m = new Mesh();
-                    m.vertices = (points.ToArray());
-                    m.uv = tex.ToArray();
-                    m.SetIndices(indices.ToArray(),MeshTopology.LineStrip,0);
 
-                    _meshes[c] = m;
-                    points.Clear();
-                    indices.Clear();
-                    tex.Clear();
-                    index = 0;
-
+                        Debug.Log(indices.Count);
                     }
 
-                 
-                    Debug.Log(indices.Count);
                 }
-                
+
             }
-        
+            return _meshes;
         }
-        return _meshes;
-    }
 
-    Texture3D _3DTexture;
+        Texture3D _3DTexture;
 
 
-   public Vector3 GetImageDataDimensions(VTK.vtkDataSet dataset) {
+        public Vector3 GetImageDataDimensions(VTK.vtkDataSet dataset) {
             int[] imageDim = new int[3];
-            if (dataset.IsA("vtkImageData"))
-            {
+            if (dataset.IsA("vtkImageData")) {
                 VTK.vtkImageData imageData = VTK.vtkImageData.SafeDownCast(dataset);
 
                 imageData.GetDimensions(imageDim);
@@ -234,190 +233,195 @@ public class Datastream : ScriptableObject {
                 int d = (int)imageDim[2];
                 return new Vector3(w, h, d);
             }
-            return new Vector3(0,0,0);
+            return new Vector3(0, 0, 0);
         }
 
 
-    ComputeBuffer _dataBuffer;
-    ComputeBuffer _topologyBuffer;
+        ComputeBuffer _dataBuffer;
+        ComputeBuffer _topologyBuffer;
+        int _cachedSeed = -1;
 
-    public ComputeBuffer GetComputeBuffer() {
-        if( _dataBuffer == null) {
+        public ComputeBuffer GetComputeBuffer() {
+            bool stuffChanged = false;
+            if (_rootChannel is PointAnchorDatastreamChannel && _dataBuffer != null) {
+                stuffChanged = (_dataBuffer.count != ((int)GetNumberOfComponents() * (int)GetNumberOfElements()) || 
+                    ((PointAnchorDatastreamChannel)_rootChannel).GetSeed() != _cachedSeed);
+                _cachedSeed = ((PointAnchorDatastreamChannel)_rootChannel).GetSeed();
+            }
 
-            long numberOfElements = GetNumberOfElements();
-            long numberOfComponents = GetNumberOfComponents();
-            float[] data = new float[numberOfElements*numberOfComponents];
+            if (_dataBuffer == null || stuffChanged) {
 
-            if(_rootChannel is VTKDatastreamChannel) {
+                long numberOfElements = GetNumberOfElements();
+                long numberOfComponents = GetNumberOfComponents();
+                float[] data = new float[numberOfElements * numberOfComponents];
 
-                VTK.vtkAbstractArray abstractArray  = ((VTKDatastreamChannel)_rootChannel).GetAbstractArray();
+                if (_rootChannel is VTKDatastreamChannel) {
 
-                if( abstractArray.IsA("vtkFloatArray")){
-                    Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
+                    VTK.vtkAbstractArray abstractArray = ((VTKDatastreamChannel)_rootChannel).GetAbstractArray();
 
-                } else if(abstractArray.IsA("vtkDoubleArray")){
-                    double[] doubleData = new double[numberOfComponents*numberOfElements];
+                    if (abstractArray.IsA("vtkFloatArray")) {
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
 
-                    Marshal.Copy(abstractArray.GetVoidPointer(0), doubleData, 0, (int)doubleData.Length);
-                    for(int i = 0; i < doubleData.Length;i++)
-                        data[i] = (float)doubleData[i];
-                } else if(abstractArray.IsA("vtkIntArray")) {
-                    int[] intData = new int[numberOfComponents*numberOfElements];
-                    Marshal.Copy(abstractArray.GetVoidPointer(0), intData, 0, (int)intData.Length);
+                    } else if (abstractArray.IsA("vtkDoubleArray")) {
+                        double[] doubleData = new double[numberOfComponents * numberOfElements];
 
-                    for(int i = 0; i < intData.Length;i++)
-                        data[i] = (float)intData[i];   
-                }
-                
-                
-                Debug.Log("Uploading Buffer of length " + (int)numberOfElements*(int)numberOfComponents + " (" + data.Length + ")");
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), doubleData, 0, (int)doubleData.Length);
+                        for (int i = 0; i < doubleData.Length; i++)
+                            data[i] = (float)doubleData[i];
+                    } else if (abstractArray.IsA("vtkIntArray")) {
+                        int[] intData = new int[numberOfComponents * numberOfElements];
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), intData, 0, (int)intData.Length);
 
+                        for (int i = 0; i < intData.Length; i++)
+                            data[i] = (float)intData[i];
+                    }
 
 
-                _dataBuffer = new ComputeBuffer((int)numberOfElements*(int)numberOfComponents,sizeof(float));
+                    Debug.Log("Uploading Buffer of length " + (int)numberOfElements * (int)numberOfComponents + " (" + data.Length + ")");
 
-                _dataBuffer.SetData(data);
 
-            } else if(_rootChannel is VTKAnchorDatastreamChannel) {
-              
 
-                VTK.vtkDataSet ds = ((VTKAnchorDatastreamChannel)_rootChannel).GetVTKDataSet();
+                    _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
 
-                if(ds.IsA("vtkPointSet")) {
-                    VTK.vtkPointSet ps = VTK.vtkPointSet.SafeDownCast(ds);
-                    Marshal.Copy(ps.GetPoints().GetVoidPointer(0),data,0,data.Length);
-                    _dataBuffer = new ComputeBuffer((int)numberOfElements*(int)numberOfComponents,sizeof(float));
                     _dataBuffer.SetData(data);
 
+                } else if (_rootChannel is VTKAnchorDatastreamChannel) {
+
+
+                    VTK.vtkDataSet ds = ((VTKAnchorDatastreamChannel)_rootChannel).GetVTKDataSet();
+
+                    if (ds.IsA("vtkPointSet")) {
+                        VTK.vtkPointSet ps = VTK.vtkPointSet.SafeDownCast(ds);
+                        Marshal.Copy(ps.GetPoints().GetVoidPointer(0), data, 0, data.Length);
+                        _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
+                        _dataBuffer.SetData(data);
+
+                    }
+                } else if (_rootChannel is PointAnchorDatastreamChannel) {
+                    if (_dataBuffer == null || _dataBuffer.count < (int)numberOfElements * (int)numberOfComponents) {
+                        if (_dataBuffer != null) _dataBuffer.Release();
+                        _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
+
+                    }
+                    _dataBuffer.SetData(((PointAnchorDatastreamChannel)_rootChannel).GetPoints().ToArray());
                 }
-            } else if(_rootChannel is PointAnchorDatastreamChannel) {
-                if(_dataBuffer == null || _dataBuffer.count < (int)numberOfElements*(int)numberOfComponents) {
-                    if(_dataBuffer!= null)_dataBuffer.Release();
-                    _dataBuffer = new ComputeBuffer((int)numberOfElements*(int)numberOfComponents,sizeof(float));
+            }
 
+            return _dataBuffer;
+        }
+
+        public ComputeBuffer GetTopologyBuffer() {
+            if (_topologyBuffer == null) {
+                if (GetVariable().IsAnchor()) {
+                    _topologyBuffer = new ComputeBuffer(/*GetTopologyArray().Length*/65000, sizeof(int) * 2);
+                    _topologyBuffer.SetData(GetTopologyArray());
                 }
-                _dataBuffer.SetData(((PointAnchorDatastreamChannel)_rootChannel).GetPoints().ToArray());
             }
+            _topologyBuffer.SetData(GetTopologyArray());
+
+            return _topologyBuffer;
         }
 
-        return _dataBuffer;
-    }
-
-    public ComputeBuffer GetTopologyBuffer() {
-        if(_topologyBuffer == null) {
-            if(GetVariable().IsAnchor()) {
-                _topologyBuffer = new ComputeBuffer(/*GetTopologyArray().Length*/65000,sizeof(int)*2);
-                _topologyBuffer.SetData(GetTopologyArray());
+        ComputeBuffer _topologyCellInfoBuffer;
+        public ComputeBuffer GetTopologyCellInfoBuffer() {
+            if (GetTopologyArray() == null) return null;
+            if (_topologyCellInfoBuffer == null) {
+                if (GetVariable().IsAnchor()) {
+                    _topologyCellInfoBuffer = new ComputeBuffer(GetTopologyCellInfoArray().Length, sizeof(int) * 2);
+                    _topologyCellInfoBuffer.SetData(GetTopologyCellInfoArray());
+                }
             }
+
+
+            return _topologyCellInfoBuffer;
         }
-        _topologyBuffer.SetData(GetTopologyArray());
+        static ComputeBuffer _emptyBuffer;
 
-        return _topologyBuffer;
-    }
-
-    ComputeBuffer _topologyCellInfoBuffer;
-    public ComputeBuffer GetTopologyCellInfoBuffer() {
-        if(GetTopologyArray() == null) return null;
-        if(_topologyCellInfoBuffer == null) {
-            if(GetVariable().IsAnchor()) {
-                _topologyCellInfoBuffer = new ComputeBuffer(GetTopologyCellInfoArray().Length,sizeof(int)*2);
-                _topologyCellInfoBuffer.SetData(GetTopologyCellInfoArray());
+        static public ComputeBuffer EmptyBuffer() {
+            if (_emptyBuffer == null) {
+                _emptyBuffer = new ComputeBuffer(1, sizeof(float));
+                float[] A = { 0 };
+                _emptyBuffer.SetData(A);
             }
+            return _emptyBuffer;
         }
 
+        public Texture3D Get3DTexture() {
+            if (_3DTexture == null) {
 
-        return _topologyCellInfoBuffer;
-    }
-    static ComputeBuffer _emptyBuffer;
+                if (_rootChannel is VTKDatastreamChannel) {
+                    VTK.vtkAbstractArray abstractArray = ((VTKDatastreamChannel)_rootChannel).GetAbstractArray();
 
-    static public ComputeBuffer EmptyBuffer() {
-       if(_emptyBuffer == null) {
-            _emptyBuffer = new ComputeBuffer(1,sizeof(float));
-            float[] A = {0};
-            _emptyBuffer.SetData(A);
-        }
-        return _emptyBuffer;
-    }
-
-    public Texture3D Get3DTexture() {
-        if(_3DTexture == null) {
-
-            if(_rootChannel is VTKDatastreamChannel)
-            {
-                VTK.vtkAbstractArray abstractArray  = ((VTKDatastreamChannel)_rootChannel).GetAbstractArray();
-
-                long numberOfElements = abstractArray.GetNumberOfTuples();
-                long numberOfComponents = abstractArray.GetNumberOfComponents();
+                    long numberOfElements = abstractArray.GetNumberOfTuples();
+                    long numberOfComponents = abstractArray.GetNumberOfComponents();
 
 
-                float[] data = new float[numberOfElements*numberOfComponents];
-                Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
+                    float[] data = new float[numberOfElements * numberOfComponents];
+                    Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
 
-                Vector3 d = GetImageDataDimensions(((VTKDatastreamChannel)_rootChannel).GetDataset());
-                Color[] colorData = new Color[(int)(d.x*d.y*d.z)];
+                    Vector3 d = GetImageDataDimensions(((VTKDatastreamChannel)_rootChannel).GetDataset());
+                    Color[] colorData = new Color[(int)(d.x * d.y * d.z)];
 
-                for (int c = 0; c < numberOfComponents; c++)
-                {
-                    for (int i = 0; i < numberOfElements; i++)
-                        colorData[i][c] = data[i * numberOfComponents + c];
+                    for (int c = 0; c < numberOfComponents; c++) {
+                        for (int i = 0; i < numberOfElements; i++)
+                            colorData[i][c] = data[i * numberOfComponents + c];
+                    }
+
+
+                    TextureFormat format;
+                    if (numberOfComponents == 1)
+                        format = TextureFormat.RFloat;
+                    else if (numberOfComponents == 2)
+                        format = TextureFormat.RGFloat;
+                    else if (numberOfComponents == 3)
+                        format = TextureFormat.RGBAFloat;
+                    else
+                        format = TextureFormat.RGBAFloat;
+
+                    _3DTexture = new Texture3D((int)d.x, (int)d.y, (int)d.z, format, false);
+                    _3DTexture.SetPixels(colorData);
+                    _3DTexture.Apply();
                 }
 
-
-                TextureFormat format;
-                if (numberOfComponents == 1)
-                    format = TextureFormat.RFloat;
-                else if (numberOfComponents == 2)
-                    format = TextureFormat.RGFloat;
-                else if (numberOfComponents == 3)
-                    format = TextureFormat.RGBAFloat;
-                else
-                    format = TextureFormat.RGBAFloat;
-
-                _3DTexture = new Texture3D((int)d.x,(int)d.y,(int)d.z, format, false);
-                _3DTexture.SetPixels(colorData);
-                _3DTexture.Apply();
             }
-           
+
+            return _3DTexture;
         }
 
-        return _3DTexture;
-    }
+        public void Bind(Material material, int bindSlot) {
+            string slot = /*GetVariable().IsAnchor()? "Anchor":*/("" + bindSlot);
+            int dim = GetVariable().GetDomainDimensionality();
+            material.SetInt("_VariableDomainDimensionality_" + slot, dim);
+            material.SetMatrix("_VariableBoundsMatrixInv_" + slot, Matrix4x4.TRS(GetVariable().GetBounds().center, Quaternion.identity, GetVariable().GetBounds().size).inverse);
+            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
+            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
 
-    public void Bind(Material material, int bindSlot) {
-        string slot = /*GetVariable().IsAnchor()? "Anchor":*/(""+bindSlot);
-        int dim = GetVariable().GetDomainDimensionality();
-        material.SetInt("_VariableDomainDimensionality_" + slot,dim);
-        material.SetMatrix("_VariableBoundsMatrixInv_" + slot,Matrix4x4.TRS(GetVariable().GetBounds().center,Quaternion.identity,GetVariable().GetBounds().size).inverse);
-        if(!GetVariable().IsAnchor()) material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
-        if(!GetVariable().IsAnchor()) material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
+            if (!GetVariable().IsAnchor()) material.SetVector("_VariableBoundsMin_" + slot, GetVariable().GetBounds().min);
+            if (!GetVariable().IsAnchor()) material.SetVector("_VariableBoundsMax_" + slot, GetVariable().GetBounds().max);
+            material.SetFloat("_VariableComponents_" + slot, GetNumberOfComponents());
 
-        if(!GetVariable().IsAnchor()) material.SetVector("_VariableBoundsMin_" + slot, GetVariable().GetBounds().min);
-        if(!GetVariable().IsAnchor()) material.SetVector("_VariableBoundsMax_" + slot, GetVariable().GetBounds().max);
-        material.SetFloat("_VariableComponents_" + slot,GetNumberOfComponents());
-        
- 
-        material.SetBuffer("_VariableDataBuffer_" + slot,EmptyBuffer());
 
-        switch(dim) {
-            case 3: 
-                material.SetTexture("_Variable3DTexture_" + slot,Get3DTexture());
-                break;
-            case 2:
-            case 1:
-            case 0:
-                material.SetInt("_VariableArrayType_" + slot,GetVariable().IsPointVariable()?1:0);
-                material.SetBuffer("_VariableDataBuffer_" + slot,GetComputeBuffer());
-                
-                if(GetVariable().IsAnchor()) {
-                    material.SetBuffer("_AnchorTopology",GetTopologyBuffer());
-                    if(GetTopologyCellInfoBuffer() != null )material.SetBuffer("_AnchorTopologyCellInfo",GetTopologyCellInfoBuffer());
+            material.SetBuffer("_VariableDataBuffer_" + slot, EmptyBuffer());
 
-                }
-                break;
+            switch (dim) {
+                case 3:
+                    material.SetTexture("_Variable3DTexture_" + slot, Get3DTexture());
+                    break;
+                case 2:
+                case 1:
+                case 0:
+                    material.SetInt("_VariableArrayType_" + slot, GetVariable().IsPointVariable() ? 1 : 0);
+                    material.SetBuffer("_VariableDataBuffer_" + slot, GetComputeBuffer());
+
+                    if (GetVariable().IsAnchor()) {
+                        material.SetBuffer("_AnchorTopology", GetTopologyBuffer());
+                        if (GetTopologyCellInfoBuffer() != null) material.SetBuffer("_AnchorTopologyCellInfo", GetTopologyCellInfoBuffer());
+
+                    }
+                    break;
+            }
+
+
         }
-         
-        
     }
-}
-
 }
