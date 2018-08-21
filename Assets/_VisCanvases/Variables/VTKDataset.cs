@@ -11,7 +11,7 @@ public class VTKDataset : Dataset {
 	VTK.vtkDataSet _dataset;
 
 
-	protected VTK.vtkDataSet GetDataSet() {
+	public VTK.vtkDataSet GetVTKDataset() {
 		if(_dataset == null) LoadDataset();
 		return _dataset;
 	}
@@ -32,10 +32,19 @@ public class VTKDataset : Dataset {
 	[SerializeField]
 	int _timestep = 0;
 
-	public void Init(string path, int instanceID, int timestep) {
+	public VTKDataset Init(string path, int instanceID, int timestep) {
 		this.SetDatasetPath(path);
 		_instanceID = instanceID;
 		_timestep = timestep;
+		return this;
+	}
+
+	public VTKDataset Init(VTK.vtkDataSet dataset, int instanceID, int timestep) {
+		this.SetDatasetPath("");
+		_instanceID = instanceID;
+		_timestep = timestep;
+		_dataset = dataset;
+		return this;
 	}
 	protected override Datastream lookupDataStream(DataVariable variable, DataVariable anchor, int instanceID = 0, int timeStep = 0) {
         //if (validateVariable(variable)) {
@@ -57,7 +66,7 @@ public class VTKDataset : Dataset {
 	}
 
 	protected override int queryNumberOfVariables() {
-		return  GetDataSet().GetPointData().GetNumberOfArrays() + GetDataSet().GetCellData().GetNumberOfArrays() ;
+		return  GetVTKDataset().GetPointData().GetNumberOfArrays() + GetVTKDataset().GetCellData().GetNumberOfArrays() ;
 	}
 	
 	protected override bool hasAnchor() {
@@ -70,8 +79,8 @@ public class VTKDataset : Dataset {
 		return var;
 	}
 	protected override DataVariable generateVarible(int i) {
-		int numPointArrays = GetDataSet().GetPointData().GetNumberOfArrays();
-		int numCellArrays = GetDataSet().GetCellData().GetNumberOfArrays();
+		int numPointArrays = GetVTKDataset().GetPointData().GetNumberOfArrays();
+		int numCellArrays = GetVTKDataset().GetCellData().GetNumberOfArrays();
 		VTK.vtkAbstractArray abstractArray;
 
 		int positionOffset = 0;
@@ -80,7 +89,7 @@ public class VTKDataset : Dataset {
 			
 
 		} else if(i < numPointArrays + positionOffset) {
-			abstractArray = GetDataSet().GetPointData().GetAbstractArray(i-positionOffset);
+			abstractArray = GetVTKDataset().GetPointData().GetAbstractArray(i-positionOffset);
 			VTKDataVariable var = ScriptableObject.CreateInstance<VTKDataVariable>();
 			var.Init(this, VTKDataVariable.ArrayType.Point, i - positionOffset);
 			result = var;
@@ -103,44 +112,49 @@ public class VTKDataset : Dataset {
 			int arrayID = ((VTKDataVariable)variable).GetArrayID();
 			VTK.vtkAbstractArray array;
 			if(((VTKDataVariable)variable).IsCellVariable()) {
-				array = GetDataSet().GetCellData().GetAbstractArray(arrayID);
+				array = GetVTKDataset().GetCellData().GetAbstractArray(arrayID);
 			} else {
-				array = GetDataSet().GetPointData().GetAbstractArray(arrayID);
+				array = GetVTKDataset().GetPointData().GetAbstractArray(arrayID);
 			}
-			vtkchannel.Init(GetDataSet(), array);
+			vtkchannel.Init(GetVTKDataset(), array);
 			return vtkchannel;
 		} else if(variable is VTKAnchorDataVariable) {
 			VTKAnchorDatastreamChannel vtkchannel = CreateInstance<VTKAnchorDatastreamChannel>();
 
-			vtkchannel.Init(GetDataSet());
+			vtkchannel.Init(GetVTKDataset());
 			return vtkchannel;;
 		} else {
 			return null;
 		}
 	}
 	public void Print() {
-		if(GetDataSet() != null) {
-			Debug.Log(GetDataSet().GetClassName());
+		if(GetVTKDataset() != null) {
+			Debug.Log(GetVTKDataset().GetClassName());
 			// VTK.vtkAbstractArray abstractArray = _dataset.GetPointData()
 			VTK.vtkPointSet pointSet = null;
-			if(GetDataSet().IsA("vtkPointSet"))
-				pointSet = VTK.vtkPointSet.SafeDownCast(GetDataSet());
+			if(GetVTKDataset().IsA("vtkPointSet"))
+				pointSet = VTK.vtkPointSet.SafeDownCast(GetVTKDataset());
 			
 			if(pointSet != null)
 				Debug.Log("<Position> " + pointSet.GetNumberOfPoints() );
-			for(int i = 0; i < GetDataSet().GetPointData().GetNumberOfArrays(); i++) {
-				Debug.Log(GetDataSet().GetPointData().GetArrayName(i) + GetDataSet().GetPointData().GetAbstractArray(i).GetNumberOfTuples());
+			for(int i = 0; i < GetVTKDataset().GetPointData().GetNumberOfArrays(); i++) {
+				Debug.Log(GetVTKDataset().GetPointData().GetArrayName(i) + GetVTKDataset().GetPointData().GetAbstractArray(i).GetNumberOfTuples());
 			}
 		}
 	}
 	public void SetDatasetPath(string path) {
 		_datasetPath = path;
 	}
+	public void SetDataset(VTK.vtkDataSet dataset) {
+		_dataset = dataset;
+	}
 	public override bool LoadDataset() {
+		if(_datasetPath == "" && _dataset == null) return false;
+		if(_datasetPath == "" && _dataset != null) return true;
 		_dataset = DEPRECATED.DataLoader.LoadVTKDataSet(_datasetPath);
-		if(!GetDataSet().IsVoid())
+		if(!GetVTKDataset().IsVoid())
 			populateVariables();
-		return !GetDataSet().IsVoid();
+		return !GetVTKDataset().IsVoid();
 	}
 	protected override bool validateVariable(DataVariable variable) {
 		return base.validateVariable(variable) && (variable is VTKDataVariable || variable is VTKAnchorDataVariable);
@@ -154,18 +168,18 @@ public class VTKDataset : Dataset {
 	}
 
 	public override bool IsPath() {
-		return GetDataSet().IsA("vtkPolyData") &&  (VTK.vtkPolyData.SafeDownCast(GetDataSet()).GetNumberOfLines()) > 0;
+		return GetVTKDataset().IsA("vtkPolyData") &&  (VTK.vtkPolyData.SafeDownCast(GetVTKDataset()).GetNumberOfLines()) > 0;
 	}
 
 	public override bool IsMesh() {
-		if(GetDataSet().IsA("vtkPolyData") && (VTK.vtkPolyData.SafeDownCast(GetDataSet())).GetNumberOfPolys() > 0) return true;
-		else if(GetDataSet().IsA("vtkUnstructuredGrid")) return true;
+		if(GetVTKDataset().IsA("vtkPolyData") && (VTK.vtkPolyData.SafeDownCast(GetVTKDataset())).GetNumberOfPolys() > 0) return true;
+		else if(GetVTKDataset().IsA("vtkUnstructuredGrid")) return true;
 		else return false;
 	}
 
 	public override bool IsVolume() {
-		if(GetDataSet() == null) return false;
-		return GetDataSet().IsA("vtkImageData"); // /* Perhaps verify the dimensionality of the image?*/ && VTK.vtkImageData.SafeDownCast(_dataset).GetDi; 
+		if(GetVTKDataset() == null) return false;
+		return GetVTKDataset().IsA("vtkImageData"); // /* Perhaps verify the dimensionality of the image?*/ && VTK.vtkImageData.SafeDownCast(_dataset).GetDi; 
 	}
 
 
@@ -206,7 +220,7 @@ public class VTKDataset : Dataset {
 			VTKDataVariable vtkVariable = (VTKDataVariable)(variable);
 
 			if(vtkVariable.IsCellVariable()) {
-				VTK.vtkAbstractArray abstractArray = GetDataSet().GetCellData().GetAbstractArray(vtkVariable.GetArrayID());
+				VTK.vtkAbstractArray abstractArray = GetVTKDataset().GetCellData().GetAbstractArray(vtkVariable.GetArrayID());
 				if(abstractArray.IsVoid()) {
 					return null;
 				}
@@ -214,7 +228,7 @@ public class VTKDataset : Dataset {
 			} 
 
 			if(vtkVariable.IsPointVariable()) {
-				VTK.vtkAbstractArray abstractArray = GetDataSet().GetPointData().GetAbstractArray(vtkVariable.GetArrayID());
+				VTK.vtkAbstractArray abstractArray = GetVTKDataset().GetPointData().GetAbstractArray(vtkVariable.GetArrayID());
 				if(abstractArray.IsVoid()) {
 					return null;
 				}
@@ -272,7 +286,7 @@ public class VTKDataset : Dataset {
 			VTKDataVariable vtkVariable = (VTKDataVariable)(variable);
 
 			if(vtkVariable.IsCellVariable()) {
-				VTK.vtkAbstractArray abstractArray = GetDataSet().GetCellData().GetAbstractArray(vtkVariable.GetArrayID());
+				VTK.vtkAbstractArray abstractArray = GetVTKDataset().GetCellData().GetAbstractArray(vtkVariable.GetArrayID());
 				if(abstractArray.IsVoid()) {
 					return false;
 				}
@@ -280,7 +294,7 @@ public class VTKDataset : Dataset {
 			} 
 
 			if(vtkVariable.IsPointVariable()) {
-				VTK.vtkAbstractArray abstractArray = GetDataSet().GetPointData().GetAbstractArray(vtkVariable.GetArrayID());
+				VTK.vtkAbstractArray abstractArray = GetVTKDataset().GetPointData().GetAbstractArray(vtkVariable.GetArrayID());
 				if(abstractArray.IsVoid()) {
 					return false;
 				}
@@ -296,8 +310,8 @@ public class VTKDataset : Dataset {
 
 
 	public override Bounds GetBounds() {
-		if(GetDataSet() == null) return new Bounds();
-		return GetDataSet().GetBounds();
+		if(GetVTKDataset() == null) return new Bounds();
+		return GetVTKDataset().GetBounds();
 	}
 }
 }

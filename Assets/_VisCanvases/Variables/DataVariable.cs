@@ -36,7 +36,7 @@ public abstract class DataVariable : Variable {
 	}
 	
 
-	protected Dataset GetDataSet() {
+	public Dataset GetDataSet() {
 		return _dataset;
 	}
 	public override Bounds GetBounds() {
