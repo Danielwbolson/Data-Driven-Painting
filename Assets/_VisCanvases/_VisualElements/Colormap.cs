@@ -94,7 +94,7 @@ namespace SculptingVis {
                
                
                 List<float> dataArray2 = new List<float>();
-
+                if(json.list[0]["Points"]!= null) {
                 var alphaPoints = json.list[0]["Points"].list;
                 for( int i = 0; i < alphaPoints.Count/4; i++) { 
                     // Add our values to our list
@@ -112,6 +112,8 @@ namespace SculptingVis {
                 result2.SetName((json.list[0].HasField("Name") ? json.list[0]["Name"].ToString() : Path.GetFileName(filePath)) + "_ALPHA");
                 visualElements.Add(result2);
 
+                }
+                
 
             }
 
