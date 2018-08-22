@@ -357,8 +357,26 @@ namespace SculptingVis {
 
 
                     float[] data = new float[numberOfElements * numberOfComponents];
-                    Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
 
+                    Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
+                    
+                    
+                    if (abstractArray.IsA("vtkFloatArray")) {
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
+
+                    } else if (abstractArray.IsA("vtkDoubleArray")) {
+                        double[] doubleData = new double[numberOfComponents * numberOfElements];
+
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), doubleData, 0, (int)doubleData.Length);
+                        for (int i = 0; i < doubleData.Length; i++)
+                            data[i] = (float)doubleData[i];
+                    } else if (abstractArray.IsA("vtkIntArray")) {
+                        int[] intData = new int[numberOfComponents * numberOfElements];
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), intData, 0, (int)intData.Length);
+
+                        for (int i = 0; i < intData.Length; i++)
+                            data[i] = (float)intData[i];
+                    }
                     Vector3 d = GetImageDataDimensions(((VTKDatastreamChannel)_rootChannel).GetDataset());
                     Color[] colorData = new Color[(int)(d.x * d.y * d.z)];
 

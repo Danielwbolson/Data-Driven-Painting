@@ -15,6 +15,7 @@ namespace SculptingVis
         public StyleTypeSocket<Colormap> _colorMapInput;
         public StyleTypeSocket<Colormap>  _opacityMapInput;
         public StyleTypeSocket<Range<float>> _opacityMultiplierInput;
+        public StyleTypeSocket<MinMax<float>> _dataRangeInput;
 
 
 
@@ -49,7 +50,10 @@ namespace SculptingVis
             if(_opacityMapInput.GetInput() != null) _volumeMaterial.SetTexture("_OpacityMap", ((Colormap)_opacityMapInput.GetInput()).GetTexture());
             Range<float> o = ((Range<float>)_opacityMultiplierInput.GetInput());
 
-                _volumeMaterial.SetFloat("_OpacityMultiplier", ((Range<float>)_opacityMultiplierInput.GetInput()));
+            _volumeVariable.LowerBound = ((MinMax<float>)_dataRangeInput.GetInput()).lowerValue;
+            _volumeVariable.UpperBound = ((MinMax<float>)_dataRangeInput.GetInput()).upperValue;
+
+            _volumeMaterial.SetFloat("_OpacityMultiplier", ((Range<float>)_opacityMultiplierInput.GetInput()));
 
 
             Material canvasMaterial = GetCanvasMaterial(canvas, _volumeMaterial);
@@ -92,15 +96,27 @@ namespace SculptingVis
             _opacityMultiplierInput = (new StyleTypeSocket<Range<float>> ()).Init("Opacity multiplier",this);
             _opacityMultiplierInput.SetDefaultInputObject((new Range<float>(0, 1,1f)));
 
+
+            _dataRangeInput = (new StyleTypeSocket<MinMax<float>> ()).Init("Data Range",this);
+            _dataRangeInput.SetDefaultInputObject((new MinMax<float>(0, 1)));
+
 			AddSubmodule(_colorMapInput);
 			AddSubmodule(_opacityMapInput);
 			AddSubmodule(_opacityMultiplierInput);
+            AddSubmodule(_dataRangeInput);
 
             return this;
 
         }
 
 		public override void UpdateModule() {
+            if(_volumeVariable.GetInput() != null) {
+                Variable v = ((Variable)_volumeVariable.GetInput());
+            ((MinMax<float>)_dataRangeInput.GetInput()).lowerBound = v.GetMin().x;
+            ((MinMax<float>)_dataRangeInput.GetInput()).upperBound = v.GetMax().x;
+
+
+            }
 			// if(_colorMapInput.GetInput() != null && _colorMapInput.GetInput() is Colormap) {
 			// 	_colorMap = ((Colormap)_colorMapInput.GetInput()).GetTexture();
 			// }

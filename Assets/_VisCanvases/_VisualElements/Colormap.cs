@@ -16,7 +16,8 @@ namespace SculptingVis {
             _texture = texture;
             return this;
         }
-        public new static VisualElement LoadFile(string filePath) {
+        public new static VisualElement [] LoadFile(string filePath) {
+            List<VisualElement> visualElements = new List<VisualElement>();
 
             string extention = Path.GetExtension(filePath);
 
@@ -28,7 +29,7 @@ namespace SculptingVis {
                 loadedImage.LoadImage(File.ReadAllBytes(filePath));
                 result = CreateInstance<Colormap>().Init(loadedImage);
                 result.SetName(Path.GetFileName(filePath));
-                return result;
+                visualElements.Add(result);
             }
 
             // Read XML file and produce a Texture2D
@@ -63,7 +64,7 @@ namespace SculptingVis {
                 Texture2D image = CreateTexture2DFromList(dataArray);
                 result = CreateInstance<Colormap>().Init(image);
                 result.SetName(name);
-                return result;
+                visualElements.Add(result);
             }
 
             // Read JSON file and produce a Texture2D
@@ -72,6 +73,7 @@ namespace SculptingVis {
                 StreamReader inStream = new StreamReader(filePath);
                 JSONObject json = JSONObject.Create(inStream.ReadToEnd());
                 inStream.Close();
+                if(json.IsNull) return null;
 
                 var RGBPoints = json.list[0]["RGBPoints"].list;
                 for( int i = 0; i < RGBPoints.Count; i++) { 
@@ -84,11 +86,37 @@ namespace SculptingVis {
                 Texture2D image = CreateTexture2DFromList(dataArray);
                 result = CreateInstance<Colormap>().Init(image);
                 result.SetName(json.list[0].HasField("Name") ? json.list[0]["Name"].ToString() : Path.GetFileName(filePath));
-                return result;
+                visualElements.Add(result);
+               
+               
+               
+               
+               
+               
+                List<float> dataArray2 = new List<float>();
+
+                var alphaPoints = json.list[0]["Points"].list;
+                for( int i = 0; i < alphaPoints.Count/4; i++) { 
+                    // Add our values to our list
+                    dataArray2.Add(float.Parse(alphaPoints[i*4].ToString()));
+                    dataArray2.Add(float.Parse(alphaPoints[i*4+1].ToString()));
+                    dataArray2.Add(float.Parse(alphaPoints[i*4+1].ToString()));
+                    dataArray2.Add(float.Parse(alphaPoints[i*4+1].ToString()));
+
+                }  
+
+                // Create and return the image
+                Colormap result2 = null;
+                Texture2D image2 = CreateTexture2DFromList(dataArray2);
+                result2 = CreateInstance<Colormap>().Init(image2);
+                result2.SetName((json.list[0].HasField("Name") ? json.list[0]["Name"].ToString() : Path.GetFileName(filePath)) + "_ALPHA");
+                visualElements.Add(result2);
+
+
             }
 
             // Read TXT file and produce a Texture2D
-            if (extention.ToUpper() == ".TXT") {
+            if (false && extention.ToUpper() == ".TXT") {
                 List<float> dataArray = new List<float>();
                 StreamReader inStream = new StreamReader(filePath);
 
@@ -115,9 +143,9 @@ namespace SculptingVis {
                 result = CreateInstance<Colormap>().Init(image);
                 result.SetName(Path.GetFileName(filePath));
 
-                return result;
+                visualElements.Add( result);
             }
-            return null;
+            return visualElements.ToArray();
         }
 
         // Given a list of data, create a texture
@@ -127,6 +155,10 @@ namespace SculptingVis {
             int imageWidth;
 
             float minIncrement = Mathf.Infinity;
+            float left = dataList[0];
+            float right  = dataList[((dataList.Count)/4-1)*4];
+            float totalWidth = right - left;
+
 
             // Create an array of Colors
             for (int i = 0; i < dataList.Count; i += 4) {
@@ -152,17 +184,17 @@ namespace SculptingVis {
                 // Get the minimum increment so that we can scale by a certain value and 
                 // generate a decent picture
                 if (i > 0) {
-                    float inc = x - dataList[i - 4];
+                    float inc = (x-left)/totalWidth - (dataList[i - 4]-left)/totalWidth;
                     if (inc < minIncrement && inc > 0) {
                         minIncrement = inc;
                     }
                 }
-                increments.Add(x);
+                increments.Add((x-left)/totalWidth );
                 pixels.Add(c);
             }
 
             // Create our texture and get its width
-            imageWidth = (int)Mathf.Min((int)(4 * (1 / minIncrement)),1024);
+            imageWidth = 1024;//(int)Mathf.Min((int)(4 * (1 / minIncrement)),1024);
             Texture2D image = new Texture2D(imageWidth, 1);
 
             // Set our new pixels, generated from our data and Lerp
@@ -180,6 +212,7 @@ namespace SculptingVis {
                     j++;
                 }
             }
+            while(newPixels.Count < image.width) newPixels.Add(new Color(0,0,0,0));
             image.SetPixels(newPixels.ToArray());
             image.Apply();
             return image;

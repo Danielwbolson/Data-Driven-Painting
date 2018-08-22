@@ -42,19 +42,24 @@ namespace SculptingVis {
 		}
 		public T value;
 	}
-	public class MinMax : Object
+	public class MinMax<T> : Object
     {
-        public MinMax(float lower, float upper)
+        public MinMax(T lower, T upper)
         {
             lowerBound = lower;
             upperBound = upper;
+
+			lowerValue = lower;
+			upperValue = upper;
         }
         public override string ToString()
         {
             return lowerBound + " < " + upperBound;
         }
-        public float lowerBound;
-        public float upperBound;
+		public T lowerValue;
+		public T upperValue;
+        public T lowerBound;
+        public T upperBound;
     }
 	public class Range<T> :Object {
 		public static bool operator ==(Range<T> A, Range<T> B)

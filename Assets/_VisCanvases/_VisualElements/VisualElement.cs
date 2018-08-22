@@ -17,15 +17,19 @@ namespace SculptingVis {
 
 
 
-		public static VisualElement LoadFile(string filePath) {
+		public static VisualElement[] LoadFile(string filePath) {
+			List<VisualElement> resultList = new List<VisualElement>();
 			VisualElement result = null;
-			if((result = Colormap.LoadFile(filePath)) != null)
-				return result;
+			VisualElement [] results = null;
+			if((results = Colormap.LoadFile(filePath)).Length > 0) {
+				foreach(var r in results)
+				resultList.Add(r);
+			}
 
 			if((result = Glyph.LoadFile(filePath)) != null)
-				return result;
+				resultList.Add(result);
 
-			return result;
+			return resultList.ToArray();
 		}
 
 		public abstract Texture2D GetPreviewImage();

@@ -244,7 +244,20 @@ public class SculptingVisWindow : EditorWindow
                         socket.GetModule().UpdateModule();
                     }
                 }
+                if(socket is StyleTypeSocket<MinMax<float>>) {
+                    float A = ((MinMax<float>)socket.GetInput()).lowerValue;
+                    float B = ((MinMax<float>)socket.GetInput()).upperValue;
 
+                    float a = A;
+                    float b = B;
+                    EditorGUILayout.MinMaxSlider(ref a,ref b,((MinMax<float>)socket.GetInput()).lowerBound,((MinMax<float>)socket.GetInput()).upperBound);
+                    if(A != a || B != b) {
+                        ((MinMax<float>)socket.GetInput()).lowerValue = a;
+                        ((MinMax<float>)socket.GetInput()).upperValue = b;
+                        socket.GetModule().UpdateModule();
+
+                    }
+                }
 
                 GUILayout.FlexibleSpace();
                 EndSocketHook(socket,nest);
