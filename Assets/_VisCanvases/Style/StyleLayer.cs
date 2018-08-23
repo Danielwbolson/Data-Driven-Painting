@@ -28,7 +28,13 @@ namespace SculptingVis
         {
             return new Bounds();
         }
-
+        bool _active = true;
+        public void SetActive(bool b) {
+            _active = b;
+        }
+        public bool IsActive() {
+            return _active;
+        }
         public virtual void DrawLayer(Canvas canvas)
         {
 

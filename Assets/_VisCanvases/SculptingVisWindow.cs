@@ -312,10 +312,14 @@ public class SculptingVisWindow : EditorWindow
         EditorGUIUtility.fieldWidth = 10;
         if(module.GetNumberOfSubmodules() >(labelOutputHook?1:0) )
             GetFoldoutStates()[""+module.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(module.GetHashCode()+""),GUIContent.none, false);
-        EditorGUIUtility.fieldWidth = x;
 
         GUILayout.Label(module.GetLabel());
+        if(module is StyleLayer) {
+            var layer = (StyleLayer)module;
+            layer.SetActive(GUILayout.Toggle(layer.IsActive(),""));
+        }
         GUILayout.FlexibleSpace();
+        EditorGUIUtility.fieldWidth = x;
 
         // End Draw Module label
         if(!labelOutputHook) GUILayout.FlexibleSpace();

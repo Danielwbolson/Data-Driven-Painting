@@ -29,7 +29,7 @@ namespace SculptingVis {
             //Graphics.DrawMesh(_styleIndicatorMesh,canvas.GetInnerSceneTransformMatrix(),_styleOriginMaterial,0);
             foreach (var layer in _layers) {
                 // Added by Daniel, allows us to toggle on and off
-                if (layer._toggled) {
+                if (layer.IsActive()) {
                     layer.DrawLayer(canvas);
                 }
             }
