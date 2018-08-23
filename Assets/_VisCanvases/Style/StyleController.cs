@@ -381,10 +381,13 @@ namespace SculptingVis
             }
 
 			else {
-                VisualElement result = VisualElement.LoadFile(path);
+                VisualElement[] results = VisualElement.LoadFile(path);
 
-                if(result != null)
-				    GetVisualElements().Add(ScriptableObject.CreateInstance<StyleVisualElement>().Init(result));
+                if(results != null) {
+                    foreach(var r in results) {
+				        GetVisualElements().Add(ScriptableObject.CreateInstance<StyleVisualElement>().Init(r));
+                    }
+                }
 			}
         }
 

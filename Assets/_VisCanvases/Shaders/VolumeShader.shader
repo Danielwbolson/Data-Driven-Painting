@@ -199,7 +199,9 @@
 				float4 test = float4(0,0,0,1);
                 float4 dst = 0;
                 fixed4 col = float4(0,1,0,1);
-				col.rgb = len;
+				float3 X = GetVariable3DTextureSample(1,backCoord+0.1);
+				col.rgb = X.rgb;
+				//return col;
 
                 //return col;
                 float percent = 0;
