@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SculptingVis
-{
+namespace SculptingVis {
     [CreateAssetMenu()]
-    public class StyleSimplePathLayer : StyleLayer
-    {
+    public class StyleSimplePathLayer : StyleLayer {
 
 
 
@@ -35,17 +33,14 @@ namespace SculptingVis
 
 
 
-        public override bool HasBounds()
-        {
+        public override bool HasBounds() {
             return _anchorVariable != null && _anchorVariable.IsAssigned();
         }
-        public override Bounds GetBounds()
-        {
+        public override Bounds GetBounds() {
             return ((Variable)_anchorVariable.GetInput()).GetBounds();
         }
 
-        public override void DrawLayer(Canvas canvas)
-        {
+        public override void DrawLayer(Canvas canvas) {
             if (_anchorVariable == null || !_anchorVariable.IsAssigned()) return;
             Datastream stream = ((Variable)_anchorVariable.GetInput()).GetStream(null, 0, 0);
 
@@ -62,21 +57,18 @@ namespace SculptingVis
             // 	_lineMaterial.SetInt("_HasColorVariable",0);
 
             // }
-            if(_colorMapInput.GetInput() != null )
-                _lineMaterial.SetTexture("_ColorMap", ((Colormap) _colorMapInput.GetInput()).GetTexture());
+            if (_colorMapInput.GetInput() != null)
+                _lineMaterial.SetTexture("_ColorMap", ((Colormap)_colorMapInput.GetInput()).GetTexture());
 
             Material canvasMaterial = GetCanvasMaterial(canvas, _lineMaterial);
             _anchorVariable.Bind(canvasMaterial, 0, 0);
             _colorVariable.Bind(canvasMaterial, 0, 0);
             _opacityVariable.Bind(canvasMaterial, 0, 0);
 
-            if (m != null && m.Length > 0)
-            {
-                for (int i = 0; i < Mathf.Min(m.Length, (Range<int>)_maxPaths.GetInput()); i += 1)
-                {
+            if (m != null && m.Length > 0) {
+                for (int i = 0; i < Mathf.Min(m.Length, (Range<int>)_maxPaths.GetInput()); i += 1) {
                     Mesh mesh = m[i];
-                    if (mesh != null)
-                    {
+                    if (mesh != null) {
                         Graphics.DrawMesh(mesh, canvas.GetInnerSceneTransformMatrix(), canvasMaterial, 0);
 
                     }
@@ -86,10 +78,8 @@ namespace SculptingVis
         }
 
 
-        public override StyleLayer CopyLayer(StyleLayer toCopy)
-        {
-            if (toCopy != null && toCopy is StyleSimplePathLayer)
-            {
+        public override StyleLayer CopyLayer(StyleLayer toCopy) {
+            if (toCopy != null && toCopy is StyleSimplePathLayer) {
                 _lineMaterial = new Material(((StyleSimplePathLayer)toCopy)._lineMaterial);
                 LineCount = ((StyleSimplePathLayer)toCopy).LineCount;
 
@@ -98,26 +88,25 @@ namespace SculptingVis
             return Init();
         }
 
-        public StyleSimplePathLayer Init()
-        {
+        public StyleSimplePathLayer Init() {
             _anchorVariable = new VariableSocket();
-            _anchorVariable.Init("Anchor",this,0);
+            _anchorVariable.Init("Anchor", this, 0);
             //SetAnchorSocket(_anchorVariable);
             _colorVariable = new VariableSocket();
-            _colorVariable.Init("Color",this,1);
+            _colorVariable.Init("Color", this, 1);
             _colorVariable.SetAnchorVariableSocket(_anchorVariable);
-			_colorVariable.RequireScalar();
+            _colorVariable.RequireScalar();
 
             _opacityVariable = new VariableSocket();
-            _opacityVariable.Init("Opacity",this,3);
-	        _opacityVariable.SetAnchorVariableSocket(_anchorVariable);
-			_opacityVariable.RequireScalar();
+            _opacityVariable.Init("Opacity", this, 3);
+            _opacityVariable.SetAnchorVariableSocket(_anchorVariable);
+            _opacityVariable.RequireScalar();
 
             AddSubmodule(_anchorVariable);
             AddSubmodule(_colorVariable);
             AddSubmodule(_opacityVariable);
-			_colorMapInput = (new StyleTypeSocket<Colormap>()).Init("Color map",this);
-			AddSubmodule(_colorMapInput);
+            _colorMapInput = (new StyleTypeSocket<Colormap>()).Init("Color map", this);
+            AddSubmodule(_colorMapInput);
 
 
             _maxPaths = (new StyleTypeSocket<Range<int>>()).Init("Max paths", this);
@@ -128,14 +117,13 @@ namespace SculptingVis
 
         }
 
-		public override void UpdateModule() {
-			if(_colorMapInput.GetInput() != null && _colorMapInput.GetInput() is Colormap) {
-			}
-		}
+        public override void UpdateModule() {
+            if (_colorMapInput.GetInput() != null && _colorMapInput.GetInput() is Colormap) {
+            }
+        }
 
 
-        public override string GetLabel()
-        {
+        public override string GetLabel() {
             return "Simple Path Layer";
         }
 

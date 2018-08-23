@@ -142,6 +142,11 @@ namespace SculptingVis {
             return _topologyArray;
         }
 
+
+        public VTK.vtkDataSet GetVTKDataset() {
+            VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
+            return vc.GetVTKDataSet();
+        }
         public Mesh[] GetMeshes() {
             if (_meshes == null) {
                 int numMeshes = 1;
@@ -238,6 +243,7 @@ namespace SculptingVis {
 
 
         ComputeBuffer _dataBuffer;
+        float[] _dataArray;
         ComputeBuffer _topologyBuffer;
         int _cachedSeed = -1;
 
@@ -310,6 +316,78 @@ namespace SculptingVis {
             return _dataBuffer;
         }
 
+
+
+        public float[] GetArray() {
+            bool stuffChanged = false;
+            if (_rootChannel is PointAnchorDatastreamChannel && _dataArray != null) {
+                stuffChanged = (_dataArray.Length != ((int)GetNumberOfComponents() * (int)GetNumberOfElements()) ||
+                    ((PointAnchorDatastreamChannel)_rootChannel).GetSeed() != _cachedSeed);
+                _cachedSeed = ((PointAnchorDatastreamChannel)_rootChannel).GetSeed();
+            }
+
+            if (_dataArray == null || stuffChanged) {
+
+                long numberOfElements = GetNumberOfElements();
+                long numberOfComponents = GetNumberOfComponents();
+                float[] data = new float[numberOfElements * numberOfComponents];
+
+                if (_rootChannel is VTKDatastreamChannel) {
+
+                    VTK.vtkAbstractArray abstractArray = ((VTKDatastreamChannel)_rootChannel).GetAbstractArray();
+
+                    if (abstractArray.IsA("vtkFloatArray")) {
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), data, 0, (int)data.Length);
+
+                    } else if (abstractArray.IsA("vtkDoubleArray")) {
+                        double[] doubleData = new double[numberOfComponents * numberOfElements];
+
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), doubleData, 0, (int)doubleData.Length);
+                        for (int i = 0; i < doubleData.Length; i++)
+                            data[i] = (float)doubleData[i];
+                    } else if (abstractArray.IsA("vtkIntArray")) {
+                        int[] intData = new int[numberOfComponents * numberOfElements];
+                        Marshal.Copy(abstractArray.GetVoidPointer(0), intData, 0, (int)intData.Length);
+
+                        for (int i = 0; i < intData.Length; i++)
+                            data[i] = (float)intData[i];
+                    }
+
+
+                    Debug.Log("Uploading Buffer of length " + (int)numberOfElements * (int)numberOfComponents + " (" + data.Length + ")");
+
+
+
+                    //_dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
+
+                    // _dataBuffer.SetData(data);
+                    _dataArray = data;
+
+                } else if (_rootChannel is VTKAnchorDatastreamChannel) {
+
+
+                    VTK.vtkDataSet ds = ((VTKAnchorDatastreamChannel)_rootChannel).GetVTKDataSet();
+
+                    if (ds.IsA("vtkPointSet")) {
+                        VTK.vtkPointSet ps = VTK.vtkPointSet.SafeDownCast(ds);
+                        Marshal.Copy(ps.GetPoints().GetVoidPointer(0), data, 0, data.Length);
+                        _dataArray = data;
+
+                    }
+                } else if (_rootChannel is PointAnchorDatastreamChannel) {
+                    _dataArray = new float[GetNumberOfElements() * GetNumberOfComponents()];
+                    for (int i = 0; i < GetNumberOfElements(); i++) {
+                        _dataArray[i * GetNumberOfComponents() + 0] = ((PointAnchorDatastreamChannel)_rootChannel).GetPoints()[i].x;
+                        _dataArray[i * GetNumberOfComponents() + 1] = ((PointAnchorDatastreamChannel)_rootChannel).GetPoints()[i].y;
+                        _dataArray[i * GetNumberOfComponents() +2] = ((PointAnchorDatastreamChannel)_rootChannel).GetPoints()[i].z;
+
+                    }
+
+                }
+            }
+
+            return _dataArray;
+        }
         public ComputeBuffer GetTopologyBuffer() {
             if (_topologyBuffer == null) {
                 if (GetVariable().IsAnchor()) {

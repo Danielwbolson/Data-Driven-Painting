@@ -90,7 +90,7 @@ bool GetTuple_0(IntPtr /*(IntPtr**)*/ return_value, IntPtr /*(vtkDataArray*)*/ c
 // virtual void GetTuple(vtkIdType tupleIdx, double * tuple)
 // virtual void GetTuple(vtkIdType tupleIdx, double * tuple)
 [DllImport("vtkplugin", EntryPoint="vtkDataArray_GetTuple_1")] public static extern 
-bool GetTuple_1(IntPtr /*(vtkDataArray*)*/ callingObject, long /*(vtkIdType)*/ tupleIdx, IntPtr /*(double*)*/ tuple);
+bool GetTuple_1(IntPtr /*(vtkDataArray*)*/ callingObject, long /*(vtkIdType)*/ tupleIdx, double[] /*(double*)*/ x);
 
 // double GetTuple1(vtkIdType tupleIdx)
 // double GetTuple1(vtkIdType tupleIdx)

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3b578a35dfff941befcb3f8f5714e8, type: 3}
+  m_Name: New Ribbon Gen Layer
+  m_EditorClassIdentifier: 
+  _sockets: []
+  _toggled: 1
+  _dataAnchors: {fileID: 0}
+  _dataTangents: {fileID: 0}
+  _dataNormals: {fileID: 0}
+  LineCount: 1000
+  halfRibbonWidth: 0.2
+  mainTexture: {fileID: 2800000, guid: d8f22748157966140a0f4815a33dbd7e, type: 3}
+  normalTexture: {fileID: 0}
+  _ribbonMaterial: {fileID: 0}
+  _ribbonMesh: []

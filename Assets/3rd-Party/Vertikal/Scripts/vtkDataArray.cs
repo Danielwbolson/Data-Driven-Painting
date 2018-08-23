@@ -142,8 +142,8 @@ public IntPtr GetTuple(long /*(vtkIdType)*/ tupleIdx) {
 
 // virtual void GetTuple(vtkIdType tupleIdx, double * tuple)
 // "virtual void GetTuple(vtkIdType tupleIdx, double * tuple)"
-public void GetTuple(long /*(vtkIdType)*/ tupleIdx, IntPtr /*(double*)*/ tuple) {
-	VTK_API.API_vtkDataArray.GetTuple_1(this, tupleIdx, tuple);
+public void GetTuple(long /*(vtkIdType)*/ tupleIdx, double /*(double[3])*/ [] x) {
+	VTK_API.API_vtkDataArray.GetTuple_1(this, tupleIdx, x);
 }
 
 
