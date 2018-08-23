@@ -542,24 +542,6 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 2097199525}
   m_Script: {fileID: 11500000, guid: eeda6d41317f444b900e374895f14e95, type: 3}
---- !u!1 &1245614079 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1371760227948092, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-    type: 2}
-  m_PrefabInternal: {fileID: 1518679471}
---- !u!114 &1245614080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1245614079}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee5e2695bdfa9c74caf3e74d30eafed3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _width: 7000
-  _height: 5000
 --- !u!1 &1255172967
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,21 +647,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _layerTypes.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _variableTypes.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4628534396763062, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -722,23 +689,6 @@ Prefab:
       propertyPath: _userVariables
       value: 
       objectReference: {fileID: 950498562}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _variableTypes.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 630eb87c7d0cafa488325a1d44f1e787,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _layerTypes.Array.data[4]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: e7701ca9289e44681a004358d924943b,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
   m_IsPrefabAsset: 0
