@@ -28,6 +28,8 @@ namespace SculptingVis {
 
         // Number of ribbons to draw
         public StyleTypeSocket<Range<int>> _maxPaths;
+        public StyleTypeSocket<Range<float>> _pathWidth;
+
         public int LineCount = 1000; // Not sure what this is useful for
 
         public StyleTypeSocket<Glyph> _glyphInput;
@@ -121,6 +123,12 @@ namespace SculptingVis {
             _maxPaths.SetDefaultInputObject(new Range<int>(1, 50000, 1000));
             AddSubmodule(_maxPaths);
 
+
+            _pathWidth = (new StyleTypeSocket<Range<float>>()).Init("Path width", this);
+            _pathWidth.SetDefaultInputObject(new Range<float>(0, 5, 1));
+            AddSubmodule(_pathWidth);
+
+
             return this;
         }
 
@@ -136,7 +144,7 @@ namespace SculptingVis {
 
             //InitDummyData(100);
             InitRealData();
-
+            halfRibbonWidth = (Range<float>)(_pathWidth.GetInput());
             float aspectRatio = (float)mainTexture.height / (float)mainTexture.width;
             float texRepeatLength = aspectRatio * halfRibbonWidth * 2.0f;
 
@@ -266,7 +274,7 @@ namespace SculptingVis {
             dataArcLengths = new float[dataAnchors.Length][];
             dataTangents = new Vector3[dataAnchors.Length][];
             dataNormals = new Vector3[dataAnchors.Length][];
-
+            Random.InitState(0);
             for (long c = 0; c < pd.GetNumberOfCells(); c++) {
 
                 pd.GetCellPoints(c, idlist);

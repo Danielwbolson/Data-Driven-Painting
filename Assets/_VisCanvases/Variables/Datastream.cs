@@ -54,8 +54,8 @@ namespace SculptingVis {
                 VTK.vtkDataSet ds = vc.GetVTKDataSet();
 
                 if (_owner.GetVariableType() != DataDimensionType.Volume) {
-                    VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                    int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
+                    VTK.vtkDataSet pd = VTK.vtkDataSet.SafeDownCast(ds);
+                    int numcells = (int)VTK.vtkDataSet.SafeDownCast(ds).GetNumberOfCells();
 
                     List<Vector2Int> topologyCellInfo = new List<Vector2Int>();
 
@@ -96,8 +96,8 @@ namespace SculptingVis {
                 VTK.vtkDataSet ds = vc.GetVTKDataSet();
 
                 if (_owner.GetVariableType() != DataDimensionType.Volume) {
-                    VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                    int numcells = (int)VTK.vtkPolyData.SafeDownCast(ds).GetNumberOfCells();
+                    VTK.vtkDataSet pd = VTK.vtkDataSet.SafeDownCast(ds);
+                    int numcells = (int)VTK.vtkDataSet.SafeDownCast(ds).GetNumberOfCells();
 
 
                     List<Vector2Int> topology = new List<Vector2Int>();
@@ -156,15 +156,15 @@ namespace SculptingVis {
                     VTK.vtkDataSet ds = vc.GetVTKDataSet();
 
                     if (_owner.GetVariableType() == DataDimensionType.Path) {
-                        VTK.vtkPolyData pd = VTK.vtkPolyData.SafeDownCast(ds);
-                        VTK.vtkCellArray ca = VTK.vtkPolyData.SafeDownCast(ds).GetLines();
-                        int numcells = (int)ca.GetNumberOfCells();
+                        VTK.vtkDataSet pd = VTK.vtkDataSet.SafeDownCast(ds);
+                        VTK.vtkPointSet pointset = VTK.vtkPointSet.SafeDownCast(ds);
+                        int numcells = (int)pd.GetNumberOfCells();
 
                         List<Vector3> points = new List<Vector3>();
                         List<Vector2> tex = new List<Vector2>();
                         List<int> indices = new List<int>();
                         int index = 0;
-                        _meshes = new Mesh[pd.GetNumberOfLines()];
+                        _meshes = new Mesh[numcells];
 
 
                         // pd.GetLines().InitTraversal();
@@ -188,8 +188,8 @@ namespace SculptingVis {
                             for (int i = 0; i < idCount; i++) {
                                 int id = (int)idlist.GetId(i);
                                 double[] p = new double[3];
-                                pd.GetPoint(id, p);
-                                points.Add(pd.GetPoints().GetPoint(id));
+                                pointset.GetPoint(id, p);
+                                points.Add(pointset.GetPoints().GetPoint(id));
                                 //Debug.Log(c + " " + i + " " + id + " " + " " + index + " " + p[0] + "," + p[1] + "," + p[2]);
                                 tex.Add(new Vector2(c, id));
 

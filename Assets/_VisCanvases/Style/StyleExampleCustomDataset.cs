@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VTK;
 
 namespace SculptingVis
 {
@@ -15,28 +16,61 @@ namespace SculptingVis
             if(_sourceVariableSocket.GetInput() == null) return;
             DataVariable inputVariable = ((DataVariable)_sourceVariableSocket.GetInput());
             Dataset ds = inputVariable.GetDataSet();
-            SetDataset(ds);
-            if(!(ds is VTKDataset)) return;
+            //if(!(ds is VTKDataset)) return;
 
 
+            
             VTK.vtkDataSet inputVTKDataset = ((VTKDataset)ds).GetVTKDataset();
 
 
 
             Debug.Log(inputVTKDataset.GetClassName());
+            int n  = (Range<int>)_sampleCount.GetInput();
+
+            vtkUnstructuredGrid output = vtkUnstructuredGrid.New();
+            output.Allocate(n ,0);
+            vtkPoints npts = vtkPoints.New();
+            output.SetPoints(npts);
+            vtkPointData npd = output.GetPointData();
+
+            Random.InitState((Range<int>)_sampleSeed.GetInput());
+
+            vtkFloatArray data = vtkFloatArray.New();
+            data.SetName("data");
+            output.GetPointData().AddArray(data);
 
 
-            _outputVTKDataset = inputVTKDataset;
+
+
+            vtkIdList idlist = vtkIdList.New();
+
+            for(int i =0; i < n; i++) {
+
+                float x = Random.Range(-inputVTKDataset.GetBounds().extents.x,inputVTKDataset.GetBounds().extents.x);
+                float y = Random.Range(-inputVTKDataset.GetBounds().extents.y,inputVTKDataset.GetBounds().extents.y);
+                float z = Random.Range(-inputVTKDataset.GetBounds().extents.z,inputVTKDataset.GetBounds().extents.z);
+
+
+                idlist.InsertId(0,npts.InsertNextPoint(x,y,z));
+                output.InsertNextCell(1,idlist);
+                float fi = (float)i;
+                unsafe{data.InsertNextTuple(new System.IntPtr((void*)&fi));}
+                
+            }
+
 
             Debug.Log(inputVTKDataset.GetClassName());
 
-
+            _outputVTKDataset = output;
             if(_generatedDataset == null) {
                 _generatedDataset = CreateInstance<VTKDataset>().Init(_outputVTKDataset,0,0);
+                _generatedDataset.LoadDataset();
+
             } else {
                 _generatedDataset.SetDataset(_outputVTKDataset);
             }
-            
+            SetDataset(_generatedDataset);
+
 
 
             // if(_pointDataset == null) {

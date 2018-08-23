@@ -149,9 +149,8 @@ public class VTKDataset : Dataset {
 		_dataset = dataset;
 	}
 	public override bool LoadDataset() {
-		if(_datasetPath == "" && _dataset == null) return false;
-		if(_datasetPath == "" && _dataset != null) return true;
-		_dataset = DEPRECATED.DataLoader.LoadVTKDataSet(_datasetPath);
+		if(_datasetPath != "" )
+			_dataset = DEPRECATED.DataLoader.LoadVTKDataSet(_datasetPath);
 		if(!GetVTKDataset().IsVoid())
 			populateVariables();
 		return !GetVTKDataset().IsVoid();

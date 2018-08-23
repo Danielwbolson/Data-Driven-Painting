@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4628534396763062}
   - component: {fileID: 114338737319168918}
   - component: {fileID: 114133819033191846}
+  - component: {fileID: 114948762312222044}
   m_Layer: 0
   m_Name: StyleController
   m_TagString: Untagged
@@ -71,14 +72,29 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0e4891bc01a0441a49c489d86d0c0731, type: 2}
   - {fileID: 11400000, guid: 4746f60dcb6bc654391846945c9157d7, type: 2}
   - {fileID: 11400000, guid: d3b8e44c4a1faad4c843254921981743, type: 2}
-  _variableTypes:
-  - {fileID: 11400000, guid: 630eb87c7d0cafa488325a1d44f1e787, type: 2}
+  _customDatasetTypes:
+  - {fileID: 11400000, guid: e7701ca9289e44681a004358d924943b, type: 2}
   _visualElements: []
   _layers: []
   _style: {fileID: 0}
   _userVariables: {fileID: 0}
   _variables: []
   _datasets: []
+  _customDatasets:
+  - {fileID: 11400000, guid: e7701ca9289e44681a004358d924943b, type: 2}
   _CanvasPrefab: {fileID: 114996770596923822, guid: 9723f129ebb084465910186df35f3bd9,
     type: 2}
   _canvases: []
+--- !u!114 &114948762312222044
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1371760227948092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee5e2695bdfa9c74caf3e74d30eafed3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _width: 7000
+  _height: 5000

@@ -85,11 +85,12 @@ namespace SculptingVis
 
         public override void DrawLayer(Canvas canvas)
         {
+
             if (_anchorVariable == null || !_anchorVariable.IsAssigned()) return;
             Datastream stream = ((Variable)_anchorVariable.GetInput()).GetStream(null, 0, 0);
+            float[] a = stream.GetArray();
 
-
-
+            
 
             if (_colorMapInput.GetInput() != null)
                 _pointMaterial.SetTexture("_ColorMap", ((Colormap)_colorMapInput.GetInput()).GetTexture());
