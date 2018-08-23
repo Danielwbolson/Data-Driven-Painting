@@ -481,7 +481,7 @@ public class SculptingVisWindow : EditorWindow
     PLANE = 2
 }
     public OPTIONS op;
-
+    string screenshotpath = "" ;
     void OnGUI()
     {
         if(GetStyleController() == null) {
@@ -521,8 +521,22 @@ public class SculptingVisWindow : EditorWindow
             GetStyleController().Reset();
             _columns = null;
         }
-        if (GUILayout.Button("Report"))
-        {
+
+                    if (GUILayout.Button("Screenshot location"))
+            {
+                       screenshotpath = EditorUtility.OpenFolderPanel("Select Folder containing glyphs or colormaps", Application.streamingAssetsPath + "/", "");
+
+            }
+        GUILayout.Label(screenshotpath);
+        
+        if (GUILayout.Button("Screenshot"))
+        { 
+            string date = System.DateTime.Now.ToString();
+  date = date.Replace("/","-");
+  date = date.Replace(" ","_");
+ date = date.Replace(":","-");
+            ScreenCapture.CaptureScreenshot(screenshotpath + "/" + date + ".png", 1);
+
             GetStyleController().Report();
         }
         //Rect workspace = GUILayoutUtility.GetRect(0,10000,0,10000);

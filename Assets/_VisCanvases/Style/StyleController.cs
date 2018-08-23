@@ -13,7 +13,6 @@ namespace SculptingVis
         public void Report() {
 
 
-
             // for(int i = 0; i < _links.Count; i++) {
             //     Debug.Log("Link[" + i + "] : " + _links[i].GetSource().GetOutput().GetInstanceID()+ "->" + _links[i].GetDestination().GetInput());
             // }
