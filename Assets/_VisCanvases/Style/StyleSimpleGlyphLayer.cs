@@ -15,12 +15,14 @@ namespace SculptingVis
 
         [SerializeField]
         public VariableSocket _colorVariable;
+        public StyleTypeSocket<MinMax<float>> _colordataRangeInput;
 
         [SerializeField]
         public VariableSocket _directionVariable;
 
         [SerializeField]
         public VariableSocket _opacityVariable;
+        public StyleTypeSocket<MinMax<float>> _opacitydataRangeInput;
 
         [SerializeField]
         public StyleTypeSocket<Range<float>> _opacityThresholdInput;
@@ -53,6 +55,13 @@ namespace SculptingVis
 
         [SerializeField]
         public StyleTypeSocket<Objectify<Color>> _colorInput;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _useColormapInput;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _flipColormapInput;
+
 
         [SerializeField]
         public Material _pointMaterial;
@@ -91,6 +100,12 @@ namespace SculptingVis
             float[] a = stream.GetArray();
 
             
+            _colorVariable.LowerBound = ((MinMax<float>)_colordataRangeInput.GetInput()).lowerValue;
+            _colorVariable.UpperBound = ((MinMax<float>)_colordataRangeInput.GetInput()).upperValue;
+
+            _opacityVariable.LowerBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).lowerValue;
+            _opacityVariable.UpperBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).upperValue;
+
 
             if (_colorMapInput.GetInput() != null)
                 _pointMaterial.SetTexture("_ColorMap", ((Colormap)_colorMapInput.GetInput()).GetTexture());
@@ -101,7 +116,8 @@ namespace SculptingVis
             _pointMaterial.SetFloat("_OpacityMultiplier", (Range<float>)_opacityMultiplierInput.GetInput());
             _pointMaterial.SetInt("_faceCamera", (Range<bool>)_faceCameraInput.GetInput()?1:0);
             _pointMaterial.SetFloat("_opacityThreshold", (Range<float>)_opacityThresholdInput.GetInput());
-
+            _pointMaterial.SetInt("_useColormap", (Range<bool>)_useColormapInput.GetInput()?1:0);
+            _pointMaterial.SetInt("_flipColormap", (Range<bool>)_flipColormapInput.GetInput()?1:0);
 
 
 
@@ -184,6 +200,11 @@ namespace SculptingVis
 	        _opacityVariable.SetAnchorVariableSocket(_anchorVariable);
 			_opacityVariable.RequireScalar();
 
+            _colordataRangeInput = (new StyleTypeSocket<MinMax<float>> ()).Init("Color Data Range",this);
+            _colordataRangeInput.SetDefaultInputObject((new MinMax<float>(0, 1)));
+
+            _opacitydataRangeInput = (new StyleTypeSocket<MinMax<float>> ()).Init("OpacityData Range",this);
+            _opacitydataRangeInput.SetDefaultInputObject((new MinMax<float>(0, 1)));
 
             _opacityThresholdInput = (new StyleTypeSocket<Range<float>>()).Init("Opacity threshold", this);
             _opacityThresholdInput.SetDefaultInputObject((new Range<float>(0, 1, 0.5f)));
@@ -197,7 +218,9 @@ namespace SculptingVis
 
             AddSubmodule(_anchorVariable);
             AddSubmodule(_colorVariable);
+            AddSubmodule(_colordataRangeInput);
             AddSubmodule(_opacityVariable);
+            AddSubmodule(_opacitydataRangeInput);
             AddSubmodule(_directionVariable);
 
             _maxGlyphs = (new StyleTypeSocket<Range<int>>()).Init("Max glyphs", this);
@@ -241,13 +264,36 @@ namespace SculptingVis
             AddSubmodule(_colorInput);
 
 
+            _useColormapInput = (new StyleTypeSocket<Range<bool>>()).Init("UseColormap", this);
+            _useColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_useColormapInput);
 
+            _flipColormapInput = (new StyleTypeSocket<Range<bool>>()).Init("FlipColormap", this);
+            _flipColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_flipColormapInput);
 
             return this;
 
         }
 
 		public override void UpdateModule() {
+
+             if(_colorVariable.GetInput() != null) {
+
+                Variable v = ((Variable)_colorVariable.GetInput());
+
+                ((MinMax<float>)_colordataRangeInput.GetInput()).lowerBound = v.GetMin().x;
+                ((MinMax<float>)_colordataRangeInput.GetInput()).upperBound = v.GetMax().x;
+            }
+
+            if(_opacityVariable.GetInput() != null) {
+
+                Variable v = ((Variable)_opacityVariable.GetInput());
+
+                ((MinMax<float>)_opacitydataRangeInput.GetInput()).lowerBound = v.GetMin().x;
+                ((MinMax<float>)_opacitydataRangeInput.GetInput()).upperBound = v.GetMax().x;
+            }
+
             base.UpdateModule();
 
 		}

@@ -43,7 +43,10 @@ Shader "Unlit/PointShader"
 			int _HasColorVariable;
 			float4 _MainTex_ST;
 			float4x4 _DataBoundsMatrixInv;
-			
+			int _useColormap;
+			int _flipColormap;
+			float4 _Color;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -63,10 +66,26 @@ Shader "Unlit/PointShader"
 
 				float3 dataSpace = WorldToDataSpace(i.worldPos);
 
-				fixed4 col = float4(0,0,0,1);
+				fixed4 c = float4(1,1,1,1);;
+
 				if(VariableIsAssigned(1)){
 					float3 dataVal =  NormalizeData(1,GetData(1,cellIndex,pointIndex,WorldToDataSpace(i.worldPos)));
-					col = tex2D(_ColorMap,float2(dataVal.x,0.5));
+					float colormapU = dataVal.x;
+					if(_flipColormap)
+						colormapU = -colormapU;
+
+
+					if(_useColormap == 1)
+						c.rgb = float3(0,1,0);//*= tex2D(_ColorMap,float2(colormapU,0.5)).rgb;
+					else
+						c.rgb = float3(1,0,0);//*= _Color.rgb;
+
+
+				} else {
+					if(_useColormap == 1)
+						c.rgb = float3(1,1,1);//*= tex2D(_ColorMap,float2(colormapU,0.5)).rgb;
+					else
+						c.rgb *= _Color.rgb;
 				}
 
 				if(VariableIsAssigned(3)) {
@@ -75,11 +94,11 @@ Shader "Unlit/PointShader"
 				}
 
 
-				col = MarkBounds(i.worldPos,col);
+				c = MarkBounds(i.worldPos,c);
 				StippleCrop(i.worldPos,i.vertex,_ScreenParams);
-				UNITY_APPLY_FOG(i.fogCoord, col);
-				UNITY_OPAQUE_ALPHA(col.a);
-				return col;
+				UNITY_APPLY_FOG(i.fogCoord, c);
+				UNITY_OPAQUE_ALPHA(c.a);
+				return c;
 			}
 			ENDCG
 		}

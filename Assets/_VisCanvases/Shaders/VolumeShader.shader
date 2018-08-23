@@ -57,7 +57,9 @@
 			float _XSlice;
 			float _ZSlice;
 			float _OpacityMultiplier;
-
+		int _useColormap;
+		int _flipColormap;
+		float4 _Color;
 
 
 ///////////////////////////////////////////////////
@@ -219,17 +221,33 @@
                 	if (traveled > len ||  a < 0.001 || (uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1 || uvw.z < 0 || uvw.z > 1) )
                 		continue;
 
-					float4 T = tex2D(_ColorMap,float2(a,0.5));
+
+
+					float colormapU = a;
+					if(_flipColormap)
+						colormapU = -colormapU;
+
+
+
+					float4 T = tex2D(_ColorMap,float2(colormapU,0.5));
 					float A = tex2D(_OpacityMap,a).r*_OpacityMultiplier;
 
 					float4 src = 0;
 	        		float alpha = A;
 
-						float3 c = T.xyz;
-     					src.a = clamp(alpha,0,1);
-	        			src.rgb = clamp(c*src.a,0,1);
-	        			dst = (1.0f - dst.a) * src + dst;
-					
+						float3 c = float3(1,1,1);
+
+
+					fixed4 col = tex2D(_ColorMap,float2(colormapU,0.5));
+					if(_useColormap)
+						c *= T.xyz;
+					else
+						c *= _Color;
+
+					src.a = clamp(alpha,0,1);
+					src.rgb = clamp(c*src.a,0,1);
+					dst = (1.0f - dst.a) * src + dst;
+				
 
 	   
 

@@ -50,6 +50,9 @@
 		float _glyphScale = 1;
 		float _OpacityMultiplier;
 		float _opacityThreshold;
+		int _useColormap;
+		int _flipColormap;
+
 		sampler2D _ColorMap;
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -186,7 +189,7 @@
             map1.b = map1.g;
             map1.r = 1; 
 
-			fixed4 c = fixed4(0,1,0,1);
+			fixed4 c = fixed4(1,1,1,1);
 			// Albedo comes from a texture tinted by color
 			o.Normal = UnpackNormal(map1);
 
@@ -196,11 +199,10 @@
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
 
-			c = _Color;
 			//return;
 			if(_useMesh==0){
 				if(_useThumbnail ==1)
-			 		c *= tex2D (_MainTex, IN.uv_MainTex);
+			 		c = tex2D (_MainTex, IN.uv_MainTex);
 				c.a = tex2D (_AlphaTex, IN.uv_MainTex);
 			}
 
@@ -213,9 +215,17 @@
 			float3 dataSpace = WorldToDataSpace(IN.worldPos);
 			float3 dataVal = GetData(1,cellIndex,pointIndex,dataSpace);
 			float3 normalizedDataVal = NormalizeData(1,dataVal);
+			float colormapU = normalizedDataVal.x;
+			if(_flipColormap)
+				colormapU = -colormapU;
 
-			fixed4 col = tex2D(_ColorMap,float2(normalizedDataVal.x,0.5));
-			c *= col;
+
+			fixed4 col = tex2D(_ColorMap,float2(colormapU,0.5));
+			if(_useColormap == 1)
+				c *= col;
+			else
+				c *= _Color;
+
 
 			float3 opacityVal = NormalizeData(3,GetData(3,cellIndex,pointIndex,dataSpace));
 			if(VariableIsAssigned(3)) {

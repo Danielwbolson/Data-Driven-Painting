@@ -46,9 +46,9 @@ namespace SculptingVis
 
             for(int i =0; i < n; i++) {
 
-                float x = Random.Range(-inputVTKDataset.GetBounds().extents.x,inputVTKDataset.GetBounds().extents.x);
-                float y = Random.Range(-inputVTKDataset.GetBounds().extents.y,inputVTKDataset.GetBounds().extents.y);
-                float z = Random.Range(-inputVTKDataset.GetBounds().extents.z,inputVTKDataset.GetBounds().extents.z);
+                float x = Random.Range(inputVTKDataset.GetBounds().min.x,inputVTKDataset.GetBounds().max.x);
+                float y = Random.Range(inputVTKDataset.GetBounds().min.y,inputVTKDataset.GetBounds().max.y);
+                float z = Random.Range(inputVTKDataset.GetBounds().min.z,inputVTKDataset.GetBounds().max.z);
 
 
                 idlist.InsertId(0,npts.InsertNextPoint(x,y,z));

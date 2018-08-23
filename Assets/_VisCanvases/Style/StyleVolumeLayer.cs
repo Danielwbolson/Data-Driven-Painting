@@ -18,6 +18,14 @@ namespace SculptingVis
         public StyleTypeSocket<MinMax<float>> _dataRangeInput;
 
 
+        [SerializeField]
+        public StyleTypeSocket<Objectify<Color>> _colorInput;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _useColormapInput;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _flipColormapInput;
 
 
         [SerializeField]
@@ -54,7 +62,10 @@ namespace SculptingVis
             _volumeVariable.UpperBound = ((MinMax<float>)_dataRangeInput.GetInput()).upperValue;
 
             _volumeMaterial.SetFloat("_OpacityMultiplier", ((Range<float>)_opacityMultiplierInput.GetInput()));
+            _volumeMaterial.SetInt("_useColormap", (Range<bool>)_useColormapInput.GetInput()?1:0);
+            _volumeMaterial.SetInt("_flipColormap", (Range<bool>)_flipColormapInput.GetInput()?1:0);
 
+            _volumeMaterial.SetColor("_Color", (Objectify<Color>)_colorInput.GetInput());
 
             Material canvasMaterial = GetCanvasMaterial(canvas, _volumeMaterial);
             _volumeVariable.Bind(canvasMaterial, 0, 0);
@@ -104,6 +115,21 @@ namespace SculptingVis
 			AddSubmodule(_opacityMapInput);
 			AddSubmodule(_opacityMultiplierInput);
             AddSubmodule(_dataRangeInput);
+
+
+
+            _colorInput = (new StyleTypeSocket<Objectify<Color>>()).Init("GlyphColor", this);
+            _colorInput.SetDefaultInputObject(new Objectify< Color>(Color.white));
+            AddSubmodule(_colorInput);
+
+
+            _useColormapInput = (new StyleTypeSocket<Range<bool>>()).Init("UseColormap", this);
+            _useColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_useColormapInput);
+
+            _flipColormapInput = (new StyleTypeSocket<Range<bool>>()).Init("FlipColormap", this);
+            _flipColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_flipColormapInput);
 
             return this;
 
