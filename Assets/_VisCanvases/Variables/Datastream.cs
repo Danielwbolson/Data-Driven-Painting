@@ -155,7 +155,7 @@ namespace SculptingVis {
                     VTKAnchorDatastreamChannel vc = (VTKAnchorDatastreamChannel)_rootChannel;
                     VTK.vtkDataSet ds = vc.GetVTKDataSet();
 
-                    if (_owner.GetVariableType() == DataDimensionType.Path) {
+                    if (_owner.GetDomainDimensionality() == 1) {
                         VTK.vtkDataSet pd = VTK.vtkDataSet.SafeDownCast(ds);
                         VTK.vtkPointSet pointset = VTK.vtkPointSet.SafeDownCast(ds);
                         int numcells = (int)pd.GetNumberOfCells();

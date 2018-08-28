@@ -167,12 +167,13 @@ public class VTKDataset : Dataset {
 	}
 
 	public override bool IsPath() {
+		if(GetVTKDataset().IsA("vtkUnstructuredGrid") && GetVTKDataset().GetCell(0).GetCellDimension() == 1) return true;
 		return GetVTKDataset().IsA("vtkPolyData") &&  (VTK.vtkPolyData.SafeDownCast(GetVTKDataset()).GetNumberOfLines()) > 0;
 	}
 
 	public override bool IsMesh() {
 		if(GetVTKDataset().IsA("vtkPolyData") && (VTK.vtkPolyData.SafeDownCast(GetVTKDataset())).GetNumberOfPolys() > 0) return true;
-		else if(GetVTKDataset().IsA("vtkUnstructuredGrid")) return true;
+		else if(GetVTKDataset().IsA("vtkUnstructuredGrid") && GetVTKDataset().GetCell(0).GetCellDimension() == 2) return true;
 		else return false;
 	}
 
