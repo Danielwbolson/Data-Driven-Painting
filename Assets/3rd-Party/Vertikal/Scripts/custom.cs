@@ -138,6 +138,17 @@ namespace VTK
     }
 
 
+    public partial class vtkDataArray {
+
+        public Vector3 GetVector(long id)
+        {
+            double[] v = new double[3];
+
+            //GetTuple_1(id, v);
+            GetTuple(id, v);
+            return new Vector3((float)v[0], (float)v[1], (float)v[2]);
+        }
+    }
 
 
     public partial class vtkDataSet {
@@ -148,6 +159,7 @@ namespace VTK
             result.SetMinMax(new Vector3((float)b[0], (float)b[2], (float)b[4]), new Vector3((float)b[1], (float)b[3], (float)b[5]));
             return result;
         }
+
 
         public Bounds GetCellBounds(long cellId)
         {
@@ -168,6 +180,13 @@ namespace VTK
             GetPoint_1(pointId,p);
             return new Vector3((float)p[0], (float)p[1], (float)p[2]);
         }
+
+        public void InsertNextPoint(Vector3 v)
+        {
+            double[] d = new double[] { v.x, v.y, v.z };
+            InsertNextPoint(d);
+        }
+
     }
 
     public partial class vtkDataSet {
