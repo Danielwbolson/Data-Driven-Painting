@@ -282,7 +282,7 @@ namespace SculptingVis
         // Use this for initialization
         void Start()
         {
-            //Reset();
+            Reset();
             //#if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;  // VSync must be disabled
             //Application.targetFrameRate = 45;
