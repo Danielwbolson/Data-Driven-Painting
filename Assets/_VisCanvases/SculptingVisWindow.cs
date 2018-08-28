@@ -467,7 +467,6 @@ public class SculptingVisWindow : EditorWindow
         // }
 
     }
-    Rect[] _columns;
     bool showVisualElementLoader = false;
     bool showCanvasManager = false;
     bool showDataLoader = false;
@@ -482,6 +481,13 @@ public class SculptingVisWindow : EditorWindow
 }
     public OPTIONS op;
     string screenshotpath = "" ;
+     
+    
+    Rect[] _columns;
+    Rect [] GetColumns() { 
+        if(_columns == null) _columns = new Rect[7];
+        return _columns;
+    }
     void OnGUI()
     {
         if(GetStyleController() == null) {
@@ -493,7 +499,7 @@ public class SculptingVisWindow : EditorWindow
             GUILayout.Label("For the time being, please run the scene to make changes.");
             return;
         }
-        if (_columns == null) _columns = new Rect[7];
+        
 
 
 
@@ -519,7 +525,6 @@ public class SculptingVisWindow : EditorWindow
             _socketHooks.Clear();
             _sockets.Clear();
             GetStyleController().Reset();
-            _columns = null;
         }
 
                     if (GUILayout.Button("Screenshot location"))
@@ -698,7 +703,7 @@ public class SculptingVisWindow : EditorWindow
         if (Event.current.type == EventType.Repaint)
             for (int i = 0; i < 7; i++)
             {
-                _columns[i] = columns[i];
+                GetColumns()[i] = columns[i];
             }
 
         for (int i = 0; i < columns.Length; i++)
@@ -714,7 +719,7 @@ public class SculptingVisWindow : EditorWindow
 
 
 
-        for (int i = 0; i < _columns.Length; i++)
+        for (int i = 0; i < GetColumns().Length; i++)
         {
             if (i % 2 == 1) continue;
 
@@ -723,13 +728,13 @@ public class SculptingVisWindow : EditorWindow
 
 
 
-                GUILayout.BeginArea(_columns[i]);
+                GUILayout.BeginArea(GetColumns()[i]);
 
                 if (!_scrollPositions.ContainsKey("VisualElements")) _scrollPositions["VisualElements"] = new Vector2(0, 0);
                 _scrollPositions["VisualElements"] = EditorGUILayout.BeginScrollView(_scrollPositions["VisualElements"]);
 
 
-                Rect scrollView = _columns[0];
+                Rect scrollView = GetColumns()[0];
                 scrollView.position -= _scrollPositions["VisualElements"];
 
 
@@ -751,14 +756,14 @@ public class SculptingVisWindow : EditorWindow
             if (i == 2)
             {
 
-                GUILayout.BeginArea(_columns[i]);
+                GUILayout.BeginArea(GetColumns()[i]);
                 if (!_scrollPositions.ContainsKey("Layers")) _scrollPositions["Layers"] = new Vector2(0, 0);
                 _scrollPositions["Layers"] = GUILayout.BeginScrollView(_scrollPositions["Layers"]);
 
 
                 for (int m = 0; m < GetStyleController().GetLayers().Count; m++)
                 {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Layers"];
                     DrawStyleModule(GetStyleController().GetLayers()[m], scrollRect, false);
                 }
@@ -786,34 +791,34 @@ public class SculptingVisWindow : EditorWindow
             if (i == 4)
             {
 
-                GUILayout.BeginArea(_columns[i]);
+                GUILayout.BeginArea(GetColumns()[i]);
                 if (!_scrollPositions.ContainsKey("Variables")) _scrollPositions["Variables"] = new Vector2(0, 0);
                 _scrollPositions["Variables"] = GUILayout.BeginScrollView(_scrollPositions["Variables"]);
 
 
                 for (int m = 0; m < GetStyleController().GetVariables().Count; m++)
                 {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetVariables()[m], scrollRect, false);
                 }
 
                 for (int m = 0; m < GetStyleController().GetUserVariables().Count; m++)
                 {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect, false);
                 }
 
                 for(int m = 0; m < GetStyleController().GetDatasets().Count;m++) {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetDatasets()[m], scrollRect, false,false,true);
          
                 }
 
                 for(int m = 0; m < GetStyleController().GetCustomDatasets().Count;m++) {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetCustomDatasets()[m], scrollRect, false,false, true);
          
@@ -829,20 +834,20 @@ public class SculptingVisWindow : EditorWindow
             if (i == 6)
             {
 
-                GUILayout.BeginArea(_columns[i]);
+                GUILayout.BeginArea(GetColumns()[i]);
                 if (!_scrollPositions.ContainsKey("CustomVariables")) _scrollPositions["CustomVariables"] = new Vector2(0, 0);
                 _scrollPositions["CustomVariables"] = GUILayout.BeginScrollView(_scrollPositions["CustomVariables"]);
 
 
                 for (int m = 0; m < GetStyleController().GetUserVariables().Count; m++)
                 {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["CustomVariables"];
                     DrawStyleModule(GetStyleController().GetUserVariables()[m], scrollRect,false,true,false);
                 }
 
                 for(int m = 0; m < GetStyleController().GetCustomDatasets().Count;m++) {
-                    Rect scrollRect = _columns[i];
+                    Rect scrollRect = GetColumns()[i];
                     scrollRect.position -= _scrollPositions["Variables"];
                     DrawStyleModule(GetStyleController().GetCustomDatasets()[m], scrollRect, false,true, false);
          

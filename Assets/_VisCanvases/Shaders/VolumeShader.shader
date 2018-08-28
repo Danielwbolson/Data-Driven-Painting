@@ -60,6 +60,7 @@
 		int _useColormap;
 		int _flipColormap;
 		float4 _Color;
+		int _stagger;
 
 
 ///////////////////////////////////////////////////
@@ -194,7 +195,7 @@
 
                 float3 uvw = float3(0,0,0);
 
-                int stepCount = 100;
+                int stepCount = 150;
                 float3 dist = backCoord - frontCoord;
                 float len = length(dist);
 
@@ -208,7 +209,26 @@
                 //return col;
                 float percent = 0;
 				float traveled = 0;
-				for (float progress = 0; progress < stepCount; progress += 1) {
+				float progress = 0;
+
+				if(_stagger == 1) {
+					float m = 1000;
+					float a = 13489;
+					float c = 21561;
+
+
+					float m2 = 1000;
+					float a2 = 67852;
+					float c2 = 45932;
+
+					int Rx  = (((a*int(10000*screenUV.x) +c)%(int)(m)));
+					int Ry  = (((a2*int(10000*screenUV.y) +c2)%(int)(m2)));
+					int r = Rx^Ry;
+					float R = r %100/100.0;
+					progress += R;
+
+				}
+				for (; progress < stepCount; progress += 1) {
 					// test.xyz = backCoord;
 				traveled = progress  * 0.01f;
 

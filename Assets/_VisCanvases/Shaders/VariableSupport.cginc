@@ -711,7 +711,7 @@ float3 GetAnchorPosition(int vertexId) {
 }
 float3 GetData(int variableSlot, int cellId, int vertexId, float3 dataPos) {
     float3 normdataPos = GetNormalizedDataSpace(variableSlot,dataPos);
-    if(_SampleAtCenter) {
+    if(true || _SampleAtCenter) {
         dataPos = GetAnchorPosition(vertexId);
 		normdataPos = GetNormalizedDataSpace(variableSlot,dataPos);
     }
