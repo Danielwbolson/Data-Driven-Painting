@@ -276,7 +276,9 @@ namespace SculptingVis
             }
             SetDataset(_generatedDataset);
 
+            
             base.UpdateModule();
+            
 
         }
 

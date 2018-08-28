@@ -246,16 +246,27 @@ namespace SculptingVis {
         float[] _dataArray;
         ComputeBuffer _topologyBuffer;
         int _cachedSeed = -1;
+        
+        long _lastRefreshedTime = 0;
+        long _lastComputeBuffer = -1;
 
+        long GetCurrentTime() {
+            return System.DateTime.Now.Ticks;
+        }
+
+        public void RefreshTimestamp() {
+            _lastRefreshedTime = GetCurrentTime();
+        }
         public ComputeBuffer GetComputeBuffer() {
             bool stuffChanged = false;
-            if (_rootChannel is PointAnchorDatastreamChannel && _dataBuffer != null) {
+            if (_rootChannel is PointAnchorDatastreamChannel && (_dataBuffer != null )) {
                 stuffChanged = (_dataBuffer.count != ((int)GetNumberOfComponents() * (int)GetNumberOfElements()) || 
                     ((PointAnchorDatastreamChannel)_rootChannel).GetSeed() != _cachedSeed);
                 _cachedSeed = ((PointAnchorDatastreamChannel)_rootChannel).GetSeed();
             }
 
-            if (_dataBuffer == null || stuffChanged) {
+            if (_dataBuffer == null || stuffChanged || _lastComputeBuffer < _lastRefreshedTime) {
+                _lastComputeBuffer = GetCurrentTime();
 
                 long numberOfElements = GetNumberOfElements();
                 long numberOfComponents = GetNumberOfComponents();
