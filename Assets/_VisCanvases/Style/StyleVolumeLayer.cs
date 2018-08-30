@@ -27,6 +27,8 @@ namespace SculptingVis
         [SerializeField]
         public StyleTypeSocket<Range<bool>> _flipColormapInput;
 
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _staggerPathInput;
 
         [SerializeField]
         Material _volumeMaterial;
@@ -64,6 +66,7 @@ namespace SculptingVis
             _volumeMaterial.SetFloat("_OpacityMultiplier", ((Range<float>)_opacityMultiplierInput.GetInput()));
             _volumeMaterial.SetInt("_useColormap", (Range<bool>)_useColormapInput.GetInput()?1:0);
             _volumeMaterial.SetInt("_flipColormap", (Range<bool>)_flipColormapInput.GetInput()?1:0);
+            _volumeMaterial.SetInt("_stagger", (Range<bool>)_staggerPathInput.GetInput()?1:0);
 
             _volumeMaterial.SetColor("_Color", (Objectify<Color>)_colorInput.GetInput());
 
@@ -130,6 +133,10 @@ namespace SculptingVis
             _flipColormapInput = (new StyleTypeSocket<Range<bool>>()).Init("FlipColormap", this);
             _flipColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
             AddSubmodule(_flipColormapInput);
+
+            _staggerPathInput = (new StyleTypeSocket<Range<bool>>()).Init("Stagger path starts", this);
+            _staggerPathInput.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_staggerPathInput);
 
             return this;
 
