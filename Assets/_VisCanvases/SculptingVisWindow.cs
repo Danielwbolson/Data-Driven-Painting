@@ -313,20 +313,23 @@ public class SculptingVisWindow : EditorWindow
         if(module.GetNumberOfSubmodules() >(labelOutputHook?1:0) )
             GetFoldoutStates()[""+module.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(module.GetHashCode()+""),GUIContent.none, false);
 
-        GUILayout.Label(module.GetLabel());
+        if(!(module is StyleVisualElement))
+            GUILayout.Label(module.GetLabel());
         if(module is StyleLayer) {
             var layer = (StyleLayer)module;
             layer.SetActive(GUILayout.Toggle(layer.IsActive(),""));
         }
+        if(!(module is StyleVisualElement))
         GUILayout.FlexibleSpace();
         EditorGUIUtility.fieldWidth = x;
 
+        if(!(module is StyleVisualElement))
         // End Draw Module label
-        if(!labelOutputHook) GUILayout.FlexibleSpace();
+            if(!labelOutputHook) GUILayout.FlexibleSpace();
 
         // if (!labelOutputHookRight) {
             // if(labelOutputHook)            GUILayout.FlexibleSpace();
-
+        if(!(module is StyleVisualElement))
             if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
                 GetStyleController().RemoveModule(module);
             }
@@ -336,7 +339,7 @@ public class SculptingVisWindow : EditorWindow
             if(true) {
                 Texture t = ((StyleVisualElement)module).GetVisualElement().GetPreviewImage();
                 float aspectRatio = ((StyleVisualElement)module).GetVisualElement().GetPreviewImageAspectRatio();
-                Rect r = GUILayoutUtility.GetRect(30*aspectRatio,30);
+                Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
 
                 GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio);
 
@@ -733,14 +736,53 @@ public class SculptingVisWindow : EditorWindow
                 scrollView.position -= _scrollPositions["VisualElements"];
 
 
-                for (int m = 0; m < GetStyleController().GetVisualElements().Count; m++)
+                                EditorGUILayout.BeginVertical();
+
+                int m = 0;
+                bool inRow = false;
+                int slots = 0;
+                int slotsPerRow = 4;
+                for (; m < GetStyleController().GetVisualElements().Count; m++)
                 {
+
+                    if(slots == 0) {
+                        EditorGUILayout.BeginHorizontal();
+                        inRow = true;
+                    } 
+                    if(!inRow) 
+                   ;// ;
+                    int slotSize = 1;
+                    if(((StyleVisualElement) GetStyleController().GetVisualElements()[m]).GetVisualElement() is Colormap) {
+                        slotSize = 2;
+                    }
+                    if(slots + slotSize > 4) {
+                        //slots = 0;
+                        ;//EditorGUILayout.EndHorizontal();
+                        ;//EditorGUILayout.BeginHorizontal();
+                        //inRow = true;
+                    }
+
+                   
                     // Rect scrollRect = columns[i];
                     // scrollRect.position -= _scrollPositions["VisualElements"];
                     DrawStyleModule(GetStyleController().GetVisualElements()[m], scrollView, false);
+                    slots = slots + slotSize;
+
+
+                    if(slots >= slotsPerRow) {
+                        EditorGUILayout.EndHorizontal();
+                        inRow = false;  
+                        slots = 0;
+                    }
+
+
                 }
+                if(inRow)
+                    EditorGUILayout.EndHorizontal();
 
 
+
+                EditorGUILayout.EndVertical();
 
                 EditorGUILayout.EndScrollView();
                 GUILayout.EndArea();
