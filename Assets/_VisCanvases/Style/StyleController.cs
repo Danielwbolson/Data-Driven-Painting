@@ -10,6 +10,28 @@ namespace SculptingVis
     {
 
         
+
+        public Camera sceneCamera;
+        public Transform cameraPivot;
+        public Transform dataVerticalPivot;
+        public Transform dataHorizontalPivot;
+
+
+        public void ZoomCamera(float amount) {
+            sceneCamera.fieldOfView += amount;
+        }
+
+        public void MoveCamera(float amount) {
+            sceneCamera.gameObject.transform.position += sceneCamera.gameObject.transform.forward*amount;
+        }
+
+        public void RotateData(float amount) {
+            dataHorizontalPivot.eulerAngles += Vector3.up*amount;
+        }
+
+        public void RollData(float amount) {
+            dataHorizontalPivot.eulerAngles += Vector3.right*amount;
+        }
         public void Report() {
 
 
@@ -466,7 +488,7 @@ namespace SculptingVis
 			return _canvases;
 		}
 		public void AddCanvas() {
-			Canvas c = Instantiate(_CanvasPrefab);
+			Canvas c = Instantiate(_CanvasPrefab,dataHorizontalPivot,false);
 			c.SetStyle(_style);
 		   	GetCanvases().Add(c);
 		}
