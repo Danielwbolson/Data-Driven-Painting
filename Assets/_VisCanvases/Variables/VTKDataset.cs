@@ -171,6 +171,11 @@ public class VTKDataset : Dataset {
 		return GetVTKDataset().IsA("vtkPolyData") &&  (VTK.vtkPolyData.SafeDownCast(GetVTKDataset()).GetNumberOfLines()) > 0;
 	}
 
+	public override bool IsPoint() {
+		if(GetVTKDataset().GetCell(0).GetCellDimension() == 0) return true;
+		return false;
+	}
+
 	public override bool IsMesh() {
 		if(GetVTKDataset().IsA("vtkPolyData") && (VTK.vtkPolyData.SafeDownCast(GetVTKDataset())).GetNumberOfPolys() > 0) return true;
 		else if(GetVTKDataset().IsA("vtkUnstructuredGrid") && GetVTKDataset().GetCell(0).GetCellDimension() == 2) return true;
