@@ -311,7 +311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bounds:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 1, y: 1, z: 1}
+    m_Extent: {x: 0.5, y: 0.5, z: 0.5}
   _areaMesh: {fileID: 0}
   _areaMaterial: {fileID: 0}
   _cornerMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}

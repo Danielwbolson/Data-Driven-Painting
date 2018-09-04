@@ -72,18 +72,18 @@ Shader "Unlit/PointShader"
 					float3 dataVal =  NormalizeData(1,GetData(1,cellIndex,pointIndex,WorldToDataSpace(i.worldPos)));
 					float colormapU = dataVal.x;
 					if(_flipColormap)
-						colormapU = 1-colormapU;
+						colormapU = -colormapU;
 
 
 					if(_useColormap == 1)
-						c.rgb = tex2D(_ColorMap,float2(colormapU,0.5)).rgb;
+						c.rgb = float3(0,1,0);//*= tex2D(_ColorMap,float2(colormapU,0.5)).rgb;
 					else
-						c.rgb = _Color.rgb;
+						c.rgb = float3(1,0,0);//*= _Color.rgb;
 
 
 				} else {
 					if(_useColormap == 1)
-						c.rgb = tex2D(_ColorMap,float2(_flipColormap==1?0:1,0.5)).rgb;
+						c.rgb = float3(1,1,1);//*= tex2D(_ColorMap,float2(colormapU,0.5)).rgb;
 					else
 						c.rgb *= _Color.rgb;
 				}
