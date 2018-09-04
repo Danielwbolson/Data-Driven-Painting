@@ -522,6 +522,54 @@ public class SculptingVisWindow : EditorWindow
         //if (_socketLinks == null) _socketLinks = new List<Vector2Int>();
 
         Rect[] columns = new Rect[7];
+
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.BeginVertical();
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Zoom Camera In")) {
+            GetStyleController().ZoomCamera(-5);
+        }
+        if(GUILayout.Button("Zoom Camera Out")) {
+            GetStyleController().ZoomCamera(5);
+        }
+        EditorGUILayout.EndHorizontal();
+
+
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Move Camera In")) {
+            GetStyleController().MoveCamera(0.25f);
+        }
+        if(GUILayout.Button("Move Camera Out")) {
+            GetStyleController().MoveCamera(-0.25f);
+        }
+        EditorGUILayout.EndHorizontal();
+
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Rotate Data Left")) {
+            GetStyleController().RotateData(15f);
+        }
+        if(GUILayout.Button("Rotate Data Right")) {
+            GetStyleController().RotateData(-15f);
+        }
+        EditorGUILayout.EndHorizontal();
+
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Roll Data Forward")) {
+            GetStyleController().RollData(-15f);
+        }
+        if(GUILayout.Button("Roll Data Backword")) {
+            GetStyleController().RollData(15f);
+        }
+        EditorGUILayout.EndHorizontal();
+
+
+        EditorGUILayout.EndVertical();
+
         EditorGUILayout.BeginVertical();
         if (GUILayout.Button("Reset"))
         {
@@ -541,13 +589,15 @@ public class SculptingVisWindow : EditorWindow
         if (GUILayout.Button("Screenshot"))
         { 
             string date = System.DateTime.Now.ToString();
-  date = date.Replace("/","-");
-  date = date.Replace(" ","_");
- date = date.Replace(":","-");
+            date = date.Replace("/","-");
+            date = date.Replace(" ","_");
+            date = date.Replace(":","-");
             ScreenCapture.CaptureScreenshot(screenshotpath + "/" + date + ".png", 1);
 
             GetStyleController().Report();
         }
+        EditorGUILayout.EndVertical();
+        EditorGUILayout.EndHorizontal();
         //Rect workspace = GUILayoutUtility.GetRect(0,10000,0,10000);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical(GUILayout.MaxWidth(350));

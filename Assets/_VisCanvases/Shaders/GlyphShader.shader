@@ -126,23 +126,25 @@
 					
 					
 				}
-				float4x4 transform = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+				float4x4 transform = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, GetAnchorPosition(pointIndex).x,GetAnchorPosition(pointIndex).y,GetAnchorPosition(pointIndex).z,1);
 
-				float3 bitangent = cross(tangent,-normal);
+				float3 bitangent = cross(tangent,normal);
 				transform[0].xyz = bitangent;
 				transform[1].xyz = tangent;
 				transform[2].xyz = normal;
 				transform[3].w = 1;
 				transform = transpose(transform);
+				transform = mul(_CanvasInnerScene,transform);
 
 				if (!_faceCamera) {
-					v.vertex.xyz = mul(transform, v.vertex);
-					v.normal = normalize(mul(transpose(inverse(transform)),v.normal));
-					v.tangent = normalize(mul(transpose(inverse(transform)), v.tangent));
-					v.vertex.xyz  += GetAnchorPosition(pointIndex);
-					v.vertex.xyz = mul(_CanvasInnerScene, v.vertex);
-					v.normal = normalize(mul(transpose(inverse(_CanvasInnerScene)), v.normal));
-					v.tangent = normalize(mul(transpose(inverse(_CanvasInnerScene)), v.tangent));
+					v.vertex.xyz = mul(transform, float4(v.vertex.xyz,1));
+					
+					//v.normal = normalize(mul(transpose(inverse(transform)),v.normal));
+					//v.tangent = normalize(mul(transpose(inverse(transform)), v.tangent));
+					//v.vertex.xyz  += GetAnchorPosition(pointIndex);
+					//v.vertex.xyz = mul(_CanvasInnerScene, v.vertex);
+					v.normal.xyz = normalize(mul(transpose(inverse(transform)), float4(v.normal.xyz,0)));
+					v.tangent.xyz = normalize(mul(transpose(inverse(transform)), float4(v.tangent.xyz,0)));
 
 				}
 				else {
@@ -151,9 +153,9 @@
 					v.normal = normalize(mul(transpose(inverse(transform)), v.normal));
 					v.tangent = normalize(mul(transpose(inverse(transform)), v.tangent));
 
-					v.vertex.xyz *= length(mul(_CanvasInnerScene, float4(0, 0, 0, 1)) - mul(_CanvasInnerScene, float4(1, 0, 0, 1)));
+					//v.vertex.xyz *= length(mul(_CanvasInnerScene, float4(0, 0, 0, 1)) - mul(_CanvasInnerScene, float4(1, 0, 0, 1)));
 
-					v.vertex.xyz += mul(_CanvasInnerScene, float4(0,0,0,1)) + mul(_CanvasInnerScene, GetAnchorPosition(pointIndex));
+					//v.vertex.xyz += mul(_CanvasInnerScene, float4(0,0,0,1)) + mul(_CanvasInnerScene, GetAnchorPosition(pointIndex));
 
 
 				}
