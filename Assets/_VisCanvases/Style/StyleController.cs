@@ -16,6 +16,7 @@ namespace SculptingVis
         public Transform dataVerticalPivot;
         public Transform dataHorizontalPivot;
 
+        public Color backdropColor;
 
         public void ZoomCamera(float amount) {
             sceneCamera.fieldOfView += amount;

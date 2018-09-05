@@ -157,7 +157,7 @@ public class SculptingVisWindow : EditorWindow
         foreach(var anchor in module.GetAnchors()) {
             if(anchor != module.GetSourceAnchor()) {
                 GUILayout.BeginHorizontal();
-                GetFoldoutStates()[""+anchor.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(anchor.GetHashCode()+""), anchor.GetLabel() +" (" + anchor.GetNumberOfPoints() + " points)");
+                GetFoldoutStates()[""+anchor.GetHashCode()] = EditorGUILayout.Foldout(GetFoldoutState(anchor.GetHashCode()+""), anchor.GetLabel() +" (" + anchor.GetNumberOfPoints() + " points)", true);
                 GUILayout.Button("-",GUILayout.Width(20));
                 GUILayout.EndHorizontal();
 
@@ -513,6 +513,8 @@ public class SculptingVisWindow : EditorWindow
 
         if (Event.current.type == EventType.Repaint)
         {
+            _columns = null;
+
             _socketHooks.Clear();
             _sockets.Clear();
         }
@@ -567,6 +569,10 @@ public class SculptingVisWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Backdrop Color:");
+        GetStyleController().backdropColor = EditorGUILayout.ColorField(GetStyleController().backdropColor);
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.EndVertical();
 
@@ -602,7 +608,7 @@ public class SculptingVisWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.BeginVertical(GUILayout.MaxWidth(350));
         EditorGUILayout.BeginVertical("box");
-        showVisualElementLoader = EditorGUILayout.Foldout(showVisualElementLoader, "Load Visual Elements");
+        showVisualElementLoader = EditorGUILayout.Foldout(showVisualElementLoader, "Load Visual Elements",true);
         if (showVisualElementLoader)
         {
 
@@ -641,7 +647,7 @@ public class SculptingVisWindow : EditorWindow
 
         EditorGUILayout.BeginVertical(GUILayout.MaxWidth(350));
         EditorGUILayout.BeginVertical("box");
-        showCanvasManager = EditorGUILayout.Foldout(showCanvasManager, "Manage Canvases");
+        showCanvasManager = EditorGUILayout.Foldout(showCanvasManager, "Manage Canvases",true);
         if (showCanvasManager)
         {
 
@@ -689,7 +695,7 @@ public class SculptingVisWindow : EditorWindow
 
         EditorGUILayout.BeginVertical(GUILayout.MaxWidth(350));
         EditorGUILayout.BeginVertical("box");
-        showDataLoader = EditorGUILayout.Foldout(showDataLoader, "Load Data");
+        showDataLoader = EditorGUILayout.Foldout(showDataLoader, "Load Data",true);
         if (showDataLoader)
         {
 
@@ -726,7 +732,7 @@ public class SculptingVisWindow : EditorWindow
 
         EditorGUILayout.BeginVertical(GUILayout.MaxWidth(350));
         EditorGUILayout.BeginVertical("box");
-        showCustomDataSettings = EditorGUILayout.Foldout(showCustomDataSettings, "Custom Variable Settings");
+        showCustomDataSettings = EditorGUILayout.Foldout(showCustomDataSettings, "Custom Variable Settings", true);
         if (showCustomDataSettings)
         {
 

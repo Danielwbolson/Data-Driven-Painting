@@ -1,4 +1,4 @@
-﻿Shader "Custom/NewSurfaceShader" {
+﻿Shader "Custom/Backdrop" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -6,12 +6,9 @@
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 	}
 	SubShader {
-        Tags {"Queue" = "Opaque" "RenderType" = "Opaque" }
-        LOD 100
-		Cull Off
-        ZWrite Off
-        Blend SrcAlpha OneMinusSrcAlpha
-
+		Tags { "RenderType"="Opaque" }
+		LOD 200
+		Cull Front
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma surface surf Standard fullforwardshadows
@@ -43,7 +40,7 @@
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
-			o.Alpha =0.5;
+			o.Alpha = c.a;
 		}
 		ENDCG
 	}
