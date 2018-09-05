@@ -46,50 +46,53 @@ namespace SculptingVis {
             return _alphaMap;
         }
         public int GetNumberOfLODs() {
-            if (_lodMeshes != null) return _lodMeshes.Length;
-            return 0;
+            return GetLODMeshes().Length;
         }
 
-        public Mesh GetLODMesh(int level) {
-            if (_lodMeshes != null) return _lodMeshes[level];
-            if (Path.GetExtension(_filePath).ToUpper() == ".GLYPH") {
+         Mesh[] GetLODMeshes() {
+             if(_lodMeshes == null) {
+                 if (Path.GetExtension(_filePath).ToUpper() == ".GLYPH") {
 
-                // For now, name the glyph based on the file package name
-                string name = Path.GetFileNameWithoutExtension(_filePath);
-                SetName(name);
+                    // For now, name the glyph based on the file package name
+                    string name = Path.GetFileNameWithoutExtension(_filePath);
+                    SetName(name);
 
-                DirectoryInfo info = new DirectoryInfo(_filePath);
-                FileInfo[] fileInfo = info.GetFiles();
-                DirectoryInfo[] directoryInfo = info.GetDirectories();
+                    DirectoryInfo info = new DirectoryInfo(_filePath);
+                    FileInfo[] fileInfo = info.GetFiles();
+                    DirectoryInfo[] directoryInfo = info.GetDirectories();
 
-                // First let's iterate through the root of this package,
-                // looking for the OBJ files
-                foreach (var file in fileInfo) {
+                    // First let's iterate through the root of this package,
+                    // looking for the OBJ files
+                    foreach (var file in fileInfo) {
 
-                    // An OBJ should contain the actual meshes of our glyph. 
-                    // We could additionally handle individual OBJ's for 
-                    // each LOD, but that can be added later.
-                    if (file.Extension.ToUpper() == ".OBJ") {
-                        if (Path.GetFileNameWithoutExtension(file.FullName).Contains("_LOD")) {
-                            Debug.Log("Mesh Loading does not currently support individual LOD meshes.");
+                        // An OBJ should contain the actual meshes of our glyph. 
+                        // We could additionally handle individual OBJ's for 
+                        // each LOD, but that can be added later.
+                        if (file.Extension.ToUpper() == ".OBJ") {
+                            if (Path.GetFileNameWithoutExtension(file.FullName).Contains("_LOD")) {
+                                Debug.Log("Mesh Loading does not currently support individual LOD meshes.");
 
-                        } else {
-                            string objPath = file.FullName;
-                            // Seth hacked todether the LoadOBJFileToMeshes function
-                            // based on LoadOBJFile, just removing the Gameobject logic
+                            } else {
+                                string objPath = file.FullName;
+                                // Seth hacked todether the LoadOBJFileToMeshes function
+                                // based on LoadOBJFile, just removing the Gameobject logic
 
-                            Mesh[] meshes = OBJLoader.LoadOBJFileToMeshes(objPath);
-                            _lodMeshes = new Mesh[meshes.Length];
-                            for (int i = 0; i < meshes.Length; i++) {
-                                _lodMeshes[meshes.Length - 1 - i] = meshes[i];
+                                Mesh[] meshes = OBJLoader.LoadOBJFileToMeshes(objPath);
+                                _lodMeshes = new Mesh[meshes.Length];
+                                for (int i = 0; i < meshes.Length; i++) {
+                                    _lodMeshes[meshes.Length - 1 - i] = meshes[i];
 
+                                }
                             }
                         }
                     }
                 }
             }
-
-            return _lodMeshes[level];
+            return _lodMeshes;
+         }
+        
+        public Mesh GetLODMesh(int level) {
+            return GetLODMeshes()[level];
         }
 
         public Texture2D GetLODNormalMap(int level) {
