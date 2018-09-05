@@ -26,8 +26,10 @@ namespace SculptingVis {
 				resultList.Add(r);
 			}
 
-			if((result = Glyph.LoadFile(filePath)) != null)
-				resultList.Add(result);
+            if ((result = Glyph.LoadFile(filePath)) != null) {
+                ((Glyph)result).SetFilePath(filePath);
+                resultList.Add(result);
+            }
 
 			return resultList.ToArray();
 		}

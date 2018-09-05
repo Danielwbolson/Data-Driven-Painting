@@ -517,6 +517,7 @@ public class SculptingVisWindow : EditorWindow
 
             _socketHooks.Clear();
             _sockets.Clear();
+            _columns = null;
         }
 
 
