@@ -805,9 +805,12 @@ public class SculptingVisWindow : EditorWindow
                 bool inRow = false;
                 int slots = 0;
                 int slotsPerRow = 4;
+                int row = 0;
+                
                 for (; m < GetStyleController().GetVisualElements().Count; m++)
                 {
 
+                    
                     if(slots == 0) {
                         EditorGUILayout.BeginHorizontal();
                         inRow = true;
@@ -828,6 +831,7 @@ public class SculptingVisWindow : EditorWindow
                    
                     // Rect scrollRect = columns[i];
                     // scrollRect.position -= _scrollPositions["VisualElements"];
+                    //GUILayout.Button("Button");
                     DrawStyleModule(GetStyleController().GetVisualElements()[m], scrollView, false);
                     slots = slots + slotSize;
 
