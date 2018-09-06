@@ -53,6 +53,21 @@
 		int _useColormap;
 		int _flipColormap;
 
+
+			int _usePlane1;
+			int _usePlane2;
+			int _usePlane3;
+
+			float3 _plane1min;
+			float3 _plane1max;
+
+			float3 _plane2min;
+			float3 _plane2max;
+			
+			float3 _plane3min;
+			float3 _plane3max;
+
+
 		sampler2D _ColorMap;
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -215,6 +230,48 @@
 			int cellIndex = floor(IN.indices.x + 0.5);
 
 			float3 dataSpace = WorldToDataSpace(IN.worldPos);
+			float3 normDataSpace = float4(GetAnchorPosition(pointIndex).xyz,0);//mul(_CanvasBoundsInverse,); 
+			normDataSpace = normDataSpace - _CanvasDataCenter;
+			normDataSpace.x = normDataSpace.x/_CanvasDataSize.x;
+			normDataSpace.y = normDataSpace.y/_CanvasDataSize.y;
+			normDataSpace.z = normDataSpace.z/_CanvasDataSize.z;
+
+			normDataSpace= (normDataSpace+0.5);
+
+
+
+				int insidePlane = 1;
+				if(_usePlane1 == 1 || _usePlane2 == 1 || _usePlane3 == 1)
+					insidePlane = 0;
+				if(_usePlane1 == 1) {
+					if(normDataSpace.x > _plane1min.x && normDataSpace.x < _plane1max.x
+						&& normDataSpace.y > _plane1min.y && normDataSpace.y < _plane1max.y
+						&& normDataSpace.z > _plane1min.z && normDataSpace.z < _plane1max.z)
+							insidePlane = 1;
+						
+				}
+
+				if(_usePlane2 == 1) {
+					if(normDataSpace.x > _plane2min.x && normDataSpace.x < _plane2max.x
+						&& normDataSpace.y > _plane2min.y && normDataSpace.y < _plane2max.y
+						&& normDataSpace.z > _plane2min.z && normDataSpace.z < _plane2max.z)
+							insidePlane = 1;
+						
+				}
+
+				if(_usePlane3 == 1) {
+					if(normDataSpace.x > _plane3min.x && normDataSpace.x < _plane3max.x
+						&& normDataSpace.y > _plane3min.y && normDataSpace.y < _plane3max.y
+						&& normDataSpace.z > _plane3min.z && normDataSpace.z < _plane3max.z)
+							insidePlane = 1;
+						
+				}
+
+				if(insidePlane == 0) 
+					discard; 
+
+
+
 			float3 dataVal = GetData(1,cellIndex,pointIndex,dataSpace);
 			float3 normalizedDataVal = NormalizeData(1,dataVal);
 			float colormapU = normalizedDataVal.x;
@@ -253,6 +310,7 @@
 			//StippleCrop(IN.worldPos,IN.screenPos,_ScreenParams);
 
 					#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
+			// o.Albedo.rgb = normDataSpace.xyz;
 
 			//o.Albedo.rgb = normalize(GetData(2, cellIndex, pointIndex, GetAnchorPosition(pointIndex)));
 			#endif

@@ -78,8 +78,13 @@ Shader "Unlit/PointShader"
 				int pointIndex = floor(i.uv.y +0.5);
 
 				float3 dataSpace = WorldToDataSpace(i.worldPos);
-				float3 normDataSpace = mul(_CanvasBoundsInverse,dataSpace); 
+				float3 normDataSpace = float4(dataSpace,0);//mul(_CanvasBoundsInverse,); 
+				normDataSpace = normDataSpace - _CanvasDataCenter;
+				normDataSpace.x = normDataSpace.x/_CanvasDataSize.x;
+				normDataSpace.y = normDataSpace.y/_CanvasDataSize.y;
+				normDataSpace.z = normDataSpace.z/_CanvasDataSize.z;
 
+				normDataSpace= (normDataSpace+0.5);
 				fixed4 c = float4(1,1,1,1);;
 
 				if(VariableIsAssigned(1)){

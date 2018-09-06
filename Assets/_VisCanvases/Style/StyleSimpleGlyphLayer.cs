@@ -70,6 +70,15 @@ namespace SculptingVis
         public Mesh _billboardMesh;
 
 
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _usePlane1;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _usePlane2;
+
+        [SerializeField]
+        public StyleTypeSocket<Range<bool>> _usePlane3;
+
 
         [SerializeField]
         bool _sampleAtCenter = true;
@@ -119,7 +128,18 @@ namespace SculptingVis
             _pointMaterial.SetInt("_useColormap", (Range<bool>)_useColormapInput.GetInput()?1:0);
             _pointMaterial.SetInt("_flipColormap", (Range<bool>)_flipColormapInput.GetInput()?1:0);
 
+            _pointMaterial.SetInt("_usePlane1", (Range<bool>)_usePlane1.GetInput()?1:0);
+            _pointMaterial.SetInt("_usePlane2", (Range<bool>)_usePlane2.GetInput()?1:0);
+            _pointMaterial.SetInt("_usePlane3", (Range<bool>)_usePlane3.GetInput()?1:0);
 
+
+            _pointMaterial.SetVector("_plane1min", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMins()[0]);
+            _pointMaterial.SetVector("_plane2min", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMins()[1]);
+            _pointMaterial.SetVector("_plane3min", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMins()[2]);
+
+            _pointMaterial.SetVector("_plane1max", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMaxes()[0]);
+            _pointMaterial.SetVector("_plane2max", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMaxes()[1]);
+            _pointMaterial.SetVector("_plane3max", ((StyleController)FindObjectOfType(typeof(StyleController))).GetPlaneMaxes()[2]);
 
             {
 
@@ -272,6 +292,21 @@ namespace SculptingVis
             _flipColormapInput.SetDefaultInputObject(new Range<bool>(false,true,false));
             AddSubmodule(_flipColormapInput);
 
+
+
+            _usePlane1 = (new StyleTypeSocket<Range<bool>>()).Init("Use Plane 1", this);
+            _usePlane1.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_usePlane1);
+
+            _usePlane2 = (new StyleTypeSocket<Range<bool>>()).Init("Use Plane 2", this);
+            _usePlane2.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_usePlane2);
+
+
+            _usePlane3 = (new StyleTypeSocket<Range<bool>>()).Init("Use Plane 3", this);
+            _usePlane3.SetDefaultInputObject(new Range<bool>(false,true,false));
+            AddSubmodule(_usePlane3);
+            
             return this;
 
         }

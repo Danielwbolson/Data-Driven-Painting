@@ -117,7 +117,18 @@
 
 
 
-    
+    		int _usePlane1;
+			int _usePlane2;
+			int _usePlane3;
+
+			float3 _plane1min;
+			float3 _plane1max;
+
+			float3 _plane2min;
+			float3 _plane2max;
+			
+			float3 _plane3min;
+			float3 _plane3max;
 
 			
 			sampler2D _ColorMap;
@@ -236,6 +247,8 @@
                 	uvw = frontCoord + traveled * normalize(dist);
                 	float4 V = tex3D(_DataVolume0,uvw);
 					V.rgb = NormalizeData(1,GetVariable3DTextureSample(1,uvw));
+
+					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
                 	if (traveled > len ||  a < 0.001 || (uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1 || uvw.z < 0 || uvw.z > 1) )

@@ -6,7 +6,7 @@ using VTK;
 namespace SculptingVis
 {
     [CreateAssetMenu()]
-    public class StyleExampleCustomDataset : StyleCustomDataset
+    public class StyleRegularGridCustomDataset : StyleCustomDataset
     {
 
         VTK.vtkDataSet _outputVTKDataset;
@@ -45,17 +45,21 @@ namespace SculptingVis
             vtkIdList idlist = vtkIdList.New();
 
             for(int i =0; i < n; i++) {
+                for(int j =0; j < n; j++) {
+                    for(int k =0; k < n; k++) {
+                        float x = i*1.0f/n;
+                        float y = j*1.0f/n;
+                        float z = k*1.0f/n;
 
-                float x = Random.Range(inputVTKDataset.GetBounds().min.x,inputVTKDataset.GetBounds().max.x);
-                float y = Random.Range(inputVTKDataset.GetBounds().min.y,inputVTKDataset.GetBounds().max.y);
-                float z = Random.Range(inputVTKDataset.GetBounds().min.z,inputVTKDataset.GetBounds().max.z);
-
-
-                idlist.InsertId(0,npts.InsertNextPoint(x,y,z));
-                output.InsertNextCell(1,idlist);
-                float fi = (float)i;
-                unsafe{data.InsertNextTuple(new System.IntPtr((void*)&fi));}
-                
+                        x = x*inputVTKDataset.GetBounds().size.x - inputVTKDataset.GetBounds().min.x;
+                        y = y*inputVTKDataset.GetBounds().size.y - inputVTKDataset.GetBounds().min.y;
+                        z = z*inputVTKDataset.GetBounds().size.z - inputVTKDataset.GetBounds().min.z;
+                        idlist.InsertId(0,npts.InsertNextPoint(x,y,z));
+                        output.InsertNextCell(1,idlist);
+                        float fi = (float)i;
+                        unsafe{data.InsertNextTuple(new System.IntPtr((void*)&fi));}
+                    }
+                }
             }
 
 
@@ -141,7 +145,7 @@ namespace SculptingVis
 		// }
 
 
-        public StyleExampleCustomDataset Init()
+        public StyleRegularGridCustomDataset Init()
         {
 
             _generatedDatasetSocket = (new StyleSocket()).Init("", this, false, true, null);
@@ -155,8 +159,8 @@ namespace SculptingVis
             _sourceVariableSocket.Init("Domain", this);
             AddSubmodule(_sourceVariableSocket);
 
-            _sampleCount = (new StyleTypeSocket<Range<int>>()).Init("Number of samples", this);
-            _sampleCount.SetDefaultInputObject((new Range<int>(1, 100000,1000)));
+            _sampleCount = (new StyleTypeSocket<Range<int>>()).Init("Number of samples (^3)", this);
+            _sampleCount.SetDefaultInputObject((new Range<int>(1, 100,1000)));
             AddSubmodule(_sampleCount);
 
 
@@ -172,7 +176,7 @@ namespace SculptingVis
         {
             // if(_generatedVariableSocket.GetOutput() != null && ((Variable)_generatedVariableSocket.GetOutput())!=null)
             // Debug.Log("Custom Output:" + ((Variable)_generatedVariableSocket.GetOutput()).GetStream(null,0,0).GetNumberOfElements());
-            return "Random Volume Sampler";
+            return "Regular Volume Sampler";
         }
 
         public override bool IsValid()
@@ -184,9 +188,9 @@ namespace SculptingVis
 
         public override StyleDataset CopyDataset(StyleDataset toCopy)
         {
-            if (toCopy != null && toCopy is StyleExampleCustomDataset)
+            if (toCopy != null && toCopy is StyleRegularGridCustomDataset)
             {
-                _sampleCount = ((StyleExampleCustomDataset)toCopy)._sampleCount;
+                _sampleCount = ((StyleRegularGridCustomDataset)toCopy)._sampleCount;
 
             }
             return Init();
