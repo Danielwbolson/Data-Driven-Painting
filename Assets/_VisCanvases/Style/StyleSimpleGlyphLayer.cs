@@ -180,7 +180,7 @@ namespace SculptingVis
                         _directionVariable.Bind(_pointMaterial, 0, 0);
 
                         //Graphics.DrawMesh(instanceMesh, canvas.GetInnerSceneTransformMatrix(), canvasMaterial, 0);
-                        Graphics.DrawMeshInstancedIndirect(instanceMesh, 0, canvasMaterial, new Bounds(new Vector3(0, 0, 0), new Vector3(300, 300, 300)),argsBuffer);
+                        Graphics.DrawMeshInstancedIndirect(instanceMesh, 0, canvasMaterial, new Bounds(new Vector3(0, 0, 0), new Vector3(300, 300, 300)),argsBuffer,0,null,UnityEngine.Rendering.ShadowCastingMode.Off,false);
 
                 }
 
@@ -306,7 +306,7 @@ namespace SculptingVis
             _usePlane3 = (new StyleTypeSocket<Range<bool>>()).Init("Use Plane 3", this);
             _usePlane3.SetDefaultInputObject(new Range<bool>(false,true,false));
             AddSubmodule(_usePlane3);
-            
+
             return this;
 
         }

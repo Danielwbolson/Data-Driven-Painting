@@ -9,9 +9,9 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Transparent" "Queue" = "Transparent" } 
+		Tags { "RenderType"="Transparent" "Queue" = "Transparent" "ForceNoShadowCasting" = "True"} 
 		LOD 100
-
+		UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
 		Pass
 		{
 
@@ -49,7 +49,7 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			
-			sampler2D _CameraDepthTexture;
+			sampler2D_float  _CameraDepthTexture;
 			sampler3D _VolumeTexture;
 			sampler2D _TransferColor;
 			sampler2D _TransferAlpha;
@@ -251,7 +251,7 @@
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
-                	if (traveled > len ||  a < 0.001 || (uvw.x < 0 || uvw.x > 1 || uvw.y < 0 || uvw.y > 1 || uvw.z < 0 || uvw.z > 1) )
+                	if (traveled > len ||  a < 0.001 || (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= 0 || uvw.y >= 1 || uvw.z <= 0 || uvw.z >= 1) )
                 		continue;
 
 
