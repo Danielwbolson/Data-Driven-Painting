@@ -11,6 +11,7 @@ float3 _CanvasBoundsExtent;
 float3 _CanvasBoundsExtentThreshold;
 float3 _CanvasBoundsThreshold;
 float4 _CanvasCropColor;
+float4x4 _CanvasBoundsInverse; 
 
 
 float OutOfBounds(float3 extents, float3 threshold, float3 position) {

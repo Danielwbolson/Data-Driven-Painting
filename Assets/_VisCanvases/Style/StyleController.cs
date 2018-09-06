@@ -18,6 +18,27 @@ namespace SculptingVis
 
         public Color backdropColor;
 
+        protected Vector3[] planeMins;
+        protected Vector3[] planeMaxes;
+
+        public Vector3[] GetPlaneMins() {
+            if(planeMins == null) planeMins = new Vector3[3];
+            return planeMins;
+        }
+
+        public Vector3[] GetPlaneMaxes() {
+            if(planeMaxes == null) {
+                planeMaxes = new Vector3[3];
+                for(int i =0; i < 3; i ++)  {
+                planeMaxes[i].x =1;
+                planeMaxes[i].y =1;
+                planeMaxes[i].z =1;
+                }
+            }
+            return planeMaxes;
+        }
+
+
         public void ZoomCamera(float amount) {
             sceneCamera.fieldOfView += amount;
         }

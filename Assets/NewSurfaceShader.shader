@@ -6,7 +6,7 @@
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 	}
 	SubShader {
-        Tags {"Queue" = "Opaque" "RenderType" = "Opaque" }
+        Tags {"RenderType" = "Opaque" }
         LOD 100
 		Cull Off
         ZWrite Off

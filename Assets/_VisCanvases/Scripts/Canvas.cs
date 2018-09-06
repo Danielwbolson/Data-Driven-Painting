@@ -84,6 +84,8 @@ namespace SculptingVis {
 
             canvasMaterial.SetVector("_CanvasBoundsCenter", _bounds.center);
             canvasMaterial.SetVector("_CanvasBoundsExtent", _bounds.extents);
+            canvasMaterial.SetMatrix("_CanvasBoundsInverse", Matrix4x4.TRS(_style.GetBounds().center, Quaternion.identity, _style.GetBounds().size).inverse);
+
             canvasMaterial.SetVector("_CanvasBoundsExtentThreshold", new Vector3(_extentThreshold, _extentThreshold, _extentThreshold));
             canvasMaterial.SetVector("_CanvasBoundsThreshold", new Vector3(_boundsThreshold, _boundsThreshold, _boundsThreshold));
             canvasMaterial.SetVector("_CropColor", _cropColor);

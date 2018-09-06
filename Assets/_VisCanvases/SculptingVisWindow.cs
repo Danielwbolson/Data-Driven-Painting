@@ -578,6 +578,39 @@ public class SculptingVisWindow : EditorWindow
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.BeginVertical();
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Plane 1:");
+        float x = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 20;
+        EditorGUILayout.MinMaxSlider("x",ref GetStyleController().GetPlaneMins()[0].x,ref GetStyleController().GetPlaneMaxes()[0].x,0,1);
+        EditorGUILayout.MinMaxSlider("y",ref GetStyleController().GetPlaneMins()[0].y,ref GetStyleController().GetPlaneMaxes()[0].y,0,1);
+        EditorGUILayout.MinMaxSlider("z",ref GetStyleController().GetPlaneMins()[0].z,ref GetStyleController().GetPlaneMaxes()[0].z,0,1);
+        EditorGUIUtility.labelWidth = x;
+        EditorGUILayout.EndHorizontal();
+
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Plane 2:");
+         x = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 20;
+        EditorGUILayout.MinMaxSlider("x",ref GetStyleController().GetPlaneMins()[1].x,ref GetStyleController().GetPlaneMaxes()[1].x,0,1);
+        EditorGUILayout.MinMaxSlider("y",ref GetStyleController().GetPlaneMins()[1].y,ref GetStyleController().GetPlaneMaxes()[1].y,0,1);
+        EditorGUILayout.MinMaxSlider("z",ref GetStyleController().GetPlaneMins()[1].z,ref GetStyleController().GetPlaneMaxes()[1].z,0,1);
+        EditorGUIUtility.labelWidth = x;
+        EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Plane 3:");
+         x = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 20;
+        EditorGUILayout.MinMaxSlider("x",ref GetStyleController().GetPlaneMins()[2].x,ref GetStyleController().GetPlaneMaxes()[2].x,0,1);
+        EditorGUILayout.MinMaxSlider("y",ref GetStyleController().GetPlaneMins()[2].y,ref GetStyleController().GetPlaneMaxes()[2].y,0,1);
+        EditorGUILayout.MinMaxSlider("z",ref GetStyleController().GetPlaneMins()[2].z,ref GetStyleController().GetPlaneMaxes()[2].z,0,1);
+        EditorGUIUtility.labelWidth = x;
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.BeginVertical();
         if (GUILayout.Button("Reset"))
         {
             _socketHooks.Clear();

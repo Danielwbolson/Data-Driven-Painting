@@ -172,6 +172,7 @@ public class VTKDataset : Dataset {
 	}
 
 	public override bool IsPoint() {
+		if(GetVTKDataset().IsA("vtkUnstructuredGrid") && GetVTKDataset().GetCell(0).GetCellDimension() == 3) return true;
 		if(GetVTKDataset().GetCell(0).GetCellDimension() == 0) return true;
 		return false;
 	}
@@ -184,6 +185,7 @@ public class VTKDataset : Dataset {
 
 	public override bool IsVolume() {
 		if(GetVTKDataset() == null) return false;
+		if(GetVTKDataset().GetCell(0).GetCellDimension() == 3) return true;
 		return GetVTKDataset().IsA("vtkImageData"); // /* Perhaps verify the dimensionality of the image?*/ && VTK.vtkImageData.SafeDownCast(_dataset).GetDi; 
 	}
 

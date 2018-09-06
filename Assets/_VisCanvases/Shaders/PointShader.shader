@@ -47,6 +47,19 @@ Shader "Unlit/PointShader"
 			int _flipColormap;
 			float4 _Color;
 
+			int _usePlane1;
+			int _usePlane2;
+			int _usePlane3;
+
+			float3 _plane1min;
+			float3 _plane1max;
+
+			float3 _plane2min;
+			float3 _plane2max;
+			
+			float3 _plane3min;
+			float3 _plane3max;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -65,6 +78,7 @@ Shader "Unlit/PointShader"
 				int pointIndex = floor(i.uv.y +0.5);
 
 				float3 dataSpace = WorldToDataSpace(i.worldPos);
+				float3 normDataSpace = mul(_CanvasBoundsInverse,dataSpace); 
 
 				fixed4 c = float4(1,1,1,1);;
 
@@ -87,7 +101,37 @@ Shader "Unlit/PointShader"
 					else
 						c.rgb *= _Color.rgb;
 				}
+				int insidePlane = 1;
+				if(_usePlane1 == 1 || _usePlane2 == 1 || _usePlane3 == 1)
+					insidePlane = 0;
+				if(_usePlane1 == 1) {
+					if(normDataSpace.x > _plane1min.x && normDataSpace.x < _plane1max.x
+						&& normDataSpace.y > _plane1min.y && normDataSpace.y < _plane1max.y
+						&& normDataSpace.z > _plane1min.z && normDataSpace.z < _plane1max.z)
+							insidePlane = 1;
+						
+				}
 
+				if(_usePlane2 == 1) {
+					if(normDataSpace.x > _plane2min.x && normDataSpace.x < _plane2max.x
+						&& normDataSpace.y > _plane2min.y && normDataSpace.y < _plane2max.y
+						&& normDataSpace.z > _plane2min.z && normDataSpace.z < _plane2max.z)
+							insidePlane = 1;
+						
+				}
+
+				if(_usePlane3 == 1) {
+					if(normDataSpace.x > _plane3min.x && normDataSpace.x < _plane3max.x
+						&& normDataSpace.y > _plane3min.y && normDataSpace.y < _plane3max.y
+						&& normDataSpace.z > _plane3min.z && normDataSpace.z < _plane3max.z)
+							insidePlane = 1;
+						
+				}
+
+				if(insidePlane == 0) 
+					discard; 
+
+				// c.rgb = normDataSpace*100%100/100.0;
 				if(VariableIsAssigned(3)) {
 					float3 opacityVal = NormalizeData(1,GetData(1,cellIndex,pointIndex,WorldToDataSpace(i.worldPos)));
 					StippleTransparency(i.vertex,_ScreenParams,opacityVal.x);

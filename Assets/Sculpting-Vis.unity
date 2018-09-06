@@ -162,7 +162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &185683386
 GameObject:
@@ -208,10 +208,10 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 0.98
+    m_Strength: 0
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -290,7 +290,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &512141383 stripped
 GameObject:
@@ -323,7 +323,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618002608
 GameObject:
@@ -690,7 +690,7 @@ Prefab:
     - target: {fileID: 224384339324827026, guid: f63abadf738068042a3ddb20af4822bb,
         type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 224384339324827026, guid: f63abadf738068042a3ddb20af4822bb,
         type: 2}
@@ -793,7 +793,7 @@ Transform:
   m_Children:
   - {fileID: 618002609}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1144411764
 GameObject:
@@ -1071,7 +1071,7 @@ Prefab:
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
       propertyPath: _customDatasetTypes.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4628534396763062, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
       propertyPath: m_LocalPosition.x
@@ -1103,7 +1103,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4628534396763062, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
@@ -1394,7 +1394,7 @@ Transform:
   m_Children:
   - {fileID: 1255172971}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1925801138 stripped
 MonoBehaviour:
