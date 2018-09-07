@@ -265,7 +265,7 @@ namespace SculptingVis {
                 _cachedSeed = ((PointAnchorDatastreamChannel)_rootChannel).GetSeed();
             }
 
-            if (_dataBuffer == null || stuffChanged || _lastComputeBuffer < _lastRefreshedTime) {
+            if (true || _dataBuffer == null || stuffChanged || _lastComputeBuffer < _lastRefreshedTime) {
                 _lastComputeBuffer = GetCurrentTime();
 
                 long numberOfElements = GetNumberOfElements();

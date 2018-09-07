@@ -121,7 +121,7 @@ public class VTKDataset : Dataset {
 		} else if(variable is VTKAnchorDataVariable) {
 			VTKAnchorDatastreamChannel vtkchannel = CreateInstance<VTKAnchorDatastreamChannel>();
 
-			vtkchannel.Init(GetVTKDataset());
+			vtkchannel.Init(this);
 			return vtkchannel;;
 		} else {
 			return null;

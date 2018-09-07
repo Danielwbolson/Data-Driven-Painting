@@ -6,16 +6,16 @@ using UnityEngine;
 namespace SculptingVis {
 public class VTKAnchorDatastreamChannel : DatastreamChannel {
 
-    public void Init(VTK.vtkDataSet dataset) {
+    public void Init(VTKDataset dataset) {
         _dataset = dataset;
     }
 
-    VTK.vtkDataSet _dataset ;
+    VTKDataset  _dataset ;
     public VTK.vtkDataSet GetVTKDataSet() {
-        return _dataset;
+        return _dataset.GetVTKDataset();
     }
     public override int GetNumberOfElements() {
-        return (int)_dataset.GetNumberOfPoints();
+        return (int)_dataset.GetVTKDataset().GetNumberOfPoints();
     }
     
     public override int GetNumberOfComponents() {
