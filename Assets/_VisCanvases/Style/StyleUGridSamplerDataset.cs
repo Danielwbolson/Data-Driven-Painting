@@ -16,6 +16,9 @@ namespace SculptingVis
         {
             double[] bary;
 
+
+
+
             if (cType == 12) // Hexahedron
             {
                 double[] r = new double[]
