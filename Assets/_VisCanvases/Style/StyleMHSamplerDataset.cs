@@ -140,6 +140,7 @@ namespace SculptingVis
         {
             vtkDataArray density;
             double[] minmax;
+            double[] mapping;
             vtkImageData vti;
 
             public VTI_MetropolisHastings(vtkDataSet dataset, string varname) : base(dataset)
@@ -148,20 +149,7 @@ namespace SculptingVis
                 density = vti.GetPointData().GetArray(varname);
                 minmax = new double[2];
                 density.GetRange(minmax);
-                /*
-
-                double v = density.GetTuple1(0);
-                minmax[0] = minmax[1] = v;
-
-                for (int i = 1; i < density.GetNumberOfTuples(); i++)
-                {
-                    v = density.GetTuple1(i);
-                    if (v < minmax[0]) minmax[0] = v;
-                    if (v > minmax[1]) minmax[1] = v;
-                }
-                */
             }
-
 
             public double Q(Vector3 point, long[] indx, double[] dxyz, int p)
             {
@@ -171,7 +159,10 @@ namespace SculptingVis
                 interpolant(point, indx, dxyz);
                 double v = interpolate_scalar(density, indx, dxyz);
 
-                v = (v - minmax[0]) / (minmax[1] - minmax[0]);
+                double mm = minmax[0] + mapping[0] * (minmax[1] - minmax[0]);
+                double MM = minmax[0] + mapping[1] * (minmax[1] - minmax[0]);
+
+                v = (v - mm) / (MM - mm);
                 if (v < 0.0 || v > 1.0) return 0.0;
 
                 if (p > 1)
@@ -184,9 +175,9 @@ namespace SculptingVis
                 return v;
             }
 
-            public void set_range(double[] r)
+            public void set_mapping_range(double[] r)
             {
-                minmax = r;
+                mapping = r;
             }
         }
 
@@ -316,27 +307,34 @@ namespace SculptingVis
 
             int numberOfRequestedSamples = (Range<int>)_sampleCount.GetInput();
 
+            double[] mappingRange = new double[2];
+
+            mappingRange[0] = ((MinMax<float>)_densityRange.GetInput()).lowerValue;
+            mappingRange[1] = ((MinMax<float>)_densityRange.GetInput()).upperValue;
+
+
             vtkDataSet inputVTKDataset = ((VTKDataset)ds).GetVTKDataset();
 
-            VTI_MetropolisHastings mh_interpolator = new VTI_MetropolisHastings(inputVTKDataset, "snd");
-            interpolator_set interpolators = new interpolator_set(inputVTKDataset, numberOfRequestedSamples);
+            VTI_MetropolisHastings mh_sampler = new VTI_MetropolisHastings(inputVTKDataset, "snd");
+            mh_sampler.set_mapping_range(mappingRange);
 
+            interpolator_set interpolators = new interpolator_set(inputVTKDataset, numberOfRequestedSamples);
 
             long[] corner_indices = new long[8];      // Corner indices for point in contention
             double[] dxyz = new double[3];          // Deltas within cell for point in contention
 
-            Vector3 point = mh_interpolator.center();
+            Vector3 point = mh_sampler.center();
 
-            mh_interpolator.interpolant(point, corner_indices, dxyz);
-            double point_density = mh_interpolator.Q(point, corner_indices, dxyz, 1);
+            mh_sampler.interpolant(point, corner_indices, dxyz);
+            double point_density = mh_sampler.Q(point, corner_indices, dxyz, 1);
 
 
             while (interpolators.get_number_of_samples() < numberOfRequestedSamples)
             {
                 Vector3 candidate = point + GaussianRandomVector();
 
-                mh_interpolator.interpolant(candidate, corner_indices, dxyz);
-                double candidate_density = mh_interpolator.Q(candidate, corner_indices, dxyz, 1);
+                mh_sampler.interpolant(candidate, corner_indices, dxyz);
+                double candidate_density = mh_sampler.Q(candidate, corner_indices, dxyz, 1);
 
                 if (candidate_density > 0.0)
                 {
@@ -344,7 +342,7 @@ namespace SculptingVis
                     {
                         point = candidate;
                         point_density = candidate_density;
-                        interpolators.interpolate(mh_interpolator, point, corner_indices, dxyz);
+                        interpolators.interpolate(mh_sampler, point, corner_indices, dxyz);
                     }
                     else
                     {
@@ -353,7 +351,7 @@ namespace SculptingVis
                         {
                             point = candidate;
                             point_density = candidate_density;
-                            interpolators.interpolate(mh_interpolator, point, corner_indices, dxyz);
+                            interpolators.interpolate(mh_sampler, point, corner_indices, dxyz);
                         }
                     }
                 }
@@ -388,6 +386,9 @@ namespace SculptingVis
         public StyleTypeSocket<Range<int>> _sampleCount;
 
         [SerializeField]
+        public StyleTypeSocket<MinMax<float>> _densityRange;
+
+        [SerializeField]
         public StyleSocket _generatedDatasetSocket;
         
         public StyleMHSamplerDataset Init()
@@ -411,6 +412,10 @@ namespace SculptingVis
             _sampleSeed = (new StyleTypeSocket<Range<int>>()).Init("SampleSeed", this);
             _sampleSeed.SetDefaultInputObject((new Range<int>(1, 10)));
             AddSubmodule(_sampleSeed);
+
+            _densityRange = (new StyleTypeSocket<MinMax<float>>()).Init("Density Mapping Range", this);
+            _densityRange.SetDefaultInputObject((new MinMax<float>(0, 1)));
+            AddSubmodule(_densityRange);
 
             return this;
         }
