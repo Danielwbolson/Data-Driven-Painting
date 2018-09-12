@@ -241,6 +241,14 @@ public class SculptingVisWindow : EditorWindow
                 }
             }
 
+            if(socket is StyleTypeSocket<Colormap>) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Colormap)(socket.GetInput())).GetName() + "]";
+                }
+            }
+
                 GUILayout.Label(label);
                 if(socket is StyleTypeSocket<Range<int>>) {
                     int A = ((Range<int>)socket.GetInput()).value;

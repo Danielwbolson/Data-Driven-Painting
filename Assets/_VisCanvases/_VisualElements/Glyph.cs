@@ -6,6 +6,20 @@ using System.IO;
 namespace SculptingVis {
     public class Glyph : VisualElement {
 
+        static Glyph defaultGlyph;
+		public static Glyph DefaultGlyph() {
+			if(defaultGlyph == null) {
+				Glyph glyph = CreateInstance<Glyph>();
+                glyph._lodMeshes = new Mesh[1];
+                glyph._lodMeshes[0] = ((SculptingVis.StyleController)FindObjectOfType(typeof(SculptingVis.StyleController))).sphere;
+                glyph.SetName("Default");
+                defaultGlyph = glyph;
+
+			}
+			return defaultGlyph;
+		}  
+
+
         static Texture2D _defaultNormalMap;
         public static Texture2D DefaultNormalMap() {
             if (_defaultNormalMap == null) {
@@ -92,11 +106,12 @@ namespace SculptingVis {
          }
         
         public Mesh GetLODMesh(int level) {
+            level = Mathf.Min(GetLODMeshes().Length-1,level);
             return GetLODMeshes()[level];
         }
 
         public Texture2D GetLODNormalMap(int level) {
-            if (_normalMaps.ContainsKey(level)) return _normalMaps[level];
+            if (_normalMaps != null && _normalMaps.ContainsKey(level)) return _normalMaps[level];
             return DefaultNormalMap();
         }
 

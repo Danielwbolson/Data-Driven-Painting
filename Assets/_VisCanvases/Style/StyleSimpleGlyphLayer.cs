@@ -171,11 +171,11 @@ namespace SculptingVis
 
 
             _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());
-            _pointMaterial.SetInt("_useMesh", (Range<bool>)_useMeshInput.GetInput()?1:0);
-            _pointMaterial.SetInt("_useThumbnail", (Range<bool>)_useThumbnailInput.GetInput()?1:0);
+            _pointMaterial.SetInt("_useMesh",1);
+            _pointMaterial.SetInt("_useThumbnail", 0);
             // _pointMaterial.SetColor("_Color", (Objectify<Color>)_colorModifier._colorSocket.GetInput());
             // _pointMaterial.SetFloat("_OpacityMultiplier", (Range<float>)_opacityMultiplierInput.GetInput());
-            _pointMaterial.SetInt("_faceCamera", (Range<bool>)_faceCameraInput.GetInput()?1:0);
+            _pointMaterial.SetInt("_faceCamera", 0);
             // _pointMaterial.SetFloat("_opacityThreshold", (Range<float>)_opacityThresholdInput.GetInput());
 
             _pointMaterial.SetInt("_usePlane1", (Range<bool>)_usePlane1.GetInput()?1:0);
@@ -201,7 +201,7 @@ namespace SculptingVis
                         if(argsBuffer == null) argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
 
                         Mesh instanceMesh;
-                        if(((Range<bool>)_useMeshInput.GetInput()) == true) {
+                        if(true) {
                             instanceMesh = ((Glyph)(_glyphInput.GetInput())).GetLODMesh(((Range<int>)_lodLevel.GetInput()));
                             _pointMaterial.SetTexture("_BumpMap", ((Glyph)(_glyphInput.GetInput())).GetLODNormalMap(((Range<int>)_lodLevel.GetInput())));
 
@@ -258,12 +258,13 @@ namespace SculptingVis
         public StyleSimpleGlyphLayer Init()
         {
             _glyphInput = (new StyleTypeSocket<Glyph> ()).Init("Glyph",this);
+            _glyphInput.SetDefaultInputObject(Glyph.DefaultGlyph());
 			AddSubmodule(_glyphInput);
 
             _maxGlyphs = (new StyleTypeSocket<Range<int>>()).Init("Max glyphs", this);
             _maxGlyphs.SetDefaultInputObject((new Range<int>(0, 60000, 1000)));
             AddSubmodule(_maxGlyphs);
-            
+
             _anchorVariable = new VariableSocket();
             _anchorVariable.Init("Anchor",this,0);
             AddSubmodule(_anchorVariable);
@@ -321,17 +322,17 @@ namespace SculptingVis
             AddSubmodule(_glyphScaleInput);
 
 
-            _useMeshInput = (new StyleTypeSocket<Range<bool>>()).Init("Use mesh", this);
-            _useMeshInput.SetDefaultInputObject((new Range<bool>(false, true,true)));
-            AddSubmodule(_useMeshInput);
+            // _useMeshInput = (new StyleTypeSocket<Range<bool>>()).Init("Use mesh", this);
+            // _useMeshInput.SetDefaultInputObject((new Range<bool>(false, true,true)));
+            // AddSubmodule(_useMeshInput);
 
-            _useThumbnailInput = (new StyleTypeSocket<Range<bool>>()).Init("Use thumbnail", this);
-            _useThumbnailInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
-            AddSubmodule(_useThumbnailInput);
+            // _useThumbnailInput = (new StyleTypeSocket<Range<bool>>()).Init("Use thumbnail", this);
+            // _useThumbnailInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
+            // AddSubmodule(_useThumbnailInput);
 
-            _faceCameraInput = (new StyleTypeSocket<Range<bool>>()).Init("FaceCamera", this);
-            _faceCameraInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
-            AddSubmodule(_faceCameraInput);
+            // _faceCameraInput = (new StyleTypeSocket<Range<bool>>()).Init("FaceCamera", this);
+            // _faceCameraInput.SetDefaultInputObject((new Range<bool>(false, true,false)));
+            // AddSubmodule(_faceCameraInput);
 
             // _opacityMultiplierInput = (new StyleTypeSocket<Range<float>>()).Init("Opacity mult", this);
             // _opacityMultiplierInput.SetDefaultInputObject((new Range<float>(0,10,1)));

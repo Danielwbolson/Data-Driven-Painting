@@ -18,6 +18,7 @@ namespace SculptingVis {
 				}
                 grayscale.Apply(true);
 				defaultColormap = (new Colormap()).Init(grayscale);
+                defaultColormap.SetName("Default");
 			}
 			return defaultColormap;
 		}  

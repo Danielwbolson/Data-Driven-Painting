@@ -10,6 +10,8 @@ namespace SculptingVis
     {
 
         
+        public Mesh sphere;
+        public Mesh cylinder;
 
         public Camera sceneCamera;
         public Transform cameraPivot;
