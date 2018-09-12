@@ -194,6 +194,8 @@ public class SculptingVisWindow : EditorWindow
 
 
     void DrawSocket(StyleSocket socket, Rect nest, bool showInputs = true, bool showOutputs = true) {
+        if(socket.IsEnabled() == false)
+            return;
             if (socket.IsInput() && !showInputs) return;
             if (socket.IsOutput() && !showOutputs) return;
 
@@ -215,8 +217,16 @@ public class SculptingVisWindow : EditorWindow
             BeginSocketHook(socket,nest);
 
 
-            
-                GUILayout.Label(socket.GetLabel());
+            string label = socket.GetLabel();
+
+            if(socket is VariableSocket) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Variable)(socket.GetInput())).GetName() + "]";
+                }
+            }
+                GUILayout.Label(label);
                 if(socket is StyleTypeSocket<Range<int>>) {
                     int A = ((Range<int>)socket.GetInput()).value;
                     ((Range<int>)socket.GetInput()).value = EditorGUILayout.IntSlider(((Range<int>)socket.GetInput()).value,((Range<int>)socket.GetInput()).lowerBound,((Range<int>)socket.GetInput()).upperBound);
@@ -264,8 +274,19 @@ public class SculptingVisWindow : EditorWindow
 
 
     }
+
+    void RemoveModule(object module) {
+        GetStyleController().RemoveModule((StyleModule)module);
+    }
+
+    void ClearSocket(object socket) {
+         GetStyleController().ClearSocket((StyleSocket)socket);
+        Repaint();
+    }
     void DrawStyleModule(StyleModule module, Rect nest, bool foldup, bool showInputs = true, bool showOutputs = true)
     {
+        if(module.IsEnabled() == false)
+            return;
         // if(module is SculptingVis.SmartData.Dataset) {
         //     DrawDatasetModule((SculptingVis.SmartData.Dataset)module, nest, showInputs, showOutputs);
         //     return;
@@ -331,7 +352,10 @@ public class SculptingVisWindow : EditorWindow
             // if(labelOutputHook)            GUILayout.FlexibleSpace();
         if(!(module is StyleVisualElement))
             if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
-                GetStyleController().RemoveModule(module);
+       GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Delete"), false, RemoveModule,module);
+                menu.ShowAsContext();
             }
         // } 
 
@@ -381,6 +405,21 @@ public class SculptingVisWindow : EditorWindow
         }
 
 
+
+        if(module is StyleColorModifier) {
+            StyleColorModifier scm = (StyleColorModifier)module;
+            float aspectRatio = 5;
+            Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+            if((Range<bool>)(scm._useVariable.GetInput())) {
+                Texture t = ((Colormap)(scm._colormapSocket.GetInput())).GetTexture();
+
+                GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipColormapSocket.GetInput())) ? -1:1));       
+            } else {
+                EditorGUI.DrawRect(r,((Objectify<Color>)scm._colorSocket.GetInput() ));
+            }
+        }
+          
 
         GUILayout.EndVertical();
     }
@@ -1036,8 +1075,14 @@ public class SculptingVisWindow : EditorWindow
 
                     if (_socketHooks[socket].Contains(evt.mousePosition) && _sockets[socket].IsInput())
                     {
-                        GetStyleController().ClearSocket(_sockets[socket]);
-                        if(activeSource != null) Debug.Log(activeSource.GetLabel() + " cleared");
+                        if(activeSource == null) {
+                        GenericMenu menu = new GenericMenu();
+            
+                        menu.AddItem(new GUIContent("Clear"), false, ClearSocket,_sockets[socket]);
+                        
+                        menu.ShowAsContext();
+                        }
+                       
 
                         break;
                     }

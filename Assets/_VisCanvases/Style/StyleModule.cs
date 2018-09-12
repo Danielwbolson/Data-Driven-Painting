@@ -12,9 +12,43 @@ namespace SculptingVis{
 			return InstanceID + "";
 		}
 
+		
 
+		StyleSocket _triggerSocket;
+		bool triggerSocketAssigned;
+		bool _hideCondition;
 
-			
+		public void HideIfTrue(StyleSocket triggerSocket) {
+			_triggerSocket = triggerSocket;
+			 triggerSocketAssigned = true;
+			_hideCondition = true;
+		}
+
+		public void HideIfFalse(StyleSocket triggerSocket) {
+			_triggerSocket = triggerSocket;
+			triggerSocketAssigned = true;
+			_hideCondition = false;
+		}
+
+		public bool IsEnabled() {
+			if(triggerSocketAssigned) {
+				//if(_triggerSocket.GetInput() != null) {
+					if(_triggerSocket.GetInput() is Range<bool>) {
+						if((Range<bool>)(_triggerSocket.GetInput()) == _hideCondition) {
+							return false;
+						} else {
+							return true;
+						}
+					} else {
+						return !_hideCondition;
+					}
+				//} else {
+				//	return _hideCondition;
+				//}
+			} else {
+				return true;
+			}
+ 		}
 
 		[SerializeField]
 		List<StyleSocket> _sockets;

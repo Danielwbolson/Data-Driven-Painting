@@ -17,6 +17,11 @@ namespace SculptingVis
         public VariableSocket _colorVariable;
         public StyleTypeSocket<MinMax<float>> _colordataRangeInput;
 
+
+        [SerializeField]
+        public StyleColorModifier _colorModifier;
+
+
         [SerializeField]
         public VariableSocket _directionVariable;
 
@@ -214,6 +219,11 @@ namespace SculptingVis
             _colorVariable.Init("Color",this,1);
             _colorVariable.SetAnchorVariableSocket(_anchorVariable);
 			_colorVariable.RequireScalar();
+
+            _colorModifier = CreateInstance<StyleColorModifier>();
+            _colorModifier.Init(_anchorVariable);
+            //AddSubmodule(_colorModifier);
+
 
             _opacityVariable = new VariableSocket();
             _opacityVariable.Init("Opacity",this,3);

@@ -9,10 +9,23 @@ namespace SculptingVis {
         [SerializeField]
         Texture2D _texture;
 
+	    static Colormap defaultColormap;
+		public static Colormap DefaultColormap() {
+			if(defaultColormap == null) {
+				Texture2D grayscale = new Texture2D(100,1);
+				for(int i = 0; i < grayscale.width; i++) {
+					grayscale.SetPixel(i,0,new Color(i*1.0f/100,i*1.0f/100,i*1.0f/100));
+				}
+                grayscale.Apply(true);
+				defaultColormap = (new Colormap()).Init(grayscale);
+			}
+			return defaultColormap;
+		}  
+
         public Texture2D GetTexture() {
             return _texture;
         }
-        protected Colormap Init(Texture2D texture) {
+        public Colormap Init(Texture2D texture) {
             _texture = texture;
             return this;
         }
