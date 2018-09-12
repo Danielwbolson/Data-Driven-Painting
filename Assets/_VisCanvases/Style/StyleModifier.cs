@@ -16,7 +16,7 @@ namespace SculptingVis
         [SerializeField]
         public StyleTypeSocket<MinMax<float>> _variableRange;
 
-        public StyleModifier Init(VariableSocket _anchorVariableSocket)
+        public StyleModifier Init(VariableSocket _anchorVariableSocket, StyleModule module, int slot = -1 )
         {
 
             _useVariable = (new StyleTypeSocket<Range<bool>>()).Init("Use Variable", this);
@@ -24,7 +24,7 @@ namespace SculptingVis
             AddSubmodule(_useVariable);
 
             _variable = new VariableSocket();
-            _variable.Init("Variable",this,1);
+            _variable.Init("Variable",this,slot);
             _variable.SetAnchorVariableSocket(_anchorVariableSocket);
 			_variable.RequireScalar();
             _variable.HideIfFalse(_useVariable);

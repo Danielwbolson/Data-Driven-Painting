@@ -32,6 +32,8 @@ namespace SculptingVis{
 
 		public bool IsEnabled() {
 			if(triggerSocketAssigned) {
+				if(_triggerSocket.IsEnabled() == false)
+					return false;
 				//if(_triggerSocket.GetInput() != null) {
 					if(_triggerSocket.GetInput() is Range<bool>) {
 						if((Range<bool>)(_triggerSocket.GetInput()) == _hideCondition) {

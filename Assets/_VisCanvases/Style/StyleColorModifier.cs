@@ -18,9 +18,9 @@ namespace SculptingVis
         public StyleTypeSocket<Range<bool>> _flipColormapSocket;
 
 
-        public StyleModifier Init(VariableSocket anchorSocket )
+        public StyleModifier Init(VariableSocket anchorSocket, StyleModule module, int slot = -1 )
         {
-            base.Init(anchorSocket);
+            base.Init(anchorSocket, module, slot);
             _colorSocket = (new StyleTypeSocket<Objectify<Color>>()).Init("Constant Color", this);
             _colorSocket.SetDefaultInputObject(new Objectify< Color>(Color.white));
             _colorSocket.HideIfTrue(_useVariable);

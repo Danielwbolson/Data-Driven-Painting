@@ -8,6 +8,11 @@ using System.IO;
 
 public class SculptingVisWindow : EditorWindow
 {
+    float map(float s, float a1, float a2, float b1, float b2)
+    {
+        return b1 + (s-a1)*(b2-b1)/(a2-a1);
+    }
+
     string myString = "Hello World";
     bool groupEnabled;
     bool myBool = true;
@@ -226,6 +231,16 @@ public class SculptingVisWindow : EditorWindow
                     label += " [" + ((Variable)(socket.GetInput())).GetName() + "]";
                 }
             }
+
+            
+            if(socket is StyleTypeSocket<Glyph>) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Glyph)(socket.GetInput())).GetName() + "]";
+                }
+            }
+
                 GUILayout.Label(label);
                 if(socket is StyleTypeSocket<Range<int>>) {
                     int A = ((Range<int>)socket.GetInput()).value;
@@ -406,18 +421,77 @@ public class SculptingVisWindow : EditorWindow
 
 
 
-        if(module is StyleColorModifier) {
-            StyleColorModifier scm = (StyleColorModifier)module;
+        if(module is StyleModifier) {            
+            StyleModifier sm = (StyleModifier)module;
+
+            bool usingVariable = (Range<bool>)(sm._useVariable.GetInput());
+
+            Variable v = null;
+        
+            if(sm._variable.GetInput() != null) 
+                v = ((Variable)sm._variable.GetInput());
+
+
             float aspectRatio = 5;
-            Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
 
-            if((Range<bool>)(scm._useVariable.GetInput())) {
-                Texture t = ((Colormap)(scm._colormapSocket.GetInput())).GetTexture();
+            if(usingVariable) {
+                GUILayout.BeginHorizontal();
+                MinMax<float> selectedRange = ((MinMax<float>)sm._variableRange.GetInput());
 
-                GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipColormapSocket.GetInput())) ? -1:1));       
+                if(v != null) 
+                {
+                    float leftVal = map(selectedRange.lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+                    GUILayout.Label("" + leftVal);
+
+                } else {
+                    GUILayout.Label("Unassigned");
+                }
+
+                if(module is StyleColorModifier) {
+                    StyleColorModifier scm = (StyleColorModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    Texture t = ((Colormap)(scm._colormapSocket.GetInput())).GetTexture();
+
+                    GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipColormapSocket.GetInput())) ? -1:1));       
+                        
+                }
+
+            
+
+                if(module is StyleOpacityModifier) {
+                    StyleOpacityModifier scm = (StyleOpacityModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    Texture t = ((Colormap)(scm._opacitymapSocket.GetInput())).GetTexture();
+
+                    GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipOpacityMapSocket.GetInput())) ? -1:1));       
+                        
+                }
+
+               
+                if(v != null) 
+                {
+                    float rightVal = map(selectedRange.upperValue,0,1,v.GetMin().x,v.GetMax().x);
+                    GUILayout.Label("" + rightVal);
+
+                } else {
+                    GUILayout.Label("Unassigned");
+                }
+                GUILayout.EndHorizontal();
+
             } else {
-                EditorGUI.DrawRect(r,((Objectify<Color>)scm._colorSocket.GetInput() ));
+                if(module is StyleColorModifier) {
+                    StyleColorModifier scm = (StyleColorModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    EditorGUI.DrawRect(r,((Objectify<Color>)scm._colorSocket.GetInput() ));
+                }
             }
+
+
+
+
         }
           
 
