@@ -29,6 +29,9 @@ namespace SculptingVis
 
 
         [SerializeField]
+        public StyleScaleModifier _scaleModifer;
+
+        [SerializeField]
         public VariableSocket _directionVariable;
 
         // [SerializeField]
@@ -151,6 +154,20 @@ namespace SculptingVis
                 }
         
 
+    
+
+                v = ((Variable)_scaleModifer._variable.GetInput());
+                if(v != null) {
+                    MinMax<float> selectedRange = ((MinMax<float>)_scaleModifer._variableRange.GetInput());
+
+                    float leftVal = map(selectedRange.lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+
+                    float rightVal = map(selectedRange.upperValue,0,1,v.GetMin().x,v.GetMax().x);
+
+                    _scaleModifer._variable.LowerBound = leftVal;
+                    _scaleModifer._variable.UpperBound = rightVal;
+                }
+        
 
             // _opacityVariable.LowerBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).lowerValue;
             // _opacityVariable.UpperBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).upperValue;
@@ -159,15 +176,22 @@ namespace SculptingVis
             //if (_colorMapInput.GetInput() != null)
             _pointMaterial.SetTexture("_ColorMap", ((Colormap)_colorModifier._colormapSocket.GetInput()).GetTexture());
             _pointMaterial.SetTexture("_OpacityMap", ((Colormap)_opacityModifier._opacitymapSocket.GetInput()).GetTexture());
-            
+            _pointMaterial.SetFloat("_ScaleMin", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
+            _pointMaterial.SetFloat("_ScaleMax", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
+
+
             _pointMaterial.SetColor("_Color", (Objectify<Color>)_colorModifier._colorSocket.GetInput());
             _pointMaterial.SetFloat("_Opacity", (Range<float>)_opacityModifier._opacitySocket.GetInput());
+            _pointMaterial.SetFloat("_Scale", (Range<float>)_opacityModifier._opacitySocket.GetInput());
+
 
             _pointMaterial.SetInt("_useColormap", (Range<bool>)_colorModifier._useVariable.GetInput()?1:0);
             _pointMaterial.SetInt("_useOpacitymap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
+            _pointMaterial.SetInt("_useScalemap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
 
             _pointMaterial.SetInt("_flipColormap", (Range<bool>)_colorModifier._flipColormapSocket.GetInput()?1:0);
             _pointMaterial.SetInt("_flipOpacitymap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
+            _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
 
 
             _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());
@@ -286,6 +310,10 @@ namespace SculptingVis
             _opacityModifier = CreateInstance<StyleOpacityModifier>();
             _opacityModifier.Init(_anchorVariable,this,3);
             AddSubmodule(_opacityModifier);
+
+            _scaleModifer = CreateInstance<StyleScaleModifier>();
+            _scaleModifer.Init(_anchorVariable,this,1);
+            AddSubmodule(_scaleModifer);
 
             // _opacityVariable = new VariableSocket();
             // _opacityVariable.Init("Opacity",this,3);
