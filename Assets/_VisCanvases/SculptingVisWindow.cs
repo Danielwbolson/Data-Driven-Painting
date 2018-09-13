@@ -1184,8 +1184,8 @@ public class SculptingVisWindow : EditorWindow
                     {
                         if(activeSource == null) {
                         GenericMenu menu = new GenericMenu();
-            
-                        menu.AddItem(new GUIContent("Clear"), false, ClearSocket,_sockets[socket]);
+                        StyleSocket ssocket = _sockets[socket];
+                        menu.AddItem(new GUIContent("Clear"), false, ClearSocket,ssocket);
                         
                         menu.ShowAsContext();
                         }

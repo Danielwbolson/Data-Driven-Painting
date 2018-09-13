@@ -486,7 +486,7 @@ namespace SculptingVis
 		}
         public void ClearSocket(StyleSocket socket)
         {
-			if(socket != null && socket.IsInput()) {
+			if(socket.IsInput()) {
 				StyleLink currentLink = null;
 				if (GetLinksByDestination().ContainsKey(socket.GetUniqueIdentifier()))
 					currentLink = GetLinkByDestination(socket);
