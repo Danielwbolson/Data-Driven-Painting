@@ -346,7 +346,7 @@ namespace SculptingVis
 
 
             _glyphScaleInput = (new StyleTypeSocket<Range<float>>()).Init("Glyph scale", this);
-            _glyphScaleInput.SetDefaultInputObject((new Range<float>(0, 10,1)));
+            _glyphScaleInput.SetDefaultInputObject((new Range<float>(0, 0.1f,0.05f)));
             AddSubmodule(_glyphScaleInput);
 
 

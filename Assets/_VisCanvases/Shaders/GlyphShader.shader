@@ -128,7 +128,7 @@
 		int pointIndex =unity_InstanceID;//_AnchorTopology[unity_InstanceID].y;
 		int cellIndex =  _AnchorTopology[unity_InstanceID].x;
 
-			v.vertex.xyz *= _glyphScale;
+			v.vertex.xyz *= (_glyphScale * (_VariableBoundsMax_0.x - _VariableBoundsMin_0.x));
 
 			if( VariableIsAssigned(0)) {
 				//float3 B = 
