@@ -18,6 +18,10 @@ namespace SculptingVis
             return "Custom Dataset";
         }
 
+        public virtual void ComputeDataset() {
+            
+        }
+
 
 
       
