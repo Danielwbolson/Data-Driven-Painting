@@ -278,6 +278,8 @@ namespace SculptingVis
 
             public vtkUnstructuredGrid create_vtu()
             {
+
+                /*
                 StreamWriter wrtr = new StreamWriter("/Users/gda/m-h.csv", false);
                 wrtr.WriteLine("X,Y,Z");
                 for (int i = 0; i < points.GetNumberOfPoints(); i++)
@@ -286,6 +288,7 @@ namespace SculptingVis
                     wrtr.WriteLine(string.Format("{0},{1},{2}", p.x, p.y, p.z));
                 }
                 wrtr.Close();
+                */
 
                 vtkUnstructuredGrid ug = vtkUnstructuredGrid.New();
                 ug.SetPoints(points);
