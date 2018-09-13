@@ -126,7 +126,8 @@ namespace SculptingVis {
 
                 // Go ahead and create the empty glyph object
                 Glyph glyph = CreateInstance<Glyph>();
-
+                    string name = Path.GetFileNameWithoutExtension(filePath);
+                    glyph.SetName(name);
                 DirectoryInfo info = new DirectoryInfo(filePath);
                 FileInfo[] fileInfo = info.GetFiles();
                 DirectoryInfo[] directoryInfo = info.GetDirectories();

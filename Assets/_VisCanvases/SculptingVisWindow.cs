@@ -736,7 +736,25 @@ public class SculptingVisWindow : EditorWindow
         EditorGUILayout.MinMaxSlider("z",ref GetStyleController().GetPlaneMins()[2].z,ref GetStyleController().GetPlaneMaxes()[2].z,0,1);
         EditorGUIUtility.labelWidth = x;
         EditorGUILayout.EndHorizontal();
+
+
+        // if(GUILayout.Button("Update remote files")) {
+
+
+        //     GetStyleController().UpdateRemoteAssets();
+        // }
+
+        if(GUILayout.Button("Load Brain Preset")) {
+            _socketHooks.Clear();
+            _sockets.Clear();
+            GetStyleController().Reset();
+            _columns = null;
+
+            GetStyleController().LoadBrainPreset();
+        }
         EditorGUILayout.EndVertical();
+
+
 
         EditorGUILayout.BeginVertical();
         if (GUILayout.Button("Reset"))

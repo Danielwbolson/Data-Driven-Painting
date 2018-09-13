@@ -57,6 +57,9 @@ namespace SculptingVis{
 
 		List<StyleModule> _subModules;
 
+		Dictionary<string, StyleModule> _subModulesByName;
+
+
 
 		List<StyleSocket> GetSockets() {
 			if(_sockets == null) 
@@ -70,6 +73,14 @@ namespace SculptingVis{
 			return _subModules;
 		}
 
+		public StyleModule GetSubmoduleByLabel(string name) {
+			if(_subModulesByName == null) _subModulesByName = new Dictionary<string, StyleModule>();
+			if(_subModulesByName.ContainsKey(name)) {
+				return _subModulesByName[name];
+
+			} else return null;
+		}
+
 		public virtual int GetNumberOfSubmodules() {
 			return GetSubmodules().Count;
 		}
@@ -78,8 +89,12 @@ namespace SculptingVis{
 			return GetSubmodules()[i];
 		}
 		public virtual void AddSubmodule(StyleModule module) {
+			if(_subModulesByName == null) _subModulesByName = new Dictionary<string, StyleModule>();
 		 	GetSubmodules().Add(module);
+			_subModulesByName[module.GetLabel()] = module;
 		}
+
+
 		// public virtual int GetNumberOfSockets() {
 		// 	return GetSockets().Count;
 		// }
