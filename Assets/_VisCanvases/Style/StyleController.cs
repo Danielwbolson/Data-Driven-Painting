@@ -18,14 +18,14 @@ namespace SculptingVis
             //client.DownloadFile(new Uri(https://github.com/joh08230/SculptingVisFiles/blob/master/zep.vti?raw=true), Path.Combine(Application.persistentDataPath,"zep.vti"));
             WWW www = new WWW("https://github.com/joh08230/SculptingVisFiles/raw/master/zep.vti");
             while(!www.isDone);
-            System.IO.File.WriteAllBytes( (Application.persistentDataPath + "/" +  "brainPreset"+ "/" + "zep.vti"), www.bytes);
+            System.IO.File.WriteAllBytes( (Application.persistentDataPath + "/" + "zep.vti"), www.bytes);
 
         }
         public void LoadBrainPreset() {
-            if(!File.Exists(Application.persistentDataPath + "/" +  "brainPreset"+ "/" + "zep.vti")) {
+            if(!File.Exists(Application.persistentDataPath + "/"  + "zep.vti")) {
                 UpdateRemoteAssets();
             }
-            LoadData(Application.persistentDataPath + "/" +  "brainPreset"+ "/" + "zep.vti");
+            LoadData(Application.persistentDataPath + "/"  + "zep.vti");
 
             LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "twist_line_1.glyph");
             LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "blue.xml");
