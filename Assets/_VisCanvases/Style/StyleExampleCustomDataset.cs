@@ -11,8 +11,7 @@ namespace SculptingVis
 
         VTK.vtkDataSet _outputVTKDataset;
 
-        public override void UpdateModule()
-        {
+        public override void ComputeDataset() {
             if(_sourceVariableSocket.GetInput() == null) return;
             DataVariable inputVariable = ((DataVariable)_sourceVariableSocket.GetInput());
             Dataset ds = inputVariable.GetDataSet();
@@ -70,35 +69,8 @@ namespace SculptingVis
                 _generatedDataset.SetDataset(_outputVTKDataset);
             }
             SetDataset(_generatedDataset);
-
-
-
-            // if(_pointDataset == null) {
-            //     _pointDataset = PointDataset.CreateInstance<PointDataset>();
-            //     _pointDataset.Init((Variable)(_sourceVariableSocket.GetInput()), (Range<int>)_sampleCount.GetInput(), 0, 0);
-            //     _pointDataset.LoadDataset();
-            //     _variable = _pointDataset.GetAnchor();
-            //     _generatedVariableSocket.SetSourceObject(_variable);
-            //     _derivableVariableSocket.SetSourceObject(_variable);
-            // }
-
-            // Datastream stream = _pointDataset.GetAnchor().GetStream(null,0,0);
-
-            // DatastreamChannel ch = stream.GetRootChannel();
-            // if(ch is PointAnchorDatastreamChannel) {
-                
-            //     int seed = (Range<int>)_sampleSeed.GetInput();
-            //     UnityEngine.Random.seed = (seed);
-            //     Bounds b = ((Variable)_sourceVariableSocket.GetInput()).GetBounds();
-            //     List<Vector3> vs = new List<Vector3>();
-            //     for(int i = 0; i < (Range<int>)_sampleCount.GetInput(); i++) {
-            //         Vector3 v = new Vector3(UnityEngine.Random.Range(b.min.x,b.max.x),UnityEngine.Random.Range(b.min.y,b.max.y),UnityEngine.Random.Range(b.min.z,b.max.z)); 
-            //         vs.Add(v);
-            //     }
-            //     ((PointAnchorDatastreamChannel)ch).SetPoints(vs);
-            // }
-            // Debug.Log("Has " + stream.GetNumberOfElements());
-            base.UpdateModule();
+            UpdateModule();
+            SetUpToDate();
 
         }
 

@@ -164,8 +164,9 @@ namespace SculptingVis
         };
         
 
-        public override void UpdateModule()
-        {
+
+        public override void ComputeDataset() {
+
             if(_sourceVariableSocket.GetInput() == null) return;
             DataVariable inputVariable = ((DataVariable)_sourceVariableSocket.GetInput());
             Dataset ds = inputVariable.GetDataSet();
@@ -276,9 +277,8 @@ namespace SculptingVis
             }
             SetDataset(_generatedDataset);
 
-            
-            base.UpdateModule();
-            
+            UpdateModule();
+            SetUpToDate();
 
         }
 

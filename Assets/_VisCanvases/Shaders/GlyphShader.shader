@@ -253,6 +253,7 @@
 				int insidePlane = 1;
 				if(_usePlane1 == 1 || _usePlane2 == 1 || _usePlane3 == 1)
 					insidePlane = 0;
+					
 				if(_usePlane1 == 1) {
 					if(normDataSpace.x > _plane1min.x && normDataSpace.x < _plane1max.x
 						&& normDataSpace.y > _plane1min.y && normDataSpace.y < _plane1max.y

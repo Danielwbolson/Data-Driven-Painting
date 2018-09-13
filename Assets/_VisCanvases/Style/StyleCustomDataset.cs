@@ -22,6 +22,19 @@ namespace SculptingVis
             
         }
 
+        int version = 0;
+        int computedVersion = 0;
+        public bool IsUpToDate() {
+            return computedVersion >= version;
+        }
+
+        public void SetUpToDate() {
+            computedVersion = version;
+        }
+        public override void UpdateModule() {
+            base.UpdateModule();
+            version++;
+        }
 
 
       

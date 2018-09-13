@@ -176,22 +176,22 @@ namespace SculptingVis
             //if (_colorMapInput.GetInput() != null)
             _pointMaterial.SetTexture("_ColorMap", ((Colormap)_colorModifier._colormapSocket.GetInput()).GetTexture());
             _pointMaterial.SetTexture("_OpacityMap", ((Colormap)_opacityModifier._opacitymapSocket.GetInput()).GetTexture());
-            _pointMaterial.SetFloat("_ScaleMin", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
-            _pointMaterial.SetFloat("_ScaleMax", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
+            //_pointMaterial.SetFloat("_ScaleMin", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
+            //_pointMaterial.SetFloat("_ScaleMax", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
 
 
             _pointMaterial.SetColor("_Color", (Objectify<Color>)_colorModifier._colorSocket.GetInput());
             _pointMaterial.SetFloat("_Opacity", (Range<float>)_opacityModifier._opacitySocket.GetInput());
-            _pointMaterial.SetFloat("_Scale", (Range<float>)_opacityModifier._opacitySocket.GetInput());
+            //_pointMaterial.SetFloat("_Scale", (Range<float>)_opacityModifier._opacitySocket.GetInput());
 
 
             _pointMaterial.SetInt("_useColormap", (Range<bool>)_colorModifier._useVariable.GetInput()?1:0);
             _pointMaterial.SetInt("_useOpacitymap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
-            _pointMaterial.SetInt("_useScalemap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
+           // _pointMaterial.SetInt("_useScalemap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
 
             _pointMaterial.SetInt("_flipColormap", (Range<bool>)_colorModifier._flipColormapSocket.GetInput()?1:0);
             _pointMaterial.SetInt("_flipOpacitymap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
-            _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
+           // _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
 
 
             _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());

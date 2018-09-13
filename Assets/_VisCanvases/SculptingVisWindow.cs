@@ -503,6 +503,13 @@ public class SculptingVisWindow : EditorWindow
         }
           
 
+        if(module is StyleCustomDataset && !showOutputs) {
+            EditorGUI.BeginDisabledGroup(((StyleCustomDataset)module).IsUpToDate());
+            if(GUILayout.Button("Do it!")) {
+                ((StyleCustomDataset)module).ComputeDataset();
+            }
+            EditorGUI.EndDisabledGroup();
+        }
         GUILayout.EndVertical();
     }
 
