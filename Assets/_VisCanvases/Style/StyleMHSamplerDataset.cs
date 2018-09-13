@@ -314,7 +314,7 @@ namespace SculptingVis
             }
         };
   
-        public override void UpdateModule()
+        public override void ComputeDataset()
         {
             if (random == null) random = new Random();
 
@@ -412,9 +412,10 @@ namespace SculptingVis
                 _generatedDataset.SetDataset(_outputVTKDataset);
             }
             SetDataset(_generatedDataset);
-            
-            base.UpdateModule();
-         }
+            UpdateModule();
+            SetUpToDate();
+
+        }
 
         VTKDataset _generatedDataset;
 

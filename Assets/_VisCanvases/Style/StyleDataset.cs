@@ -33,11 +33,12 @@ namespace SculptingVis{
         List<StyleVariable> _variables;
         
         public override void UpdateModule() {
+            if(GetDataset() == null) return;
             if(GetDataset()!= null && _cachedDataset!= null && GetDataset().GetHashCode() != _cachedDataset.GetHashCode()){
                 _anchorVariable = null;
                 _variables = null;
             }
-            if(GetDataset().GetAnchor() != null)
+            if(GetDataset() != null && GetDataset().GetAnchor() != null)
                 if(_anchorVariable == null) _anchorVariable = ScriptableObject.CreateInstance<StyleDataVariable>().Init(GetDataset().GetAnchor());
             if(_variables == null){
                 _variables = new List<StyleVariable>();
@@ -55,6 +56,7 @@ namespace SculptingVis{
                 index++;
             }
             _cachedDataset = GetDataset();
+            base.UpdateModule();
         }
         public override int GetNumberOfSubmodules() {
             if(GetDataset() != null)

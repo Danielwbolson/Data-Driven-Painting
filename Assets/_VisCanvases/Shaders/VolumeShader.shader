@@ -251,7 +251,7 @@
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
-                	if (traveled > len ||  a < 0.001 || (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= 0 || uvw.y >= 1 || uvw.z <= 0 || uvw.z >= 1) )
+                	if (traveled > len ||  a < 0.001 || (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
                 		continue;
 
 

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SculptingVis {
 	public abstract class VisualElement : ScriptableObject {
 		[SerializeField]
-		string _name;
+		string _name = "";
 
 		protected void SetName(string name) {
 			_name = name;

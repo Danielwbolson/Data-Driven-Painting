@@ -9,6 +9,7 @@ namespace SculptingVis{
 		[SerializeField]
 		string _name;
 
+	
 		public override string GetLabel() {
 			return _name;
 		}

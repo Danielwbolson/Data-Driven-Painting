@@ -12,14 +12,53 @@ namespace SculptingVis{
 			return InstanceID + "";
 		}
 
+		
 
+		StyleSocket _triggerSocket;
+		bool triggerSocketAssigned;
+		bool _hideCondition;
 
-			
+		public void HideIfTrue(StyleSocket triggerSocket) {
+			_triggerSocket = triggerSocket;
+			 triggerSocketAssigned = true;
+			_hideCondition = true;
+		}
+
+		public void HideIfFalse(StyleSocket triggerSocket) {
+			_triggerSocket = triggerSocket;
+			triggerSocketAssigned = true;
+			_hideCondition = false;
+		}
+
+		public bool IsEnabled() {
+			if(triggerSocketAssigned) {
+				if(_triggerSocket.IsEnabled() == false)
+					return false;
+				//if(_triggerSocket.GetInput() != null) {
+					if(_triggerSocket.GetInput() is Range<bool>) {
+						if((Range<bool>)(_triggerSocket.GetInput()) == _hideCondition) {
+							return false;
+						} else {
+							return true;
+						}
+					} else {
+						return !_hideCondition;
+					}
+				//} else {
+				//	return _hideCondition;
+				//}
+			} else {
+				return true;
+			}
+ 		}
 
 		[SerializeField]
 		List<StyleSocket> _sockets;
 
 		List<StyleModule> _subModules;
+
+		Dictionary<string, StyleModule> _subModulesByName;
+
 
 
 		List<StyleSocket> GetSockets() {
@@ -34,6 +73,14 @@ namespace SculptingVis{
 			return _subModules;
 		}
 
+		public StyleModule GetSubmoduleByLabel(string name) {
+			if(_subModulesByName == null) _subModulesByName = new Dictionary<string, StyleModule>();
+			if(_subModulesByName.ContainsKey(name)) {
+				return _subModulesByName[name];
+
+			} else return null;
+		}
+
 		public virtual int GetNumberOfSubmodules() {
 			return GetSubmodules().Count;
 		}
@@ -42,8 +89,12 @@ namespace SculptingVis{
 			return GetSubmodules()[i];
 		}
 		public virtual void AddSubmodule(StyleModule module) {
+			if(_subModulesByName == null) _subModulesByName = new Dictionary<string, StyleModule>();
 		 	GetSubmodules().Add(module);
+			_subModulesByName[module.GetLabel()] = module;
 		}
+
+
 		// public virtual int GetNumberOfSockets() {
 		// 	return GetSockets().Count;
 		// }

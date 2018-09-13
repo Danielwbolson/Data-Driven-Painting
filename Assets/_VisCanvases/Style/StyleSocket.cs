@@ -11,6 +11,9 @@ namespace SculptingVis {
 		public override string GetLabel() {
 			return _label;	
 		}
+		public override string ToString() {
+			return GetLabel();
+		}
 		[SerializeField]
 		protected string _label;
 

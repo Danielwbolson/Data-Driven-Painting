@@ -8,6 +8,11 @@ using System.IO;
 
 public class SculptingVisWindow : EditorWindow
 {
+    float map(float s, float a1, float a2, float b1, float b2)
+    {
+        return b1 + (s-a1)*(b2-b1)/(a2-a1);
+    }
+
     string myString = "Hello World";
     bool groupEnabled;
     bool myBool = true;
@@ -194,6 +199,8 @@ public class SculptingVisWindow : EditorWindow
 
 
     void DrawSocket(StyleSocket socket, Rect nest, bool showInputs = true, bool showOutputs = true) {
+        if(socket.IsEnabled() == false)
+            return;
             if (socket.IsInput() && !showInputs) return;
             if (socket.IsOutput() && !showOutputs) return;
 
@@ -215,8 +222,34 @@ public class SculptingVisWindow : EditorWindow
             BeginSocketHook(socket,nest);
 
 
+            string label = socket.GetLabel();
+
+            if(socket is VariableSocket) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Variable)(socket.GetInput())).GetName() + "]";
+                }
+            }
+
             
-                GUILayout.Label(socket.GetLabel());
+            if(socket is StyleTypeSocket<Glyph>) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Glyph)(socket.GetInput())).GetName() + "]";
+                }
+            }
+
+            if(socket is StyleTypeSocket<Colormap>) {
+                if(socket.GetInput() == null) {
+                    label += " [Not Assigned]";
+                } else {
+                    label += " [" + ((Colormap)(socket.GetInput())).GetName() + "]";
+                }
+            }
+
+                GUILayout.Label(label);
                 if(socket is StyleTypeSocket<Range<int>>) {
                     int A = ((Range<int>)socket.GetInput()).value;
                     ((Range<int>)socket.GetInput()).value = EditorGUILayout.IntSlider(((Range<int>)socket.GetInput()).value,((Range<int>)socket.GetInput()).lowerBound,((Range<int>)socket.GetInput()).upperBound);
@@ -264,8 +297,19 @@ public class SculptingVisWindow : EditorWindow
 
 
     }
+
+    void RemoveModule(object module) {
+        GetStyleController().RemoveModule((StyleModule)module);
+    }
+
+    void ClearSocket(object socket) {
+         GetStyleController().ClearSocket((StyleSocket)socket);
+        Repaint();
+    }
     void DrawStyleModule(StyleModule module, Rect nest, bool foldup, bool showInputs = true, bool showOutputs = true)
     {
+        if(module.IsEnabled() == false)
+            return;
         // if(module is SculptingVis.SmartData.Dataset) {
         //     DrawDatasetModule((SculptingVis.SmartData.Dataset)module, nest, showInputs, showOutputs);
         //     return;
@@ -331,7 +375,10 @@ public class SculptingVisWindow : EditorWindow
             // if(labelOutputHook)            GUILayout.FlexibleSpace();
         if(!(module is StyleVisualElement))
             if(GUILayout.Button("-",EditorStyles.miniButton,GUILayout.MaxWidth(20))) {
-                GetStyleController().RemoveModule(module);
+       GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Delete"), false, RemoveModule,module);
+                menu.ShowAsContext();
             }
         // } 
 
@@ -382,6 +429,87 @@ public class SculptingVisWindow : EditorWindow
 
 
 
+        if(module is StyleModifier) {            
+            StyleModifier sm = (StyleModifier)module;
+
+            bool usingVariable = (Range<bool>)(sm._useVariable.GetInput());
+
+            Variable v = null;
+        
+            if(sm._variable.GetInput() != null) 
+                v = ((Variable)sm._variable.GetInput());
+
+
+            float aspectRatio = 5;
+
+            if(usingVariable) {
+                GUILayout.BeginHorizontal();
+                MinMax<float> selectedRange = ((MinMax<float>)sm._variableRange.GetInput());
+
+                if(v != null) 
+                {
+                    float leftVal = map(selectedRange.lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+                    GUILayout.Label("" + leftVal);
+
+                } else {
+                    GUILayout.Label("Unassigned");
+                }
+
+                if(module is StyleColorModifier) {
+                    StyleColorModifier scm = (StyleColorModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    Texture t = ((Colormap)(scm._colormapSocket.GetInput())).GetTexture();
+
+                    GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipColormapSocket.GetInput())) ? -1:1));       
+                        
+                }
+
+            
+
+                if(module is StyleOpacityModifier) {
+                    StyleOpacityModifier scm = (StyleOpacityModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    Texture t = ((Colormap)(scm._opacitymapSocket.GetInput())).GetTexture();
+
+                    GUI.DrawTexture(r,t,ScaleMode.ScaleToFit,true,aspectRatio * (((Range<bool>)(scm._flipOpacityMapSocket.GetInput())) ? -1:1));       
+                        
+                }
+
+               
+                if(v != null) 
+                {
+                    float rightVal = map(selectedRange.upperValue,0,1,v.GetMin().x,v.GetMax().x);
+                    GUILayout.Label("" + rightVal);
+
+                } else {
+                    GUILayout.Label("Unassigned");
+                }
+                GUILayout.EndHorizontal();
+
+            } else {
+                if(module is StyleColorModifier) {
+                    StyleColorModifier scm = (StyleColorModifier) module;
+                    Rect r = GUILayoutUtility.GetRect(25*aspectRatio,25);
+
+                    EditorGUI.DrawRect(r,((Objectify<Color>)scm._colorSocket.GetInput() ));
+                }
+            }
+
+
+
+
+        }
+          
+
+        if(module is StyleCustomDataset && !showOutputs) {
+            EditorGUI.BeginDisabledGroup(((StyleCustomDataset)module).IsUpToDate());
+            if(GUILayout.Button("Do it!")) {
+                ((StyleCustomDataset)module).ComputeDataset();
+            }
+            EditorGUI.EndDisabledGroup();
+        }
         GUILayout.EndVertical();
     }
 
@@ -608,7 +736,25 @@ public class SculptingVisWindow : EditorWindow
         EditorGUILayout.MinMaxSlider("z",ref GetStyleController().GetPlaneMins()[2].z,ref GetStyleController().GetPlaneMaxes()[2].z,0,1);
         EditorGUIUtility.labelWidth = x;
         EditorGUILayout.EndHorizontal();
+
+
+        // if(GUILayout.Button("Update remote files")) {
+
+
+        //     GetStyleController().UpdateRemoteAssets();
+        // }
+
+        if(GUILayout.Button("Load Brain Preset")) {
+            _socketHooks.Clear();
+            _sockets.Clear();
+            GetStyleController().Reset();
+            _columns = null;
+
+            GetStyleController().LoadBrainPreset();
+        }
         EditorGUILayout.EndVertical();
+
+
 
         EditorGUILayout.BeginVertical();
         if (GUILayout.Button("Reset"))
@@ -1036,8 +1182,14 @@ public class SculptingVisWindow : EditorWindow
 
                     if (_socketHooks[socket].Contains(evt.mousePosition) && _sockets[socket].IsInput())
                     {
-                        GetStyleController().ClearSocket(_sockets[socket]);
-                        if(activeSource != null) Debug.Log(activeSource.GetLabel() + " cleared");
+                        if(activeSource == null) {
+                        GenericMenu menu = new GenericMenu();
+                        StyleSocket ssocket = _sockets[socket];
+                        menu.AddItem(new GUIContent("Clear"), false, ClearSocket,ssocket);
+                        
+                        menu.ShowAsContext();
+                        }
+                       
 
                         break;
                     }

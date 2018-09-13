@@ -66,6 +66,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e0b495b2b69051438f05ad621717448, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sphere: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  cylinder: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  sceneCamera: {fileID: 0}
+  cameraPivot: {fileID: 0}
+  dataVerticalPivot: {fileID: 0}
+  dataHorizontalPivot: {fileID: 0}
+  backdropColor: {r: 0, g: 0, b: 0, a: 0}
   _layerTypes:
   - {fileID: 11400000, guid: 558c41a5887024b278db4353801f4d70, type: 2}
   - {fileID: 11400000, guid: 420cc6eebdb5769439b1aa4ea401614d, type: 2}
@@ -74,6 +81,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d3b8e44c4a1faad4c843254921981743, type: 2}
   _customDatasetTypes:
   - {fileID: 11400000, guid: e7701ca9289e44681a004358d924943b, type: 2}
+  - {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f, type: 2}
+  - {fileID: 11400000, guid: 2648bedee2ab947e180d7915ca27db3d, type: 2}
+  - {fileID: 11400000, guid: 802f3d9d520a5f440a0bae250ff07f6d, type: 2}
+  - {fileID: 11400000, guid: 6db8353da2daf534dad9864b85a06590, type: 2}
   _visualElements: []
   _layers: []
   _style: {fileID: 0}
@@ -82,6 +93,7 @@ MonoBehaviour:
   _datasets: []
   _customDatasets:
   - {fileID: 11400000, guid: e7701ca9289e44681a004358d924943b, type: 2}
+  - {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f, type: 2}
   _CanvasPrefab: {fileID: 114996770596923822, guid: 9723f129ebb084465910186df35f3bd9,
     type: 2}
   _canvases: []

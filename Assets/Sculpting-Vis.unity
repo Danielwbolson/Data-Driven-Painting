@@ -1063,16 +1063,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasets.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.size
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 4628534396763062, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1107,31 +1097,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
-      propertyPath: _style
-      value: 
-      objectReference: {fileID: 1296487319}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _userVariables
-      value: 
-      objectReference: {fileID: 950498562}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasets.Array.data[1]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[1]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 1255172970}
+    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
+        type: 2}
+      propertyPath: cameraPivot
+      value: 
+      objectReference: {fileID: 1830216108}
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
       propertyPath: dataVerticalPivot
@@ -1144,189 +1117,14 @@ Prefab:
       objectReference: {fileID: 618002609}
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
-      propertyPath: cameraPivot
+      propertyPath: _style
       value: 
-      objectReference: {fileID: 1830216108}
+      objectReference: {fileID: 1296487319}
     - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
         type: 2}
-      propertyPath: _customDatasetTypes.Array.data[2]
+      propertyPath: _userVariables
       value: 
-      objectReference: {fileID: 11400000, guid: 2648bedee2ab947e180d7915ca27db3d,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[3]
-      value: 
-      objectReference: {fileID: 11400000, guid: 802f3d9d520a5f440a0bae250ff07f6d,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[4]
-      value: 
-      objectReference: {fileID: 11400000, guid: 153e06d7e405f487e9614bb8e19a6f1d,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[5]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[6]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[7]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[8]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[9]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[10]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[11]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[12]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[13]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[14]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[15]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[16]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[17]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[18]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[19]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[20]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[21]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[22]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[23]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[24]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[25]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[26]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[27]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[28]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[29]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[30]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
-    - target: {fileID: 114338737319168918, guid: c6dd0b4fa16c40a43b649847b5a4a64d,
-        type: 2}
-      propertyPath: _customDatasetTypes.Array.data[31]
-      value: 
-      objectReference: {fileID: 11400000, guid: 7fd9f34d83b40ae4d8cf6c3b4e79e63f,
-        type: 2}
+      objectReference: {fileID: 950498562}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6dd0b4fa16c40a43b649847b5a4a64d, type: 2}
   m_IsPrefabAsset: 0
