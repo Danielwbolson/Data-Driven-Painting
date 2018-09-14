@@ -31,8 +31,8 @@ namespace SculptingVis
         public void SetUpToDate() {
             computedVersion = version;
         }
-        public override void UpdateModule() {
-            base.UpdateModule();
+        public override void UpdateModule(string updatedSocket = null) {
+            base.UpdateModule(updatedSocket);
             version++;
         }
 

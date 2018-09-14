@@ -32,7 +32,7 @@ namespace SculptingVis{
         StyleVariable _anchorVariable;
         List<StyleVariable> _variables;
         
-        public override void UpdateModule() {
+        public override void UpdateModule(string updatedSocket = null) {
             if(GetDataset() == null) return;
             if(GetDataset()!= null && _cachedDataset!= null && GetDataset().GetHashCode() != _cachedDataset.GetHashCode()){
                 _anchorVariable = null;

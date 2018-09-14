@@ -32,7 +32,7 @@ namespace SculptingVis
 
 
             _scaleRangeSocket = (new StyleTypeSocket<MinMax<float>>()).Init("Scale Range",this);
-            _scaleRangeSocket.SetDefaultInputObject(new MinMax<float>(0,1));
+            _scaleRangeSocket.SetDefaultInputObject(new MinMax<float>(0,0.1f));
             _scaleRangeSocket.HideIfFalse(_useVariable);
             AddSubmodule(_scaleRangeSocket);
 

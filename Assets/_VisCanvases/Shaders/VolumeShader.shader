@@ -50,16 +50,15 @@
 			float4 _MainTex_ST;
 			
 			sampler2D_float  _CameraDepthTexture;
-			sampler3D _VolumeTexture;
+			// sampler3D _VolumeTexture;
 			sampler2D _TransferColor;
 			sampler2D _TransferAlpha;
 			float4 _VolumeDimensions;
 			float _XSlice;
 			float _ZSlice;
 			float _OpacityMultiplier;
-		int _useColormap;
-		int _flipColormap;
 		float4 _Color;
+		float4 _Opacity;
 		int _stagger;
 
 
@@ -132,9 +131,11 @@
 
 			
 			sampler2D _ColorMap;
-
 			sampler2D _OpacityMap;
-
+			int _useColormap;
+			int _useOpacitymap;
+			int _flipColormap;
+			int _flipOpacitymap;
 
 			v2f vert (appdata v)
 			{
@@ -165,6 +166,7 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 
+				//    return float4(1,0,0,1);
 
 
 				// Compute projective scaling factor...
@@ -201,7 +203,6 @@
 			   	float3 frontCoord = direction * frontDepth + i.modelSpaceCameraPos;
 			   	backCoord = backCoord+0.5;
 			   	frontCoord = frontCoord+0.5;
-				
 				float3 dir = normalize(direction);
 
                 float3 uvw = float3(0,0,0);
@@ -215,7 +216,7 @@
                 fixed4 col = float4(0,1,0,1);
 				float3 X = GetVariable3DTextureSample(1,backCoord+0.1);
 				col.rgb = X.rgb;
-				//return col;
+				//return float4(frontCoord,1);
 
                 //return col;
                 float percent = 0;
@@ -245,8 +246,10 @@
 
 					//percent = progress/stepCount;
                 	uvw = frontCoord + traveled * normalize(dist);
-                	float4 V = tex3D(_DataVolume0,uvw);
+                	float4 V;// = tex3D(_DataVolume0,uvw);
 					V.rgb = NormalizeData(1,GetVariable3DTextureSample(1,uvw));
+					float4 O;
+					O.rgb = NormalizeData(3,GetVariable3DTextureSample(3,uvw));
 
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
@@ -256,22 +259,33 @@
 
 
 
-					float colormapU = a;
+					float colormapU = V.x;
 					if(_flipColormap)
-						colormapU = -colormapU;
+						colormapU = 1-colormapU;
+					colormapU = clamp(colormapU,0.01,0.99);
 
+
+					float opacitymapU = O.x;
+					if(_flipColormap)
+						opacitymapU = 1-opacitymapU;
+					opacitymapU = clamp(opacitymapU,0.01,0.99);
 
 
 					float4 T = tex2D(_ColorMap,float2(colormapU,0.5));
-					float A = tex2D(_OpacityMap,a).r*_OpacityMultiplier;
+					float A = tex2D(_OpacityMap,opacitymapU).r*_OpacityMultiplier;
 
 					float4 src = 0;
 	        		float alpha = A;
 
+					if(_useOpacitymap == 1)
+						alpha = A;
+					else
+						alpha = _Opacity;
+
 						float3 c = float3(1,1,1);
 
 
-					fixed4 col = tex2D(_ColorMap,float2(colormapU,0.5));
+					fixed4 col = T;
 					if(_useColormap)
 						c *= T.xyz;
 					else

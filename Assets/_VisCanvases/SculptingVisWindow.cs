@@ -254,27 +254,29 @@ public class SculptingVisWindow : EditorWindow
                     int A = ((Range<int>)socket.GetInput()).value;
                     ((Range<int>)socket.GetInput()).value = EditorGUILayout.IntSlider(((Range<int>)socket.GetInput()).value,((Range<int>)socket.GetInput()).lowerBound,((Range<int>)socket.GetInput()).upperBound);
                     if(A != ((Range<int>)socket.GetInput()).value)
-                        socket.GetModule().UpdateModule();
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
                 }
+
+                
 
                 if(socket is StyleTypeSocket<Range<float>>) {
                     float A = ((Range<float>)socket.GetInput()).value;
                     ((Range<float>)socket.GetInput()).value = EditorGUILayout.Slider(((Range<float>)socket.GetInput()).value,((Range<float>)socket.GetInput()).lowerBound,((Range<float>)socket.GetInput()).upperBound);
                     if(A != ((Range<float>)socket.GetInput()).value)
-                        socket.GetModule().UpdateModule();
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
                 }
                 if(socket is StyleTypeSocket<Range<bool>>) {
                     bool A = ((Range<bool>)socket.GetInput()).value;
                     ((Range<bool>)socket.GetInput()).value = EditorGUILayout.Toggle(((Range<bool>)socket.GetInput()).value);
                     if(A != ((Range<bool>)socket.GetInput()).value)
-                        socket.GetModule().UpdateModule();
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
                 }
 
                 if(socket is StyleTypeSocket<Objectify<Color>>) {
                     Color A = ((Objectify<Color>)socket.GetInput()).value;
                     ((Objectify<Color>)socket.GetInput()).value = EditorGUILayout.ColorField(A);
                     if(A != ((Objectify<Color>)socket.GetInput()).value) {
-                        socket.GetModule().UpdateModule();
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
                     }
                 }
                 if(socket is StyleTypeSocket<MinMax<float>>) {
@@ -287,11 +289,21 @@ public class SculptingVisWindow : EditorWindow
                     if(A != a || B != b) {
                         ((MinMax<float>)socket.GetInput()).lowerValue = a;
                         ((MinMax<float>)socket.GetInput()).upperValue = b;
-                        socket.GetModule().UpdateModule();
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
 
                     }
                 }
+                if(socket is StyleTypeSocket<Objectify<float>>) {
+                    float A = ((Objectify<float>)socket.GetInput()).value;
 
+                    float a = A;
+                    A = EditorGUILayout.FloatField(a);
+                    if(A != a) {
+                        ((Objectify<float>)socket.GetInput()).value = A;
+                        socket.GetModule().UpdateModule(socket.GetUniqueIdentifier());
+
+                    }
+                }
                 GUILayout.FlexibleSpace();
                 EndSocketHook(socket,nest);
 
@@ -1220,6 +1232,7 @@ public class SculptingVisWindow : EditorWindow
                                 link.SetSource(activeSource);
                                 link.SetDestination(_sockets[socket]);
                                 GetStyleController().AddLink(link);
+                                _sockets[socket].GetModule().UpdateModule(socket);
                             }
                             activeSource = null;
                             break;

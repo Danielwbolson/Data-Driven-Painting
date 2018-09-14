@@ -398,7 +398,7 @@ namespace SculptingVis
 
         }
 
-		public override void UpdateModule() {
+		public override void UpdateModule(string updatedSocket = null) {
 
             //  if(_colorVariable.GetInput() != null) {
 

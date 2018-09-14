@@ -112,7 +112,7 @@ namespace SculptingVis{
 			return "Module";
 		}
 
-		public virtual void UpdateModule() {
+		public virtual void UpdateModule(string updatedSocket = null) {
 			foreach(var socket in GetSockets()) {
 				foreach(var link in socket.GetLinks()) {
 					link.UpdateLink();

@@ -113,7 +113,7 @@ namespace SculptingVis
 
         }
 
-		public override void UpdateModule() {
+		public override void UpdateModule(string updatedSocket = null) {
 
 		}
 
