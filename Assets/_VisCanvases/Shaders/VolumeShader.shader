@@ -266,7 +266,7 @@
 
 
 					float opacitymapU = O.x;
-					if(_flipColormap)
+					if(_flipOpacitymap)
 						opacitymapU = 1-opacitymapU;
 					opacitymapU = clamp(opacitymapU,0.01,0.99);
 
