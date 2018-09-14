@@ -662,24 +662,30 @@ namespace SculptingVis
             {
                 {
                     DirectoryInfo info = new DirectoryInfo(path);
-                    FileInfo[] fileInfo = info.GetFiles();
-                    foreach (var file in fileInfo)
-                        LoadVisualElements(file.FullName);
+                    if(info.Exists) {
+                        FileInfo[] fileInfo = info.GetFiles();
+                        foreach (var file in fileInfo)
+                            LoadVisualElements(file.FullName);
+                    }
+                    
                 }
 
 
                 {
                     DirectoryInfo info = new DirectoryInfo(path);
-                    DirectoryInfo[] fileInfo = info.GetDirectories();
-                    foreach (var file in fileInfo)
-                        LoadVisualElements(file.FullName);
+                    if(info.Exists) {
+                        DirectoryInfo[] fileInfo = info.GetDirectories();
+                        foreach (var file in fileInfo)
+                            LoadVisualElements(file.FullName);
+                    }
+                    
                 }
             }
 
 			else {
                 VisualElement[] results = VisualElement.LoadFile(path);
 
-                if(results != null) {
+                if(results != null && results.Length > 0) {
                     foreach(var r in results) {
 				        GetVisualElements().Add(ScriptableObject.CreateInstance<StyleVisualElement>().Init(r));
                     }
