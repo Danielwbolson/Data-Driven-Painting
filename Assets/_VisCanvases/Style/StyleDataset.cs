@@ -60,7 +60,7 @@ namespace SculptingVis{
         }
         public override int GetNumberOfSubmodules() {
             if(GetDataset() != null)
-                return base.GetNumberOfSubmodules()+ GetDataset().GetVariables().Length;
+                return base.GetNumberOfSubmodules()+ GetDataset().GetVariables().Length + ((_anchorVariable != null)?1:0);
             return base.GetNumberOfSubmodules();
 			//return GetAnchors().Count + GetAnchoredVariables().Count + GetContinuousVariables().Count;
 		}
