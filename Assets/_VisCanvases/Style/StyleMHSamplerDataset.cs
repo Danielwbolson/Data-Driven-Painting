@@ -87,7 +87,8 @@ namespace SculptingVis
                     int offset = 0;
                     for (int j = 0; j < 3; j++)
                     {
-                        bool isSet = 0 == (i & ((2 - j) << j));
+                        bool isSet = 1 == (i & (1 << j));
+                        //bool isSet = 1 == (i & (1 << (2 - j)));
                         offset = (int)(offset + ((ijk[j] + (isSet ? 1 : 0)) * incs[j]));
                     }
                     indx[i] = offset;
@@ -157,6 +158,45 @@ namespace SculptingVis
             }
 
             public double get_stddev() { return stdDev; }
+
+            public Vector3 get_starting_point()
+            {
+                double mm = minmax[0] + mapping[0] * (minmax[1] - minmax[0]);
+                double MM = minmax[0] + mapping[1] * (minmax[1] - minmax[0]);
+
+                double best_v = mm;
+                int best_i = 0, best_j = 0, best_k = 0;
+                int indx = 0;
+                double[] vv = new double[1];
+                for (int k = 0; k < counts[0]; k++)
+                {
+                    for (int j = 0; j < counts[1]; j++)
+                    {
+                        for (int i = 0; i < counts[2]; i++)
+                        {
+                            density.GetTuple(indx++, vv);
+                            double v = vv[0];
+                            if (v >= mm && v <= MM && v > best_v)
+                            {
+                                best_i = i;  
+                                best_j = j;
+                                best_k = k;
+                                best_v = v;
+
+                            }
+                        }
+                    }
+                }
+
+                if (best_v == mm)
+                {
+                    Debug.Log("No data in range");
+                    return center();
+                }
+
+                Vector3 best_point = new Vector3((float)(origin[2] + best_i * deltas[2]), (float)(origin[1] + best_j * deltas[1]), (float)(origin[2] + best_k * deltas[2]));
+                return best_point;
+            }
 
             public double Q(Vector3 point, long[] indx, double[] dxyz, int p)
             {
@@ -343,13 +383,13 @@ namespace SculptingVis
             long[] corner_indices = new long[8];      // Corner indices for point in contention
             double[] dxyz = new double[3];          // Deltas within cell for point in contention
 
-            Vector3 point = mh_sampler.center();
+            Vector3 point = mh_sampler.get_starting_point();
 
             mh_sampler.interpolant(point, corner_indices, dxyz);
             double point_density = mh_sampler.Q(point, corner_indices, dxyz, 1);
 
 
-            int misses = 0, last_k = 0;
+            int misses = 0;
             while (interpolators.get_number_of_samples() < numberOfRequestedSamples)
             {
                 Vector3 candidate = point + GaussianRandomVector(mh_sampler.get_stddev() * stepScale);
@@ -379,23 +419,17 @@ namespace SculptingVis
                 else
                 {
                     misses = misses + 1;
-                    if (misses > 1000)
+                    if ((misses % 1000) == 0)
                     {
-                        if (interpolators.get_number_of_samples() > last_k)
-                        {
-                            // then we know the first random walk found some goo; start another walk
-                            point = mh_sampler.center();
-                            mh_sampler.interpolant(point, corner_indices, dxyz);
-                            point_density = mh_sampler.Q(point, corner_indices, dxyz, 1);
-                            misses = 0;
-                            last_k = interpolators.get_number_of_samples();
-                        }
+                        int k = misses / 1000;
+                        if (k < 4) stepScale = stepScale * 2;
                         else
                         {
                             Debug.Log("M-H excessive misses");
                             break;
                         }
                     }
+
                 }
             }
 
