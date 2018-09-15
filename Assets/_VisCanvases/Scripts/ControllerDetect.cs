@@ -78,42 +78,57 @@ public class ControllerDetect : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        GameObject c = ParentWithTag(other.transform, tag).gameObject;
-        if (c) {
-            if (_controller == null) {
-                _controller = c;
-                _controllerCollider = other;
-                _controllerTouch = _controller.GetComponent<VRTK.VRTK_InteractTouch>();
-                _controllerGrab = _controller.GetComponent<VRTK.VRTK_InteractGrab>();
-            } else if (_controller != c) {
-                _secondaryController = c;
-                _secondaryControllerCollider = other;
-                _secondaryControllerTouch = _secondaryController.GetComponent<VRTK.VRTK_InteractTouch>();
-                _secondaryControllerGrab = _secondaryController.GetComponent<VRTK.VRTK_InteractGrab>();
+        if (ParentWithTag(other.transform, tag))
+        {
+            GameObject c = ParentWithTag(other.transform, tag).gameObject;
+            if (c)
+            {
+                if (_controller == null)
+                {
+                    _controller = c;
+                    _controllerCollider = other;
+                    _controllerTouch = _controller.GetComponent<VRTK.VRTK_InteractTouch>();
+                    _controllerGrab = _controller.GetComponent<VRTK.VRTK_InteractGrab>();
+                }
+                else if (_controller != c)
+                {
+                    _secondaryController = c;
+                    _secondaryControllerCollider = other;
+                    _secondaryControllerTouch = _secondaryController.GetComponent<VRTK.VRTK_InteractTouch>();
+                    _secondaryControllerGrab = _secondaryController.GetComponent<VRTK.VRTK_InteractGrab>();
+                }
             }
+
         }
     }
 
     private void OnTriggerExit(Collider other) {
-        GameObject c = ParentWithTag(other.transform, tag).gameObject;
-        if (c) {
-            // If the object to leave was our primary controller, we need to give power
-            // to our secondary controller
-            if (c == _controller) {
-                _controller = _secondaryController;
-                _controllerCollider = _secondaryControllerCollider;
-                _controllerGrab = _secondaryControllerGrab;
-                _controllerTouch = _secondaryControllerTouch;
+        if (ParentWithTag(other.transform, tag))
+        {
+            GameObject c = ParentWithTag(other.transform, tag).gameObject;
+            if (c)
+            {
+                // If the object to leave was our primary controller, we need to give power
+                // to our secondary controller
+                if (c == _controller)
+                {
+                    _controller = _secondaryController;
+                    _controllerCollider = _secondaryControllerCollider;
+                    _controllerGrab = _secondaryControllerGrab;
+                    _controllerTouch = _secondaryControllerTouch;
 
-                _secondaryController = null;
-                _secondaryControllerCollider = null;
-                _secondaryControllerGrab = null;
-                _secondaryControllerTouch = null;
-            } else if (c == _secondaryController) {
-                _secondaryController = null;
-                _secondaryControllerCollider = null;
-                _secondaryControllerGrab = null;
-                _secondaryControllerTouch = null;
+                    _secondaryController = null;
+                    _secondaryControllerCollider = null;
+                    _secondaryControllerGrab = null;
+                    _secondaryControllerTouch = null;
+                }
+                else if (c == _secondaryController)
+                {
+                    _secondaryController = null;
+                    _secondaryControllerCollider = null;
+                    _secondaryControllerGrab = null;
+                    _secondaryControllerTouch = null;
+                }
             }
         }
     }
@@ -129,3 +144,4 @@ public class ControllerDetect : MonoBehaviour {
         return start.tag == tag ? start : null;
     }
 }
+
