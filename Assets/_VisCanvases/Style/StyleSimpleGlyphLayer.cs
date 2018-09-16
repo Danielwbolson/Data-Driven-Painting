@@ -286,7 +286,7 @@ namespace SculptingVis
 			AddSubmodule(_glyphInput);
 
             _maxGlyphs = (new StyleTypeSocket<Range<int>>()).Init("Max glyphs", this);
-            _maxGlyphs.SetDefaultInputObject((new Range<int>(0, 60000, 1000)));
+            _maxGlyphs.SetDefaultInputObject((new Range<int>(0, 60000, 10000)));
             AddSubmodule(_maxGlyphs);
 
             _anchorVariable = new VariableSocket();
