@@ -11,6 +11,12 @@ namespace SculptingVis
     [CreateAssetMenu()]
     public class StyleMHSamplerDataset : StyleCustomDataset
     {
+
+        float map(float s, float a1, float a2, float b1, float b2)
+        {
+            return b1 + (s-a1)*(b2-b1)/(a2-a1);
+        }
+
         vtkDataSet _outputVTKDataset;
         Random random;
         double mean = 0.0;
@@ -370,8 +376,8 @@ namespace SculptingVis
 
             double[] mappingRange = new double[2];
 
-            mappingRange[0] = ((Range<float>)_densityMapMin.GetInput());
-            mappingRange[1] = ((Range<float>)_densityMapMax.GetInput());
+            mappingRange[0] = ((MinMax<float>)_variableRange.GetInput()).lowerValue;
+            mappingRange[1] = ((MinMax<float>)_variableRange.GetInput()).upperValue;
 
             vtkDataSet inputVTKDataset = ((VTKDataset)ds).GetVTKDataset();
 
@@ -454,6 +460,52 @@ namespace SculptingVis
 
         }
 
+        
+
+        public override void UpdateModule(string updatedSocket = null) {
+                        Variable v = null;
+            v = ((Variable)_sourceVariableSocket.GetInput());
+            if(updatedSocket!= null) {
+            if(updatedSocket  == _variableDataMax.GetUniqueIdentifier() ) {
+                    
+
+                if(_sourceVariableSocket.GetInput() != null)  {
+                    ((Objectify<float>)_variableDataMax.GetInput()).value = Mathf.Min(((Objectify<float>)(_variableDataMax.GetInput())).value,v.GetMax().x);
+
+                    ((MinMax<float>)_variableRange.GetInput()).upperValue = map(((Objectify<float>)_variableDataMax.GetInput()).value,v.GetMin().x,v.GetMax().x,0,1);
+                }
+            }
+            if(updatedSocket == _variableDataMin.GetUniqueIdentifier()) {
+                    
+                if(_sourceVariableSocket.GetInput() != null)  {
+                    float newVal = ((Objectify<float>)(_variableDataMin.GetInput())).value;
+                    float minVal = v.GetMin().x;
+                    float best = Mathf.Max(newVal,minVal);
+                    ((Objectify<float>)_variableDataMin.GetInput()).value = best;
+
+
+                    float newnormalized = map(((Objectify<float>)_variableDataMin.GetInput()).value,v.GetMin().x,v.GetMax().x,0,1);
+
+                    ((MinMax<float>)_variableRange.GetInput()).lowerValue = map(((Objectify<float>)_variableDataMin.GetInput()).value,v.GetMin().x,v.GetMax().x,0,1);
+                }
+            }
+            if(updatedSocket  == _variableRange.GetUniqueIdentifier() ) {
+                    
+                if(_sourceVariableSocket.GetInput() != null)  {
+
+                    ((Objectify<float>)_variableDataMin.GetInput()).value = map(((MinMax<float>)_variableRange.GetInput()).lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+                    ((Objectify<float>)_variableDataMax.GetInput()).value = map(((MinMax<float>)_variableRange.GetInput()).upperValue,0,1,v.GetMin().x,v.GetMax().x);
+                }
+            }
+            if(updatedSocket  == _sourceVariableSocket.GetUniqueIdentifier() ) {
+                if(_sourceVariableSocket.GetInput() != null)  {
+                    ((Objectify<float>)_variableDataMin.GetInput()).value = map(((MinMax<float>)_variableRange.GetInput()).lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+                    ((Objectify<float>)_variableDataMax.GetInput()).value = map(((MinMax<float>)_variableRange.GetInput()).upperValue,0,1,v.GetMin().x,v.GetMax().x);
+                }
+            }
+            }
+            base.UpdateModule(updatedSocket);
+        }
         VTKDataset _generatedDataset;
 
         [SerializeField]
@@ -471,11 +523,21 @@ namespace SculptingVis
         [SerializeField]
         public StyleTypeSocket<Range<int>> _sampleCount;
 
-        [SerializeField]
-        public StyleTypeSocket<Range<float>> _densityMapMax;
+        // [SerializeField]
+        // public StyleTypeSocket<Range<float>> _densityMapMax;
+
+        // [SerializeField]
+        // public StyleTypeSocket<Range<float>> _densityMapMin;
 
         [SerializeField]
-        public StyleTypeSocket<Range<float>> _densityMapMin;
+        public StyleTypeSocket<Objectify<float>> _variableDataMin;
+        
+        [SerializeField]
+        public StyleTypeSocket<Objectify<float>> _variableDataMax;
+        
+        [SerializeField]
+        public StyleTypeSocket<MinMax<float>> _variableRange;
+
 
         [SerializeField]
         public StyleSocket _generatedDatasetSocket;
@@ -506,13 +568,31 @@ namespace SculptingVis
             _stepScale.SetDefaultInputObject((new Range<float>((float)0.1, (float)10.0, (float)1.0)));
             AddSubmodule(_stepScale);
 
-            _densityMapMax = (new StyleTypeSocket<Range<float>>()).Init("Density Mapping Max", this);
-            _densityMapMax.SetDefaultInputObject((new Range<float>((float)0.0, (float)1.0, (float)1.0)));
-            AddSubmodule(_densityMapMax);
+            // _densityMapMax = (new StyleTypeSocket<Range<float>>()).Init("Density Mapping Max", this);
+            // _densityMapMax.SetDefaultInputObject((new Range<float>((float)0.0, (float)1.0, (float)1.0)));
+            // AddSubmodule(_densityMapMax);
 
-            _densityMapMin = (new StyleTypeSocket<Range<float>>()).Init("Density Mapping Min", this);
-            _densityMapMin.SetDefaultInputObject((new Range<float>((float)0.0, (float)1.0, (float)0.0)));
-            AddSubmodule(_densityMapMin);
+            // _densityMapMin = (new StyleTypeSocket<Range<float>>()).Init("Density Mapping Min", this);
+            // _densityMapMin.SetDefaultInputObject((new Range<float>((float)0.0, (float)1.0, (float)0.0)));
+            // AddSubmodule(_densityMapMin);
+
+            _variableRange = new StyleTypeSocket<MinMax<float>>();
+            _variableRange.Init("Data Range",this);
+            _variableRange.SetDefaultInputObject(new MinMax<float>(0,1));
+
+            AddSubmodule(_variableRange);
+
+            _variableDataMin = new StyleTypeSocket<Objectify<float>>();
+            _variableDataMin.Init("Data min",this);
+            _variableDataMin.SetDefaultInputObject(new Objectify<float>(0));
+
+            AddSubmodule(_variableDataMin);
+
+            _variableDataMax = new StyleTypeSocket<Objectify<float>>();
+            _variableDataMax.Init("Data max",this);
+            _variableDataMax.SetDefaultInputObject(new Objectify<float>(1));
+
+            AddSubmodule(_variableDataMax);
 
  
             return this;
