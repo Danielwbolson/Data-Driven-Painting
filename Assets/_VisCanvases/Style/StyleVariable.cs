@@ -7,6 +7,9 @@ namespace SculptingVis{
 		[SerializeField]
 		protected Variable _variable;
 
+		public override string GetTypeTag() {
+			return "VARIABLE";
+		}
 
         public void SetVariable(Variable v) {
             _variable = v;
