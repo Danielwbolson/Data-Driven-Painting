@@ -21,7 +21,6 @@ namespace SculptingVis
         }
 
         vtkDataSet _outputVTKDataset;
-        Random random;
         double mean = 0.0;
 
         public float GaussianRandomNumber(double stdDev)
@@ -368,7 +367,6 @@ namespace SculptingVis
   
         public override void ComputeDataset()
         {
-            if (random == null) random = new Random();
 
             if (_sourceVariableSocket.GetInput() == null) return;
             DataVariable inputVariable = ((DataVariable)_sourceVariableSocket.GetInput());

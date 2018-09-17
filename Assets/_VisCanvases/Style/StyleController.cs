@@ -279,6 +279,7 @@ namespace SculptingVis
 
             if(!json["links"].IsNull) 
                 foreach(var j in json["links"].list) {
+                    if(j.GetField("sourcesocket").str == j.GetField("destinationsocket").str) continue;
                     StyleLink link = new StyleLink();
                     link.SetSource((StyleSocket)StyleModule.GetModuleMap() [j.GetField("sourcesocket").str]);
                     link.SetDestination((StyleSocket)StyleModule.GetModuleMap() [j.GetField("destinationsocket").str]);
