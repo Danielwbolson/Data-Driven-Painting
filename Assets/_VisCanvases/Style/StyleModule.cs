@@ -39,7 +39,7 @@ namespace SculptingVis{
 			applySeralization(json);
 			if(json.HasField("submodules")) {
 				var submods = json["submodules"].list;
-				for(int i = 0; i <submods.Count; i++) {
+				for(int i = 0; i <GetNumberOfSubmodules(); i++) {
 					if(submods[i].GetField("typetag").str != GetSubmodule(i).GetTypeTag()) {
 						Debug.LogError("MISMATCH!");
 					} else {

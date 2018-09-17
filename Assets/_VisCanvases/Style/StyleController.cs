@@ -235,6 +235,9 @@ namespace SculptingVis
 
                     }
                 }
+
+            Dictionary<string, JSONObject> customDatasets = new Dictionary<string, JSONObject>();
+
             if(!json["samplers"].IsNull)
                 foreach(var j in json["samplers"].list) {
                     
@@ -252,6 +255,7 @@ namespace SculptingVis
 
                             
                         GetCustomDatasets()[GetCustomDatasets().Count-1].ApplySerialization(j);
+                        customDatasets[GetCustomDatasets()[GetCustomDatasets().Count-1].GetUniqueIdentifier()] = j;
                     }
 
             if(!json["layers"].IsNull)
@@ -279,7 +283,14 @@ namespace SculptingVis
                     link.SetSource((StyleSocket)StyleModule.GetModuleMap() [j.GetField("sourcesocket").str]);
                     link.SetDestination((StyleSocket)StyleModule.GetModuleMap() [j.GetField("destinationsocket").str]);
                     AddLink(link);
+                    if(((StyleSocket)StyleModule.GetModuleMap() [j.GetField("destinationsocket").str]).GetModule() is StyleCustomDataset) {
+                        StyleCustomDataset scd = ((StyleCustomDataset)((StyleSocket)StyleModule.GetModuleMap() [j.GetField("destinationsocket").str]).GetModule());
+
+                        scd.ComputeDataset();
+                        scd.ApplySerialization(customDatasets[scd.GetUniqueIdentifier()]);
+                    }
                 }
+                
 
                 
 
