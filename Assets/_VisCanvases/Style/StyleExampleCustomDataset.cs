@@ -8,7 +8,9 @@ namespace SculptingVis
     [CreateAssetMenu()]
     public class StyleExampleCustomDataset : StyleCustomDataset
     {
-
+		public override string GetTypeTag() {
+			return "RANDOM_SAMPLER";
+		}
         VTK.vtkDataSet _outputVTKDataset;
 
         public override void ComputeDataset() {

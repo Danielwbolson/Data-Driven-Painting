@@ -32,7 +32,7 @@ namespace SculptingVis{
 		}
 
 		public virtual string GetTypeTag() {
-			return "Didn't set a TypeTag for " + GetLabel();
+			return (""+this.GetType()).ToUpper() + "_UNTAGGED";
 		}
 		public void ApplySerialization(JSONObject json) {
 			SetInstanceID(json.GetField("id").str);

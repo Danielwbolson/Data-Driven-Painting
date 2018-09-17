@@ -8,7 +8,9 @@ namespace SculptingVis
     [CreateAssetMenu()]
     public class StyleRegularGridCustomDataset : StyleCustomDataset
     {
-
+		public override string GetTypeTag() {
+			return "REGULAR_SAMPLER";
+		}
         VTK.vtkDataSet _outputVTKDataset;
 
 
@@ -137,7 +139,7 @@ namespace SculptingVis
             AddSubmodule(_sourceVariableSocket);
 
             _sampleCount = (new StyleTypeSocket<Range<int>>()).Init("Number of samples (^3)", this);
-            _sampleCount.SetDefaultInputObject((new Range<int>(1, 100,1000)));
+            _sampleCount.SetDefaultInputObject((new Range<int>(1, 10,100)));
             AddSubmodule(_sampleCount);
 
 

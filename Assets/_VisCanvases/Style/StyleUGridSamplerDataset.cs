@@ -11,7 +11,9 @@ namespace SculptingVis
     public class StyleUGridSamplerDataset : StyleCustomDataset
     {
         vtkDataSet _outputVTKDataset;
-
+		public override string GetTypeTag() {
+			return "UNSTRUCTURED_SAMPLER";
+		}
         public static double[] barycentric_weights(int cType, long[] pids, vtkDataArray points)
         {
             double[] bary;
