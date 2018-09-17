@@ -25,7 +25,7 @@ namespace SculptingVis
         }
 
         public string GetBrainPath() {
-            if (brain_path == "") astro_40_path = Application.persistentDataPath + "/" + "DefaultResources" + "/" + "data" + "/" + "zep.vti";
+            if (brain_path == "") brain_path = Application.persistentDataPath + "/" + "DefaultResources" + "/" + "data" + "/" + "zep.vti";
             if(!System.IO.Directory.Exists(Path.GetDirectoryName(brain_path))) {
                 System.IO.Directory.CreateDirectory(Path.GetDirectoryName(brain_path));
             }            
@@ -46,9 +46,9 @@ namespace SculptingVis
                 LoadData(GetAstroPath());
             }
             if(tag.Contains("brain")) {
-                if(!File.Exists(GetAstroPath()))
+                if(!File.Exists(GetBrainPath()))
                     UpdateRemoteAssets("brain");
-                LoadData(GetAstroPath());
+                LoadData(GetBrainPath());
             }
 
             if(tag.Contains("default") && tag.Contains("glyph")) {
@@ -77,7 +77,7 @@ namespace SculptingVis
 
             if(tag.Contains("brain")) {
 
-                DownloadAndExtract("https://github.com/joh08230/SculptingVisFiles/blob/master/zep.vti?raw=true", Path.GetDirectoryName(GetBrainPath()));
+                Download("https://github.com/joh08230/SculptingVisFiles/blob/master/zep.vti?raw=true", GetBrainPath());
 
             }
             if(tag.Contains("default")) {
@@ -129,12 +129,12 @@ namespace SculptingVis
 
         public static void DownloadAndExtract(string zipUrl, string destinationFolder) {
 
-            string zipFile = Path.Combine(destinationFolder,"TEMP_ZIP.zip");
+            string zipFile = destinationFolder + "/" + "TEMP_ZIP_" + zipUrl.GetHashCode() + ".zip";
             System.IO.Directory.CreateDirectory(Path.GetDirectoryName(zipFile));
             Download(zipUrl,zipFile);
 
             ExtractArchive(zipFile,destinationFolder );
-            System.IO.File.Delete(zipFile);
+            //System.IO.File.Delete(zipFile);
 
         }
 
