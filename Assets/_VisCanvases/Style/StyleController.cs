@@ -43,7 +43,8 @@ namespace SculptingVis
             if(tag.Contains("astro")) {
                 if(!File.Exists(GetAstroPath()))
                     UpdateRemoteAssets("astro");
-                LoadData(GetAstroPath());
+                if(File.Exists(GetAstroPath()))
+                    LoadData(GetAstroPath());
             }
             if(tag.Contains("brain")) {
                 if(!File.Exists(GetBrainPath()))
@@ -70,8 +71,8 @@ namespace SculptingVis
         }
         public virtual void UpdateRemoteAssets(string tag) {
             if(tag.Contains("astro")) {
-
-                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/vti0040-all-velocity-floats.zip", Path.GetDirectoryName(GetAstroPath()));
+                Debug.Log("You'll have to put the vti0040-all-velocity-floats.vti file into the folder " + GetAstroPath());
+                //Download("https://www.sculpting-vis.org/wp-content/uploads/2018/09/vti0040-all-velocity-floats.txt", GetAstroPath());
 
             }
 
@@ -131,7 +132,7 @@ namespace SculptingVis
 
             string zipFile = destinationFolder + "/" + "TEMP_ZIP_" + zipUrl.GetHashCode() + ".zip";
             System.IO.Directory.CreateDirectory(Path.GetDirectoryName(zipFile));
-            Download(zipUrl,zipFile);
+            //Download(zipUrl,zipFile);
 
             ExtractArchive(zipFile,destinationFolder );
             //System.IO.File.Delete(zipFile);
@@ -854,6 +855,8 @@ namespace SculptingVis
         // Use this for initialization
         void Start()
         {
+            Debug.Log("Place the file vti0040-all-velocity-floats.vti at:");
+            Debug.Log(GetAstroPath());
             Reset();
             //#if UNITY_EDITOR
             QualitySettings.vSyncCount = 0;  // VSync must be disabled
