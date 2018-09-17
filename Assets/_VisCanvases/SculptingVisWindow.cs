@@ -314,13 +314,17 @@ public class SculptingVisWindow : EditorWindow
         GetStyleController().RemoveModule((StyleModule)module);
     }
 
+    void Download(object tag) {
+        GetStyleController().UpdateRemoteAssets((string)tag);
+    }
+
     void ClearSocket(object socket) {
          GetStyleController().ClearSocket((StyleSocket)socket);
         Repaint();
     }
     void DrawStyleModule(StyleModule module, Rect nest, bool foldup, bool showInputs = true, bool showOutputs = true)
     {
-        if(module.IsEnabled() == false)
+        if(module == null || module.IsEnabled() == false)
             return;
         // if(module is SculptingVis.SmartData.Dataset) {
         //     DrawDatasetModule((SculptingVis.SmartData.Dataset)module, nest, showInputs, showOutputs);
@@ -431,7 +435,12 @@ public class SculptingVisWindow : EditorWindow
                     DrawSocket(socket,nest,showInputs,showOutputs);
                 }
                 else {
-                    DrawStyleModule(submod,nest,true,showInputs,showOutputs);
+                    if(module is StyleCustomDataset && submod is StyleVariable) {
+                        if(showOutputs) 
+                            DrawStyleModule(submod,nest,true,showInputs,showOutputs);
+
+                    } else 
+                        DrawStyleModule(submod,nest,true,showInputs,showOutputs);
                 }
 
 
@@ -631,6 +640,8 @@ public class SculptingVisWindow : EditorWindow
         if(_columns == null) _columns = new Rect[7];
         return _columns;
     }
+
+    string savePath = "";
     void OnGUI()
     {
         if(GetStyleController() == null) {
@@ -749,21 +760,64 @@ public class SculptingVisWindow : EditorWindow
         EditorGUIUtility.labelWidth = x;
         EditorGUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
+        if(GUILayout.Button("Download Astro Data")) {
 
-        // if(GUILayout.Button("Update remote files")) {
+                GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Download data (This will take several minutes)"), false, Download,"astro");
+                menu.ShowAsContext();
+        }
+
+        if(GUILayout.Button("Download Default visual elements")) {
+
+                GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Download visual elements (This  could take a few seconds)"), false, Download,"default glyph colormap");
+                menu.ShowAsContext();
+        }
 
 
-        //     GetStyleController().UpdateRemoteAssets();
+
+        if(GUILayout.Button("Download primitive glyphs")) {
+
+                GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Download primtitive glyphs (This could take a moment)"), false, Download,"primitive");
+                menu.ShowAsContext();
+        }
+
+        GUILayout.EndHorizontal();
+
+        // if(GUILayout.Button("Load Brain Preset")) {
+        //     _socketHooks.Clear();
+        //     _sockets.Clear();
+        //     GetStyleController().Reset();
+        //     _columns = null;
+
+        //     GetStyleController().LoadBrainPreset();
         // }
+        GUILayout.BeginHorizontal();
 
-        if(GUILayout.Button("Load Brain Preset")) {
+        if(GUILayout.Button("Save")) {
+            if(savePath == "")
+                savePath = EditorUtility.SaveFilePanel("Save visualization",Application.persistentDataPath,"untitled","sculptvis");
+            GetStyleController().SaveState(savePath);
+        }
+        if(GUILayout.Button("Save As")) {
+            savePath = EditorUtility.SaveFilePanel("Save visualization",Application.persistentDataPath,"untitled","sculptvis");
+            GetStyleController().SaveState(savePath);
+        }
+
+        if(GUILayout.Button("Load")) {
             _socketHooks.Clear();
             _sockets.Clear();
             GetStyleController().Reset();
             _columns = null;
-
-            GetStyleController().LoadBrainPreset();
+            string path = EditorUtility.OpenFilePanel("Load visualization",Application.persistentDataPath,"sculptvis");
+            GetStyleController().LoadState(path);
         }
+        GUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
 
 
@@ -803,7 +857,14 @@ public class SculptingVisWindow : EditorWindow
         showVisualElementLoader = EditorGUILayout.Foldout(showVisualElementLoader, "Load Visual Elements",true);
         if (showVisualElementLoader)
         {
-
+            if (GUILayout.Button("Load Defaults"))
+            {
+                GetStyleController().LoadElements("default glyph colormap");
+            }
+            if (GUILayout.Button("Load Primitives"))
+            {
+                GetStyleController().LoadElements("primitive glyph");
+            }
             if (GUILayout.Button("Load Folder"))
             {
                 string path = EditorUtility.OpenFolderPanel("Select Folder containing glyphs or colormaps", Application.streamingAssetsPath + "/", "");
@@ -899,6 +960,20 @@ public class SculptingVisWindow : EditorWindow
             //         GetStyleController().LoadVisualElements(path);
             //     }
             // }
+            GUILayout.BeginHorizontal();
+             if (GUILayout.Button("Load Astro Data"))
+            {
+                GetStyleController().LoadElements("astro");
+
+            }
+
+             if (GUILayout.Button("Load Brain Data"))
+            {
+                GetStyleController().LoadElements("brain");
+
+            }
+            GUILayout.EndHorizontal();
+
             if (GUILayout.Button("Load File"))
             {
                 string path = EditorUtility.OpenFilePanel("Select VTK file", Application.streamingAssetsPath + "/example_data/VTK/","");
@@ -1143,7 +1218,7 @@ public class SculptingVisWindow : EditorWindow
 
                 for(int m = 0; m < GetStyleController().GetCustomDatasets().Count;m++) {
                     Rect scrollRect = GetColumns()[i];
-                    scrollRect.position -= _scrollPositions["Variables"];
+                    scrollRect.position -= _scrollPositions["CustomVariables"];
                     DrawStyleModule(GetStyleController().GetCustomDatasets()[m], scrollRect, false,true, false);
          
                 }

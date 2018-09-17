@@ -6,6 +6,9 @@ namespace SculptingVis {
     [CreateAssetMenu()]
     public class StyleSimplePathLayer : StyleLayer {
 
+        public override string GetTypeTag() {
+            return "PATH_LAYER";
+        }
 
 
         [SerializeField]

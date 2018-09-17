@@ -8,6 +8,16 @@ namespace SculptingVis
     public class StyleSimpleGlyphLayer : StyleLayer
     {
 
+
+		public override JSONObject serialize() {
+			JSONObject json = new JSONObject();
+			return json;
+		}
+
+		public override string GetTypeTag() {
+			return "GLYPH_LAYER";
+		}
+
         float map(float s, float a1, float a2, float b1, float b2)
         {
             return b1 + (s-a1)*(b2-b1)/(a2-a1);
@@ -227,7 +237,14 @@ namespace SculptingVis
                         Mesh instanceMesh;
                         if(true) {
                             instanceMesh = ((Glyph)(_glyphInput.GetInput())).GetLODMesh(((Range<int>)_lodLevel.GetInput()));
-                            _pointMaterial.SetTexture("_BumpMap", ((Glyph)(_glyphInput.GetInput())).GetLODNormalMap(((Range<int>)_lodLevel.GetInput())));
+                            if(((Glyph)(_glyphInput.GetInput())).HasNormals()) {
+                                _pointMaterial.SetTexture("_BumpMap",((Glyph)(_glyphInput.GetInput())).GetLODNormalMap(((Range<int>)_lodLevel.GetInput())));
+                                _pointMaterial.SetInt("_hasBumpMap", 1);
+                            } else {
+                                _pointMaterial.SetInt("_hasBumpMap", 0);
+
+                            }
+               
 
                         }
                         else {

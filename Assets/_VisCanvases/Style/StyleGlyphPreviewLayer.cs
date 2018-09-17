@@ -8,6 +8,9 @@ namespace SculptingVis
     public class StyleGlyphPreviewLayer : StyleLayer
     {
 
+		public override string GetTypeTag() {
+			return "GLYPHPREVIEW_LAYER";
+		}
 
 
         [SerializeField]
@@ -58,9 +61,16 @@ namespace SculptingVis
 
 
 
-            if(_glyphInput.GetInput() != null && ((Glyph)(_glyphInput.GetInput())).GetNumberOfLODs() >= ((Range<int>)_lodLevel.GetInput())+1)
+            if(_glyphInput.GetInput() != null)
             {
-                _glyphMaterial.SetTexture("_BumpMap",((Glyph)(_glyphInput.GetInput())).GetLODNormalMap(((Range<int>)_lodLevel.GetInput())));
+                if(((Glyph)(_glyphInput.GetInput())).HasNormals()) {
+                    _glyphMaterial.SetTexture("_BumpMap",((Glyph)(_glyphInput.GetInput())).GetLODNormalMap(((Range<int>)_lodLevel.GetInput())));
+                    _glyphMaterial.SetInt("_hasBumpMap", 1);
+                } else {
+                    _glyphMaterial.SetInt("_hasBumpMap", 0);
+
+                }
+               
 
                 Material canvasMaterial = GetCanvasMaterial(canvas, _glyphMaterial);
 

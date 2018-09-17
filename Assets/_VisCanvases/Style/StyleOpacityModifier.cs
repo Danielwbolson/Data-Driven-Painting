@@ -11,7 +11,9 @@ namespace SculptingVis
          
             return "Opacity Modifier";
         }
-
+       public override string GetTypeTag() {
+            return "OPACITY_MODIFIER";
+        }
 
         public StyleTypeSocket<Range<float>> _opacitySocket; 
         public StyleTypeSocket<Colormap> _opacitymapSocket; 

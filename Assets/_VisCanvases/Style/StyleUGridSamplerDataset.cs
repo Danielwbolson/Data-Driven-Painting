@@ -341,6 +341,8 @@ namespace SculptingVis
 
             } else {
                 _generatedDataset.SetDataset(_outputVTKDataset);
+                _generatedDataset.SetName("UGridSampler on " + inputVariable.GetName());
+
             }
             SetDataset(_generatedDataset);
             

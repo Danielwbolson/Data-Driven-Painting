@@ -8,6 +8,8 @@ namespace SculptingVis {
 [CreateAssetMenu()]
 public class SimplePathLayer : Layer {
 
+
+
 	[SerializeField]
 	public VariableSocket _anchorVariable;
 

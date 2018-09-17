@@ -12,7 +12,9 @@ namespace SculptingVis
             return "Scale Modifier";
         }
 
-
+       public override string GetTypeTag() {
+            return "SCALE_MODIFIER";
+        }
         public StyleTypeSocket<Range<float>> _scaleSocket; 
         public StyleTypeSocket<MinMax<float>> _scaleRangeSocket;
 

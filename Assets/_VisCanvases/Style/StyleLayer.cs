@@ -6,6 +6,12 @@ namespace SculptingVis
 {
     public abstract class StyleLayer : StyleModule
     {
+        public JSONObject GetSerialized() {
+
+            JSONObject result = new JSONObject();
+            result.AddField("id",GetUniqueIdentifier());
+            return result;
+        }
         [HideInInspector]
         public bool _toggled = true;
 

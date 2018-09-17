@@ -7,6 +7,11 @@ namespace SculptingVis {
 
     public class RibbonGen : StyleLayer {
 
+
+        public override string GetTypeTag() {
+            return "RIBBON_LAYER";
+        }
+
         // VARIABLE SOCKETS (streamline data generated with VTK)
 
         // positions for the centerline of the ribbon

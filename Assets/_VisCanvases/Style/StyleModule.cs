@@ -1,14 +1,83 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace SculptingVis{
 	public class StyleModule : ScriptableObject{
 
 
-		public System.Guid InstanceID {get; protected set;}
+		public virtual JSONObject GetSerializedJSONObject() { 
+			JSONObject json = new JSONObject();
+			json.AddField("typetag",GetTypeTag());
+			json.AddField("id",GetUniqueIdentifier());
+			JSONObject serialized = serialize();
+			if(serialized!= null && !serialized.IsNull)
+				json.Absorb(serialized);
+			JSONObject submoduleList = new JSONObject();
+			
+			for(int i = 0; i < GetNumberOfSubmodules(); i++) {
+				JSONObject submodule = GetSubmodule(i).GetSerializedJSONObject();
+				if(submodule!=null)
+					submoduleList.Add(submodule);	
+			}
+			if(GetNumberOfSubmodules() > 0)
+				json.AddField("submodules",submoduleList);
+			return json;
+		}
+
+		public virtual JSONObject serialize() {
+			JSONObject json = new JSONObject();
+			return json;
+		}
+
+		public virtual string GetTypeTag() {
+			return "Didn't set a TypeTag for " + GetLabel();
+		}
+		public void ApplySerialization(JSONObject json) {
+			SetInstanceID(json.GetField("id").str);
+			applySeralization(json);
+			if(json.HasField("submodules")) {
+				var submods = json["submodules"].list;
+				for(int i = 0; i <submods.Count; i++) {
+					if(submods[i].GetField("typetag").str != GetSubmodule(i).GetTypeTag()) {
+						Debug.LogError("MISMATCH!");
+					} else {
+						GetSubmodule(i).ApplySerialization(submods[i]);
+					}
+				}
+
+			}
+		}
+		public virtual void applySeralization(JSONObject json) {
+
+		}
+
+		static Dictionary<string, StyleModule> _moduleMap;
+		public static Dictionary<string, StyleModule> GetModuleMap() {
+			if(_moduleMap == null) _moduleMap = new Dictionary<string, StyleModule>();
+			return _moduleMap;
+		}
+		public void SetInstanceID(string id ) {
+			if(InstanceID != "")
+				GetModuleMap().Remove(InstanceID);
+			InstanceID = id;
+				GetModuleMap()[InstanceID] = this;
+		}
+		public string GenerateInstanceID() {
+			long ticks = DateTime.Now.Ticks;
+			byte[] bytes = BitConverter.GetBytes(ticks);
+			string id = Convert.ToBase64String(bytes)
+									.Replace('+', '_')
+									.Replace('/', '-')
+									.TrimEnd('=');
+			return id;
+		}
+		public string InstanceID = "";
+
 		// Other properties, etc.
 		public virtual string GetUniqueIdentifier() {
+			if(InstanceID == "") SetInstanceID(GenerateInstanceID());
 			return InstanceID + "";
 		}
 

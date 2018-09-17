@@ -11,6 +11,9 @@ namespace SculptingVis
     [CreateAssetMenu()]
     public class StyleMHSamplerDataset : StyleCustomDataset
     {
+		public override string GetTypeTag() {
+			return "MH_SAMPLER";
+		}
 
         float map(float s, float a1, float a2, float b1, float b2)
         {
@@ -396,6 +399,7 @@ namespace SculptingVis
 
 
             int misses = 0;
+            Random.InitState(((Range<int>)_sampleSeed.GetInput()));
             while (interpolators.get_number_of_samples() < numberOfRequestedSamples)
             {
                 Vector3 candidate = point + GaussianRandomVector(mh_sampler.get_stddev() * stepScale);
@@ -453,6 +457,8 @@ namespace SculptingVis
 
             } else {
                 _generatedDataset.SetDataset(_outputVTKDataset);
+                _generatedDataset.SetName("MH on " + inputVariable.GetName());
+
             }
             SetDataset(_generatedDataset);
             UpdateModule();

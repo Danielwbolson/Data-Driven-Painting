@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace SculptingVis {
 	public class VariableSocket : StyleSocket {
-		
+
+		public override string GetTypeTag() {
+			return ("VARIABLE_SOCKET").ToUpper();
+		}
 		[SerializeField]
 		Variable _inputVariable;
 		[SerializeField]

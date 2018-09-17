@@ -13,6 +13,9 @@ namespace SculptingVis
         }
 
 
+        public override string GetTypeTag() {
+            return "COLOR_MODIFIER";
+        }
         public StyleTypeSocket<Objectify<Color>> _colorSocket; 
         public StyleTypeSocket<Colormap> _colormapSocket; 
         public StyleTypeSocket<Range<bool>> _flipColormapSocket;

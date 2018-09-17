@@ -73,6 +73,8 @@ namespace SculptingVis
 
             } else {
                 _generatedDataset.SetDataset(_outputVTKDataset);
+                _generatedDataset.SetName("Regularly generated from" + inputVariable.GetName());
+
             }
             SetDataset(_generatedDataset);
 

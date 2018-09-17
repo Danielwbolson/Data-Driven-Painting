@@ -6,6 +6,7 @@ using System.IO;
 namespace SculptingVis {
     public class Glyph : VisualElement {
 
+
         static Glyph defaultGlyph;
 		public static Glyph DefaultGlyph() {
 			if(defaultGlyph == null) {
@@ -45,6 +46,13 @@ namespace SculptingVis {
 
         [SerializeField]
         Dictionary<int, Texture2D> _normalMaps;
+
+        [SerializeField]
+        bool _providesNormalMap = false;
+
+        public bool HasNormals() {
+            return _providesNormalMap;
+        }
 
         [SerializeField]
         Texture2D _alphaMap;
@@ -128,6 +136,7 @@ namespace SculptingVis {
                 Glyph glyph = CreateInstance<Glyph>();
                     string name = Path.GetFileNameWithoutExtension(filePath);
                     glyph.SetName(name);
+                glyph._providesNormalMap = false;
                 DirectoryInfo info = new DirectoryInfo(filePath);
                 FileInfo[] fileInfo = info.GetFiles();
                 DirectoryInfo[] directoryInfo = info.GetDirectories();
@@ -153,6 +162,7 @@ namespace SculptingVis {
                         Texture2D normalMap = new Texture2D(1, 1);
                         normalMap.LoadImage(File.ReadAllBytes(file.FullName));
                         glyph._normalMaps[level] = normalMap;
+                        glyph._providesNormalMap = true;
 
                     }
                     // The only PNG we expect on this level is the thumbnail...
@@ -181,6 +191,8 @@ namespace SculptingVis {
                                 Texture2D normalMap = new Texture2D(1, 1);
                                 normalMap.LoadImage(File.ReadAllBytes(file.FullName));
                                 glyph._normalMaps[level] = normalMap;
+                                glyph._providesNormalMap = true;
+
 
                             }
                         }

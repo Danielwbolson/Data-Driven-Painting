@@ -60,7 +60,7 @@
 		int _useOpacitymap;
 		int _flipColormap;
 		int _flipOpacitymap;
-
+		int _hasBumpMap;
 
 			int _usePlane1;
 			int _usePlane2;
@@ -218,6 +218,7 @@
 
 			fixed4 c = fixed4(1,1,1,1);
 			// Albedo comes from a texture tinted by color
+			if(_hasBumpMap)
 			o.Normal = UnpackNormal(map1);
 
 			o.Albedo = c.rgb;

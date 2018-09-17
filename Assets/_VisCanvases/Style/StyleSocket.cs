@@ -44,7 +44,7 @@ namespace SculptingVis {
 			return _links;
 		}
 		public StyleSocket Init(string label, StyleModule module, bool isInput, bool isOutput, Object sourceObject = null) {
-			this.InstanceID = System.Guid.NewGuid();
+			this.InstanceID = GenerateInstanceID();
 			_module = module;
 			_isInput = isInput;
 			_isOutput = isOutput;

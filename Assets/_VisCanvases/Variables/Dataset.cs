@@ -4,7 +4,16 @@ using UnityEngine;
 
 namespace SculptingVis {
 public abstract class Dataset : ScriptableObject {
-
+	public string absolute_path = "";
+	public string streaming_path = "";
+	public string persistent_path = "";
+	protected string _name = "Unnamed";
+	public void SetName(string name) {
+		_name = name;
+	}
+	public string GetDatasetName() {
+		return _name;
+	}
 	[SerializeField]
 	private HashSet<DataVariable> _variables;
 

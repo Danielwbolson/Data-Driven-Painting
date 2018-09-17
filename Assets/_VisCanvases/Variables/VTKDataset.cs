@@ -149,8 +149,18 @@ public class VTKDataset : Dataset {
 		_dataset = dataset;
 	}
 	public override bool LoadDataset() {
-		if(_datasetPath != "" )
+		if(_datasetPath != "" ) {
 			_dataset = DEPRECATED.DataLoader.LoadVTKDataSet(_datasetPath);
+			if(_datasetPath.StartsWith(Application.persistentDataPath) ){
+					persistent_path = _datasetPath.Substring(Application.persistentDataPath.Length);
+				} else if(_datasetPath.StartsWith(Application.streamingAssetsPath) ) {
+					streaming_path = _datasetPath.Substring( Application.streamingAssetsPath.Length);
+				} else {
+					absolute_path = _datasetPath;
+				}
+
+			_name = System.IO.Path.GetFileName(_datasetPath);
+		}
 		if(!GetVTKDataset().IsVoid())
 			populateVariables();
 		return !GetVTKDataset().IsVoid();

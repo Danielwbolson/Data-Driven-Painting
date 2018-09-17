@@ -13,11 +13,6 @@ namespace SculptingVis
         }
 
 
-        public override string GetLabel()
-        {
-            return "Custom Dataset";
-        }
-
         public virtual void ComputeDataset() {
             
         }

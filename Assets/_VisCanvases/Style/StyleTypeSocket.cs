@@ -10,6 +10,7 @@ namespace SculptingVis {
 
 
 	public class Objectify<T> : Object {
+
 		public static bool operator ==(Objectify<T> A, Objectify<T> B)
 		{
 			if (object.ReferenceEquals(A, null))
@@ -106,7 +107,70 @@ namespace SculptingVis {
 		// 	public virtual Object GetInput() {
 		// 	return _input;
 		// }
+		
 	public class StyleTypeSocket<T> : StyleTypeSocket {
+		public override JSONObject serialize() {
+			JSONObject json = new JSONObject();
+
+			if(GetInput() is Range<int>) {
+				json.AddField("value",((Range<int>)GetInput()).value);
+			}
+			if(GetInput() is Range<float>) {
+				json.AddField("value",((Range<float>)GetInput()).value);
+			}
+			if(GetInput() is Range<bool>) {
+				json.AddField("value",((Range<bool>)GetInput()).value);
+			}
+			if(GetInput() is MinMax<float>) {
+				json.AddField("lowervalue",((MinMax<float>)GetInput()).lowerValue);
+				json.AddField("uppervalue",((MinMax<float>)GetInput()).upperValue);
+			}
+			if(GetInput() is Objectify<Color>) {
+				json.AddField("red",((Objectify<Color>)GetInput()).value.r);
+				json.AddField("green",((Objectify<Color>)GetInput()).value.g);
+				json.AddField("blue",((Objectify<Color>)GetInput()).value.b);
+				json.AddField("alpha",((Objectify<Color>)GetInput()).value.a);
+			}
+			if(GetInput() is Objectify<float>) {
+				json.AddField("value",((Objectify<float>)GetInput()).value);
+			}
+			return json;
+		}
+		public override void applySeralization(JSONObject json) {
+			if(GetInput() is Range<int>) {
+				 json.GetField(out ((Range<int>)GetInput()).value, "value",0);
+			}
+			if(GetInput() is Range<float>) {
+				json.GetField(out ((Range<float>)GetInput()).value, "value",0);
+			}
+			if(GetInput() is Range<bool>) {
+				json.GetField(out ((Range<bool>)GetInput()).value,"value",false);
+			}
+			if(GetInput() is MinMax<float>) {
+
+				json.GetField(out ((MinMax<float>)GetInput()).lowerValue,"lowervalue",0);
+				json.GetField(out ((MinMax<float>)GetInput()).upperValue,"uppervalue",0);
+
+			}
+			if(GetInput() is Objectify<Color>) {
+
+				json.GetField(out ((Objectify<Color>)GetInput()).value.r, "red",0);
+				json.GetField(out ((Objectify<Color>)GetInput()).value.g, "green",0);
+				json.GetField(out ((Objectify<Color>)GetInput()).value.b, "blue",0);
+				json.GetField(out ((Objectify<Color>)GetInput()).value.a, "alpha",0);
+
+
+			}
+			if(GetInput() is Objectify<float>) {
+				json.AddField("value",((Objectify<float>)GetInput()).value);
+				json.GetField(out ((Objectify<float>)GetInput()).value, "value",0);
+			}
+		}
+		public override string GetTypeTag() {
+			return (typeof(T) + "_TYPESOCKET").ToUpper();
+		}
+
+
 		public override bool DoesAccept(StyleSocket incoming) {
 			return incoming.GetOutput() is T;
 		}

@@ -36,7 +36,7 @@
         int _TransformNormals;
         float4x4 _GlyphTransform;
         float4x4 _GlyphTransformInverse;
-
+        int _hasBumpMap;
         
         void vert(inout appdata_full v, out Input o) {
 
@@ -84,7 +84,7 @@
             //else {
             //    o.Normal = bump;
             //}
-
+            if(_hasBumpMap)
             o.Normal = UnpackNormal(map1);
             o.Albedo.rgb = c.rgb; //IN.uv_BumpMap;
             //o.Albedo.rgb = o.Normal;

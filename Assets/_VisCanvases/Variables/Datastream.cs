@@ -294,7 +294,7 @@ namespace SculptingVis {
                     }
 
 
-                    Debug.Log("Uploading Buffer of length " + (int)numberOfElements * (int)numberOfComponents + " (" + data.Length + ")");
+                    //Debug.Log("Uploading Buffer of length " + (int)numberOfElements * (int)numberOfComponents + " (" + data.Length + ")");
 
 
 

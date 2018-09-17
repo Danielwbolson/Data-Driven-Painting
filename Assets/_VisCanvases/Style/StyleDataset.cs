@@ -6,6 +6,23 @@ namespace SculptingVis{
 	public class StyleDataset : StyleModule {
 		[SerializeField]
 		protected Dataset _dataset;
+	    public override JSONObject serialize() {
+            if( _dataset == null) return null;
+			JSONObject json = new JSONObject();
+			if(_dataset.absolute_path != "")
+				json.AddField("absolutepath",_dataset.absolute_path.Replace("\\", "/"));
+			if(_dataset.persistent_path != "")
+				json.AddField("persistentpath",_dataset.persistent_path.Replace("\\", "/"));
+			
+			if(_dataset.streaming_path != "")
+				json.AddField("streamingpath",_dataset.streaming_path.Replace("\\", "/"));
+			
+			return json;
+		}
+
+		public override string GetTypeTag() {
+			return "DATASET";
+		}
 
         public void SetDataset(Dataset dataset) {
             _dataset = dataset;
@@ -16,7 +33,7 @@ namespace SculptingVis{
             return _dataset;
         }
 	    public override string GetLabel() {
-			return _dataset + "";
+			return _dataset.GetDatasetName() + "";
 		}
 
         public virtual StyleDataset CopyDataset(StyleDataset toCopy)

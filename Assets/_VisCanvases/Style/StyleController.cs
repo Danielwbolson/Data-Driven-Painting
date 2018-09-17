@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Net;
 using System;
+using System.IO.Compression;
 
 namespace SculptingVis
 {
@@ -11,253 +12,527 @@ namespace SculptingVis
     public class StyleController : MonoBehaviour
     {
 
+        string astro_40_path = "";
+        string brain_path = "";
 
-        public virtual void UpdateRemoteAssets() {
+        string visual_element_path = "";
+        public string GetAstroPath() {
+            if (astro_40_path == "") astro_40_path = Application.persistentDataPath + "/" + "DefaultResources" + "/" + "data" + "/" + "vti0040-all-velocity-floats.vti";
+            if(!System.IO.Directory.Exists(Path.GetDirectoryName(astro_40_path))) {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(astro_40_path));
+            }            
+            return astro_40_path;
+        }
+
+        public string GetBrainPath() {
+            if (brain_path == "") astro_40_path = Application.persistentDataPath + "/" + "DefaultResources" + "/" + "data" + "/" + "zep.vti";
+            if(!System.IO.Directory.Exists(Path.GetDirectoryName(brain_path))) {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(brain_path));
+            }            
+            return brain_path;
+        }
+        public string GetVisualElementPath() {
+            if (visual_element_path == "") visual_element_path = Application.persistentDataPath + "/" + "DefaultResources" + "/" + "visualelements" + "/";
+            if(!System.IO.Directory.Exists(Path.GetDirectoryName(visual_element_path))) {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(visual_element_path));
+            }
+            return visual_element_path;
+        }
+        
+        public void LoadElements(string tag) {
+            if(tag.Contains("astro")) {
+                if(!File.Exists(GetAstroPath()))
+                    UpdateRemoteAssets("astro");
+                LoadData(GetAstroPath());
+            }
+            if(tag.Contains("brain")) {
+                if(!File.Exists(GetAstroPath()))
+                    UpdateRemoteAssets("brain");
+                LoadData(GetAstroPath());
+            }
+
+            if(tag.Contains("default") && tag.Contains("glyph")) {
+                if(!Directory.Exists(Path.Combine(GetVisualElementPath(),"glyphs")))
+                    UpdateRemoteAssets("glyph");
+                LoadVisualElements(Path.Combine(GetVisualElementPath(),"glyphs"));
+            }
+            if(tag.Contains("primitive")) {
+                if(!Directory.Exists(Path.Combine(GetVisualElementPath(),"primitives")))
+                    UpdateRemoteAssets("primitive");
+                LoadVisualElements(Path.Combine(GetVisualElementPath(),"primitives"));
+            }
+            if(tag.Contains("default") && tag.Contains("colormap")) {
+                if(!Directory.Exists(Path.Combine(GetVisualElementPath(),"Colormaps")))
+                    UpdateRemoteAssets("default");
+                LoadVisualElements(Path.Combine(GetVisualElementPath(),"Colormaps"));
+            }
+
+        }
+        public virtual void UpdateRemoteAssets(string tag) {
+            if(tag.Contains("astro")) {
+
+                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/vti0040-all-velocity-floats.zip", Path.GetDirectoryName(GetAstroPath()));
+
+            }
+
+            if(tag.Contains("brain")) {
+
+                DownloadAndExtract("https://github.com/joh08230/SculptingVisFiles/blob/master/zep.vti?raw=true", Path.GetDirectoryName(GetBrainPath()));
+
+            }
+            if(tag.Contains("default")) {
+                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/VisualElements.zip",visual_element_path);
+            }
+
+            if(tag.Contains("primitive")) {
+                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/primitives.zip",visual_element_path);
+            }
+
+
+            
+        }
+
+        public static void ExtractArchive(string zipFile, string destinationFolder){
+            ZipStorer zip = ZipStorer.Open(zipFile, FileAccess.Read);
+
+            // Read the central directory collection
+            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+
+            string unzipPath = destinationFolder;
+            System.IO.Directory.CreateDirectory(unzipPath);
+
+            // Look for the desired file
+            foreach (ZipStorer.ZipFileEntry entry in dir)
+            {
+                Debug.Log(entry.FilenameInZip);
+                if(entry.FilenameInZip.EndsWith("/")) {
+                    System.IO.Directory.CreateDirectory(Path.Combine(unzipPath, entry.FilenameInZip));
+                } else {
+                    zip.ExtractFile(entry,Path.Combine(unzipPath,entry.FilenameInZip));
+                }
+            }
+            zip.Close();
+        }
+
+        public static void Download(string url, string destinationFile) {
+            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
+
             System.Net.WebClient client = new WebClient();
             Debug.Log(Application.persistentDataPath);
             //client.DownloadFile(new Uri(https://github.com/joh08230/SculptingVisFiles/blob/master/zep.vti?raw=true), Path.Combine(Application.persistentDataPath,"zep.vti"));
-            WWW www = new WWW("https://github.com/joh08230/SculptingVisFiles/raw/master/zep.vti");
+            WWW www = new WWW(url);
             while(!www.isDone);
-            System.IO.File.WriteAllBytes( (Application.persistentDataPath + "/" + "zep.vti"), www.bytes);
+
+            System.IO.File.WriteAllBytes( destinationFile, www.bytes);
 
         }
-        public void LoadBrainPreset() {
-            if(!File.Exists(Application.persistentDataPath + "/"  + "zep.vti")) {
-                UpdateRemoteAssets();
-            }
-            LoadData(Application.persistentDataPath + "/"  + "zep.vti");
 
-            LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "twist_line_1.glyph");
-            LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "blue.xml");
+        public static void DownloadAndExtract(string zipUrl, string destinationFolder) {
 
-            LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "red.xml");
+            string zipFile = Path.Combine(destinationFolder,"TEMP_ZIP.zip");
+            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(zipFile));
+            Download(zipUrl,zipFile);
 
-
-            int regularGridTypeID = -1;
-            for(int i = 0; i < _customDatasetTypes.Count; i++) {
-                if(_customDatasetTypes[i].GetLabel().Contains("Regular") ) 
-                    regularGridTypeID = i;
-            }
-            if(regularGridTypeID == -1) return;
-            SetCustomVariableTypeToCreate(regularGridTypeID);
-            CreateCustomDataset();
-
-            StyleRegularGridCustomDataset regularVolume = (StyleRegularGridCustomDataset)GetCustomDatasets()[GetCustomDatasets().Count-1];
-
-
-
-
-            int volumeTypeID = -1;
-            for(int i = 0; i < _layerTypes.Count; i++) {
-                if(_layerTypes[i].GetLabel().Contains("Volume") ) 
-                    volumeTypeID = i;
-            }
-            if(volumeTypeID == -1) return;
-
-            SetLayerTypeToCreate(volumeTypeID);
-            CreateLayer();
-            StyleVolumeLayer volLayer = (StyleVolumeLayer)GetLayers()[GetLayers().Count-1];
-
-            int glyphLayerTypeID = -1;
-            for(int i = 0; i < _layerTypes.Count; i++) {
-                if(_layerTypes[i].GetLabel().Contains("Simple Glyph Layer") ) 
-                    glyphLayerTypeID = i;
-            }
-            if(glyphLayerTypeID == -1) return;
-
-            SetLayerTypeToCreate(glyphLayerTypeID);
-            CreateLayer();
-
-            StyleSimpleGlyphLayer glyphLayer1 = (StyleSimpleGlyphLayer)GetLayers()[GetLayers().Count-1];
-
-            CreateLayer();
-
-            StyleSimpleGlyphLayer glyphLayer2 = (StyleSimpleGlyphLayer)GetLayers()[GetLayers().Count-1];
-
-            int faVariable = -1;
-            for(int i = 0; i < GetVariables().Count; i++) {
-                if(GetVariables()[i].GetLabel().Contains("FA")) {
-                    faVariable = i;
-                }
-            }
-
-
-            int n1Variable = -1;
-            for(int i = 0; i < GetVariables().Count; i++) {
-                if(GetVariables()[i].GetLabel().Contains("n1")) {
-                    n1Variable = i;
-                }
-            }
-
-            int n2Variable = -1;
-            for(int i = 0; i < GetVariables().Count; i++) {
-                if(GetVariables()[i].GetLabel().Contains("n2")) {
-                    n2Variable = i;
-                }
-            }
-
-            int f1Variable = -1;
-            for(int i = 0; i < GetVariables().Count; i++) {
-                if(GetVariables()[i].GetLabel().Contains("f1")) {
-                    f1Variable = i;
-                }
-            }
-
-
-            int f2Variable = -1;
-            for(int i = 0; i < GetVariables().Count; i++) {
-                if(GetVariables()[i].GetLabel().Contains("f2")) {
-                    f2Variable = i;
-                }
-            }
-
-            
-             int glyphID = -1;
-            for(int i = 0; i < GetVisualElements().Count; i++) {
-
-                if(GetVisualElements()[i] != null)
-                if(((StyleVisualElement)GetVisualElements()[i]).GetVisualElement() != null) 
-                if(((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName() != null)
-                if (((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("twist")) {
-                    glyphID = i;
-                }
-            }
-
-
-            int blueMapID = -1;
-            for(int i = 0; i < GetVisualElements().Count; i++) {
-                if(GetVisualElements()[i] != null &&  ((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("30T1")) {
-                    blueMapID = i;
-                }
-            }
-
-            int redMapID = -1;
-            for(int i = 0; i < GetVisualElements().Count; i++) {
-                if(GetVisualElements()[i] != null &&  ((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("R5")) {
-                    redMapID = i;
-                }
-            }
-
-            // Create Links
-
-
-            // Generate Regular grid
-           StyleLink domainLink = new StyleLink();
-
-            domainLink.SetSource((StyleSocket)GetVariables()[faVariable].GetSubmoduleByLabel(""));
-
-            
-            domainLink.SetDestination((StyleSocket)regularVolume.GetSubmoduleByLabel("Domain"));
-
-
-            AddLink(domainLink);
-            
-            StyleSocket countSocket = (StyleSocket)regularVolume.GetSubmodule(2);
-            ((Range<int>)(countSocket.GetInput())).value = 35;
-
-
-            regularVolume.ComputeDataset();
-
-
-
-
-
-           StyleLink volumeVariableLink = new StyleLink();
-            volumeVariableLink.SetSource((StyleSocket)GetVariables()[faVariable].GetSubmoduleByLabel(""));
-            volumeVariableLink.SetDestination((StyleSocket) volLayer.GetSubmoduleByLabel("Volume"));
-            AddLink(volumeVariableLink);
-
-
-
-            for(int i =0; i < GetCustomDatasets()[0].GetNumberOfSubmodules(); i++) {
-                Debug.Log(i + ":" + GetCustomDatasets()[0].GetSubmodule(i).GetLabel() + " " + GetCustomDatasets()[0].GetSubmodule(i) + " " + GetCustomDatasets()[0].GetSubmodule(i).GetType());
-            }
-
-            StyleLink glyphAnchor1Link = new StyleLink();
-            glyphAnchor1Link.SetSource((StyleSocket)GetCustomDatasets()[0].GetSubmodule(4).GetSubmodule(0));
-            glyphAnchor1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Anchor"));
-            AddLink(glyphAnchor1Link);
-
-
-            StyleLink glyphAnchor2Link = new StyleLink();
-            glyphAnchor2Link.SetSource((StyleSocket)GetCustomDatasets()[0].GetSubmodule(4).GetSubmodule(0));
-            glyphAnchor2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Anchor"));
-            AddLink(glyphAnchor2Link);
-
-
-
-            ((Range<int>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Max glyphs")).GetInput())).value = 70000;
-            ((Range<int>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Max glyphs")).GetInput())).value = 70000;
-            ((Range<float>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Glyph scale")).GetInput())).value = 4;
-            ((Range<float>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Glyph scale")).GetInput())).value = 4;
-
-
-            StyleLink glyphDirection1Link = new StyleLink();
-            glyphDirection1Link.SetSource((StyleSocket)GetVariables()[n1Variable].GetSubmoduleByLabel(""));
-            glyphDirection1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Direction"));
-            AddLink(glyphDirection1Link);
-
-
-            StyleLink glyphDirection2Link = new StyleLink();
-            glyphDirection2Link.SetSource((StyleSocket)GetVariables()[n2Variable].GetSubmoduleByLabel(""));
-            glyphDirection2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Direction"));
-            AddLink(glyphDirection2Link);
-
-
-
-            ((Range<bool>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Use Plane 1")).GetInput())).value = true;
-            ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Use Plane 1")).GetInput())).value = true;
-
-            ((Range<bool>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Use Variable")).GetInput())).value = true;
-            ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Use Variable")).GetInput())).value = true;
-            ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Flip Colormap")).GetInput())).value = true;
-
-            ((MinMax<float>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Data Range")).GetInput())).upperValue = 0.5f;
-            ((MinMax<float>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Data Range")).GetInput())).upperValue = 0.5f;
-
-            StyleLink glyph1Link = new StyleLink();
-            glyph1Link.SetSource((StyleSocket)GetVisualElements()[glyphID].GetSubmoduleByLabel(""));
-            glyph1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Glyph"));
-            AddLink(glyph1Link);
-
-            StyleLink glyph2Link = new StyleLink();
-            glyph2Link.SetSource((StyleSocket)GetVisualElements()[glyphID].GetSubmoduleByLabel(""));
-            glyph2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Glyph"));
-            AddLink(glyph2Link);
-
-
-
-            StyleLink glyphColor1Link = new StyleLink();
-            glyphColor1Link.SetSource((StyleSocket)GetVisualElements()[blueMapID].GetSubmoduleByLabel(""));
-            glyphColor1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Colormap"));
-            AddLink(glyphColor1Link);
-
-            StyleLink glyphColor2Link = new StyleLink();
-            glyphColor2Link.SetSource((StyleSocket)GetVisualElements()[redMapID].GetSubmoduleByLabel(""));
-            glyphColor2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Colormap"));
-            AddLink(glyphColor2Link);
-
-            StyleLink glyphColorVar1Link = new StyleLink();
-            glyphColorVar1Link.SetSource((StyleSocket)GetVariables()[f1Variable].GetSubmoduleByLabel(""));
-            glyphColorVar1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Variable"));
-            AddLink(glyphColorVar1Link);
-
-            StyleLink glyphColorVar2Link = new StyleLink();
-            glyphColorVar2Link.SetSource((StyleSocket)GetVariables()[f2Variable].GetSubmoduleByLabel(""));
-            glyphColorVar2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Variable"));
-            AddLink(glyphColorVar2Link);
-            
-            planeMaxes[0].y = 0.525f;
-            planeMins[0].y = 0.5f;
-
-            planeMaxes[1].y = 0.5f;
-            planeMins[1].y = 0.45f;
-
-
-            RollData(-90);
-            ZoomCamera(-10);
+            ExtractArchive(zipFile,destinationFolder );
+            System.IO.File.Delete(zipFile);
 
         }
+
+        public void SaveState(string filepath) {
+
+            JSONObject json = new JSONObject();
+
+
+            JSONObject visualelements = new JSONObject();
+            for(int i = 0; i < GetVisualElements().Count; i++) {
+                visualelements.Add(GetVisualElements()[i].GetSerializedJSONObject());
+            }
+            json.AddField("visualelements",visualelements);
+
+            JSONObject datasets = new JSONObject();
+            for(int i = 0; i < GetDatasets().Count; i++) {
+                datasets.Add(GetDatasets()[i].GetSerializedJSONObject());
+            }
+            json.AddField("datasets",datasets);
+
+            JSONObject layers = new JSONObject();
+            for(int i = 0; i < GetLayers().Count; i++) {
+                layers.Add(GetLayers()[i].GetSerializedJSONObject());
+            }
+            
+            json.AddField("layers",layers);
+
+
+            JSONObject samplers = new JSONObject();
+            for(int i = 0; i < GetCustomDatasets().Count; i++) {
+                samplers.Add(GetCustomDatasets()[i].GetSerializedJSONObject());
+            }
+            json.AddField("samplers",samplers);
+
+
+            JSONObject links = new JSONObject();
+            for(int i = 0; i < GetLinks().Count; i++ ) {
+                string sourceID = GetLinks()[i].GetSource().GetUniqueIdentifier();
+                string destinationID = GetLinks()[i].GetDestination().GetUniqueIdentifier();
+                JSONObject link = new JSONObject();
+                link.AddField("sourcesocket",sourceID);
+                link.AddField("destinationsocket",destinationID);
+                links.Add(link);
+            }
+            json.AddField("links",links);
+
+            Debug.Log(json.ToString());
+
+            
+            string text = json.ToString();
+
+             System.IO.File.WriteAllText(filepath, text);
+
+        }
+
+
+        public void LoadState(string filepath) {
+            Reset();
+            string contents = File.ReadAllText(filepath);
+
+            JSONObject json = new JSONObject(contents);
+            if(!json["visualelements"].IsNull)
+            foreach(var j in json["visualelements"].list) {
+                string path = "";
+                if(j.HasField("absolutepath")) {
+                    j.GetField(out path,"absolutepath","");
+                } else if(j.HasField("streamingpath")) {
+                    j.GetField(out path,"streamingpath","");
+                    path = Application.streamingAssetsPath + path;
+                } else if(j.HasField("persistentpath")) {
+                    j.GetField(out path,"persistentpath","");
+                    path = Application.persistentDataPath + path;
+                }
+
+                if(System.IO.File.Exists(path) || System.IO.Directory.Exists(path)) {
+                    LoadVisualElements(path);
+                    GetVisualElements()[GetVisualElements().Count-1].ApplySerialization(j);
+                }
+            }
+
+            if(!json["datasets"].IsNull)
+                foreach(var j in json["datasets"].list) {
+                    string path = "";
+                    if(j.HasField("absolutepath")) {
+                        j.GetField(out path,"absolutepath","");
+                    } else if(j.HasField("streamingpath")) {
+                        j.GetField(out path,"streamingpath","");
+                        path = Application.streamingAssetsPath + path;
+                    } else if(j.HasField("persistentpath")) {
+                        j.GetField(out path,"persistentpath","");
+                        path = Application.persistentDataPath + path;
+                    }
+
+                    if(System.IO.File.Exists(path) || System.IO.Directory.Exists(path)) {
+                        LoadData(path);
+                        GetDatasets()[GetDatasets().Count-1].ApplySerialization(j);
+
+                    }
+                }
+            if(!json["samplers"].IsNull)
+                foreach(var j in json["samplers"].list) {
+                    
+                        int requestedSamplerType = -1;
+                        for(int i = 0; i < _customDatasetTypes.Count; i++) {
+                            if(_customDatasetTypes[i].GetTypeTag() == j.GetField("typetag").str ) 
+                                requestedSamplerType = i;
+                        }
+                        if(requestedSamplerType == -1){
+                            Debug.LogError("Culdn't match a customdataset");
+                            continue;
+                        } 
+                        SetCustomVariableTypeToCreate(requestedSamplerType);
+                        CreateCustomDataset();
+
+                            
+                        GetCustomDatasets()[GetCustomDatasets().Count-1].ApplySerialization(j);
+                    }
+
+            if(!json["layers"].IsNull)
+                foreach(var j in json["layers"].list) {
+                    
+                        int requestedLayerType = -1;
+                        for(int i = 0; i < _layerTypes.Count; i++) {
+                            if(_layerTypes[i].GetTypeTag() == j.GetField("typetag").str ) 
+                                requestedLayerType = i;
+                        }
+                        if(requestedLayerType == -1){
+                            Debug.LogError("Culdn't match a layertype");
+                            continue;
+                        } 
+                        SetLayerTypeToCreate(requestedLayerType);
+                        CreateLayer();
+
+                            
+                        GetLayers()[GetLayers().Count-1].ApplySerialization(j);
+                    }
+
+            if(!json["links"].IsNull) 
+                foreach(var j in json["links"].list) {
+                    StyleLink link = new StyleLink();
+                    link.SetSource((StyleSocket)StyleModule.GetModuleMap() [j.GetField("sourcesocket").str]);
+                    link.SetDestination((StyleSocket)StyleModule.GetModuleMap() [j.GetField("destinationsocket").str]);
+                    AddLink(link);
+                }
+
+                
+
+                           
+
+
+
+        }
+        // public void LoadBrainPreset() {
+        //     // System.IO.Directory.CreateDirectory(Application.persistentDataPath +"/" +  "anotherTest");
+            
+        //     // DownloadAndExtract("https://drive.google.com/uc?export=download&id=14emWpv682TFxXROmTtwSi89BeYybHdY9",Application.persistentDataPath +"/" +  "anotherTest");
+        //     // Open an existing zip file for reading
+
+
+        //     if(!File.Exists(Application.persistentDataPath + "/"  + "zep.vti")) {
+        //         UpdateRemoteAssets();
+        //     }
+        //     LoadData(Application.persistentDataPath + "/"  + "zep.vti");
+
+        //     LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "twist_line_1.glyph");
+        //     LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "blue.xml");
+
+        //     LoadVisualElements(Application.streamingAssetsPath+"/"+"tests" + "/" + "red.xml");
+
+
+        //     int regularGridTypeID = -1;
+        //     for(int i = 0; i < _customDatasetTypes.Count; i++) {
+        //         if(_customDatasetTypes[i].GetLabel().Contains("Regular") ) 
+        //             regularGridTypeID = i;
+        //     }
+        //     if(regularGridTypeID == -1) return;
+        //     SetCustomVariableTypeToCreate(regularGridTypeID);
+        //     CreateCustomDataset();
+
+        //     StyleRegularGridCustomDataset regularVolume = (StyleRegularGridCustomDataset)GetCustomDatasets()[GetCustomDatasets().Count-1];
+
+
+
+
+        //     int volumeTypeID = -1;
+        //     for(int i = 0; i < _layerTypes.Count; i++) {
+        //         if(_layerTypes[i].GetLabel().Contains("Volume") ) 
+        //             volumeTypeID = i;
+        //     }
+        //     if(volumeTypeID == -1) return;
+
+        //     SetLayerTypeToCreate(volumeTypeID);
+        //     CreateLayer();
+        //     StyleVolumeLayer volLayer = (StyleVolumeLayer)GetLayers()[GetLayers().Count-1];
+
+        //     int glyphLayerTypeID = -1;
+        //     for(int i = 0; i < _layerTypes.Count; i++) {
+        //         if(_layerTypes[i].GetLabel().Contains("Simple Glyph Layer") ) 
+        //             glyphLayerTypeID = i;
+        //     }
+        //     if(glyphLayerTypeID == -1) return;
+
+        //     SetLayerTypeToCreate(glyphLayerTypeID);
+        //     CreateLayer();
+
+        //     StyleSimpleGlyphLayer glyphLayer1 = (StyleSimpleGlyphLayer)GetLayers()[GetLayers().Count-1];
+
+        //     CreateLayer();
+
+        //     StyleSimpleGlyphLayer glyphLayer2 = (StyleSimpleGlyphLayer)GetLayers()[GetLayers().Count-1];
+
+        //     int faVariable = -1;
+        //     for(int i = 0; i < GetVariables().Count; i++) {
+        //         if(GetVariables()[i].GetLabel().Contains("FA")) {
+        //             faVariable = i;
+        //         }
+        //     }
+
+
+        //     int n1Variable = -1;
+        //     for(int i = 0; i < GetVariables().Count; i++) {
+        //         if(GetVariables()[i].GetLabel().Contains("n1")) {
+        //             n1Variable = i;
+        //         }
+        //     }
+
+        //     int n2Variable = -1;
+        //     for(int i = 0; i < GetVariables().Count; i++) {
+        //         if(GetVariables()[i].GetLabel().Contains("n2")) {
+        //             n2Variable = i;
+        //         }
+        //     }
+
+        //     int f1Variable = -1;
+        //     for(int i = 0; i < GetVariables().Count; i++) {
+        //         if(GetVariables()[i].GetLabel().Contains("f1")) {
+        //             f1Variable = i;
+        //         }
+        //     }
+
+
+        //     int f2Variable = -1;
+        //     for(int i = 0; i < GetVariables().Count; i++) {
+        //         if(GetVariables()[i].GetLabel().Contains("f2")) {
+        //             f2Variable = i;
+        //         }
+        //     }
+
+            
+        //      int glyphID = -1;
+        //     for(int i = 0; i < GetVisualElements().Count; i++) {
+
+        //         if(GetVisualElements()[i] != null)
+        //         if(((StyleVisualElement)GetVisualElements()[i]).GetVisualElement() != null) 
+        //         if(((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName() != null)
+        //         if (((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("twist")) {
+        //             glyphID = i;
+        //         }
+        //     }
+
+
+        //     int blueMapID = -1;
+        //     for(int i = 0; i < GetVisualElements().Count; i++) {
+        //         if(GetVisualElements()[i] != null &&  ((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("30T1")) {
+        //             blueMapID = i;
+        //         }
+        //     }
+
+        //     int redMapID = -1;
+        //     for(int i = 0; i < GetVisualElements().Count; i++) {
+        //         if(GetVisualElements()[i] != null &&  ((StyleVisualElement)GetVisualElements()[i]).GetVisualElement().GetName().Contains("R5")) {
+        //             redMapID = i;
+        //         }
+        //     }
+
+        //     // Create Links
+
+
+        //     // Generate Regular grid
+        //    StyleLink domainLink = new StyleLink();
+
+        //     domainLink.SetSource((StyleSocket)GetVariables()[faVariable].GetSubmoduleByLabel(""));
+
+            
+        //     domainLink.SetDestination((StyleSocket)regularVolume.GetSubmoduleByLabel("Domain"));
+
+
+        //     AddLink(domainLink);
+            
+        //     StyleSocket countSocket = (StyleSocket)regularVolume.GetSubmodule(2);
+        //     ((Range<int>)(countSocket.GetInput())).value = 35;
+
+
+        //     regularVolume.ComputeDataset();
+
+
+
+
+
+        // //    StyleLink volumeVariableLink = new StyleLink();
+        // //     volumeVariableLink.SetSource((StyleSocket)GetVariables()[faVariable].GetSubmoduleByLabel(""));
+        // //     volumeVariableLink.SetDestination((StyleSocket) volLayer.GetSubmoduleByLabel("Volume"));
+        // //     AddLink(volumeVariableLink);
+
+
+
+        // //     for(int i =0; i < GetCustomDatasets()[0].GetNumberOfSubmodules(); i++) {
+        // //         Debug.Log(i + ":" + GetCustomDatasets()[0].GetSubmodule(i).GetLabel() + " " + GetCustomDatasets()[0].GetSubmodule(i) + " " + GetCustomDatasets()[0].GetSubmodule(i).GetType());
+        // //     }
+
+        // //     StyleLink glyphAnchor1Link = new StyleLink();
+        // //     glyphAnchor1Link.SetSource((StyleSocket)GetCustomDatasets()[0].GetSubmodule(4).GetSubmodule(0));
+        // //     glyphAnchor1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Anchor"));
+        // //     AddLink(glyphAnchor1Link);
+
+
+        // //     StyleLink glyphAnchor2Link = new StyleLink();
+        // //     glyphAnchor2Link.SetSource((StyleSocket)GetCustomDatasets()[0].GetSubmodule(4).GetSubmodule(0));
+        // //     glyphAnchor2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Anchor"));
+        // //     AddLink(glyphAnchor2Link);
+
+
+
+        // //     ((Range<int>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Max glyphs")).GetInput())).value = 70000;
+        // //     ((Range<int>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Max glyphs")).GetInput())).value = 70000;
+        // //     ((Range<float>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Glyph scale")).GetInput())).value = 4;
+        // //     ((Range<float>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Glyph scale")).GetInput())).value = 4;
+
+
+        // //     StyleLink glyphDirection1Link = new StyleLink();
+        // //     glyphDirection1Link.SetSource((StyleSocket)GetVariables()[n1Variable].GetSubmoduleByLabel(""));
+        // //     glyphDirection1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Direction"));
+        // //     AddLink(glyphDirection1Link);
+
+
+        // //     StyleLink glyphDirection2Link = new StyleLink();
+        // //     glyphDirection2Link.SetSource((StyleSocket)GetVariables()[n2Variable].GetSubmoduleByLabel(""));
+        // //     glyphDirection2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Direction"));
+        // //     AddLink(glyphDirection2Link);
+
+
+
+        // //     ((Range<bool>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Use Plane 1")).GetInput())).value = true;
+        // //     ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Use Plane 1")).GetInput())).value = true;
+
+        // //     ((Range<bool>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Use Variable")).GetInput())).value = true;
+        // //     ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Use Variable")).GetInput())).value = true;
+        // //     ((Range<bool>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Flip Colormap")).GetInput())).value = true;
+
+        // //     ((MinMax<float>)(((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Data Range")).GetInput())).upperValue = 0.5f;
+        // //     ((MinMax<float>)(((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Data Range")).GetInput())).upperValue = 0.5f;
+
+        // //     StyleLink glyph1Link = new StyleLink();
+        // //     glyph1Link.SetSource((StyleSocket)GetVisualElements()[glyphID].GetSubmoduleByLabel(""));
+        // //     glyph1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Glyph"));
+        // //     AddLink(glyph1Link);
+
+        // //     StyleLink glyph2Link = new StyleLink();
+        // //     glyph2Link.SetSource((StyleSocket)GetVisualElements()[glyphID].GetSubmoduleByLabel(""));
+        // //     glyph2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Glyph"));
+        // //     AddLink(glyph2Link);
+
+
+
+        // //     StyleLink glyphColor1Link = new StyleLink();
+        // //     glyphColor1Link.SetSource((StyleSocket)GetVisualElements()[blueMapID].GetSubmoduleByLabel(""));
+        // //     glyphColor1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Colormap"));
+        // //     AddLink(glyphColor1Link);
+
+        // //     StyleLink glyphColor2Link = new StyleLink();
+        // //     glyphColor2Link.SetSource((StyleSocket)GetVisualElements()[redMapID].GetSubmoduleByLabel(""));
+        // //     glyphColor2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Colormap"));
+        // //     AddLink(glyphColor2Link);
+
+        // //     StyleLink glyphColorVar1Link = new StyleLink();
+        // //     glyphColorVar1Link.SetSource((StyleSocket)GetVariables()[f1Variable].GetSubmoduleByLabel(""));
+        // //     glyphColorVar1Link.SetDestination((StyleSocket)glyphLayer1.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Variable"));
+        // //     AddLink(glyphColorVar1Link);
+
+        // //     StyleLink glyphColorVar2Link = new StyleLink();
+        // //     glyphColorVar2Link.SetSource((StyleSocket)GetVariables()[f2Variable].GetSubmoduleByLabel(""));
+        // //     glyphColorVar2Link.SetDestination((StyleSocket)glyphLayer2.GetSubmoduleByLabel("Color Modifier").GetSubmoduleByLabel("Variable"));
+        // //     AddLink(glyphColorVar2Link);
+            
+        // //     planeMaxes[0].y = 0.525f;
+        // //     planeMins[0].y = 0.5f;
+
+        // //     planeMaxes[1].y = 0.5f;
+        // //     planeMins[1].y = 0.45f;
+
+
+        // //     RollData(-90);
+        // //     ZoomCamera(-10);
+
+
+
+
+        // }
         
         public Mesh sphere;
         public Mesh cylinder;
@@ -432,7 +707,7 @@ namespace SculptingVis
 
 
         [SerializeField]
-        List<SmartData.Dataset> _datasets;
+        List<StyleDataset> _datasets;
 
         [SerializeField]
         List<StyleDataset> _customDatasets;
@@ -563,9 +838,9 @@ namespace SculptingVis
             return _variables;
         }
 
-        public List<SmartData.Dataset> GetDatasets()
+        public List<StyleDataset> GetDatasets()
         {
-            if (_datasets == null) _datasets = new List<SmartData.Dataset>();
+            if (_datasets == null) _datasets = new List<StyleDataset>();
 
             return _datasets;
         }
@@ -605,9 +880,9 @@ namespace SculptingVis
         // Update is called once per frame
         void Update()
         {
-            foreach(var dataset in GetDatasets()) {
-                dataset.Update();
-            }
+            // foreach(var dataset in GetDatasets()) {
+            //     dataset.Update();
+            // }
 
             // foreach(var dataset in GetCustomDatasets()) {
             //     dataset.UpdateModule();
@@ -646,13 +921,21 @@ namespace SculptingVis
 					Debug.Log("Loaded a VTK file! " + path);
 				}
 
-				for(int i = 0; i < vtkds.GetVariables().Length; i++) {
-					GetVariables().Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init(vtkds.GetVariables()[i]));
-				}
+                
+				// for(int i = 0; i < vtkds.GetVariables().Length; i++) {
+				// 	GetVariables().Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init(vtkds.GetVariables()[i]));
+				// }
 				
-				if(vtkds.GetAnchor() != null)
-					GetVariables().Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init(vtkds.GetAnchor()));
-			}
+				// if(vtkds.GetAnchor() != null)
+				// 	GetVariables().Add(ScriptableObject.CreateInstance<StyleDataVariable>().Init(vtkds.GetAnchor()));
+    
+                StyleDataset dataset = new StyleDataset();
+                dataset.SetDataset(vtkds);
+                dataset.UpdateModule();
+                GetDatasets().Add(dataset);
+
+            
+            }
         }
 
         public void LoadVisualElements(string path)
