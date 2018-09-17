@@ -82,11 +82,11 @@ namespace SculptingVis
 
             }
             if(tag.Contains("default")) {
-                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/VisualElements.zip",visual_element_path);
+                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/VisualElements.zip",GetVisualElementPath());
             }
 
             if(tag.Contains("primitive")) {
-                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/primitives.zip",visual_element_path);
+                DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/primitives.zip",GetVisualElementPath());
             }
 
 
@@ -132,10 +132,10 @@ namespace SculptingVis
 
             string zipFile = destinationFolder + "/" + "TEMP_ZIP_" + zipUrl.GetHashCode() + ".zip";
             System.IO.Directory.CreateDirectory(Path.GetDirectoryName(zipFile));
-            //Download(zipUrl,zipFile);
+            Download(zipUrl,zipFile);
 
             ExtractArchive(zipFile,destinationFolder );
-            //System.IO.File.Delete(zipFile);
+            System.IO.File.Delete(zipFile);
 
         }
 
