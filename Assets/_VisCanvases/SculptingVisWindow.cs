@@ -801,17 +801,17 @@ public class SculptingVisWindow : EditorWindow
         // }
         GUILayout.BeginHorizontal();
 
-        if(GUILayout.Button("Save")) {
+        if(GUILayout.Button("Save State")) {
             if(savePath == "")
                 savePath = EditorUtility.SaveFilePanel("Save visualization",Application.persistentDataPath,"untitled","sculptvis");
             GetStyleController().SaveState(savePath);
         }
-        if(GUILayout.Button("Save As")) {
+        if(GUILayout.Button("Save State As")) {
             savePath = EditorUtility.SaveFilePanel("Save visualization",Application.persistentDataPath,"untitled","sculptvis");
             GetStyleController().SaveState(savePath);
         }
 
-        if(GUILayout.Button("Load")) {
+        if(GUILayout.Button("Load State")) {
             _socketHooks.Clear();
             _sockets.Clear();
             GetStyleController().Reset();
@@ -820,6 +820,19 @@ public class SculptingVisWindow : EditorWindow
             GetStyleController().LoadState(path);
         }
         GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+
+        if(GUILayout.Button("Save View As")) {
+            GetStyleController().SaveView( EditorUtility.SaveFilePanel("Save view",Application.persistentDataPath,"untitled","sculptview"));
+        }
+        
+
+        if(GUILayout.Button("Load View")) {
+            GetStyleController().LoadView(EditorUtility.OpenFilePanel("Load view",Application.persistentDataPath,"sculptview"));
+        }
+        GUILayout.EndHorizontal();
+
         EditorGUILayout.EndVertical();
 
 

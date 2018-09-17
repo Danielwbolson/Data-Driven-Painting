@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System;
 using System.IO.Compression;
+ using System.Text;
 
 namespace SculptingVis
 {
@@ -87,7 +88,7 @@ namespace SculptingVis
 
 
             if(tag.Contains("primitive")) {
-                System.IO.Directory.Delete(GetVisualElementPath() + "/primitives");
+                System.IO.Directory.Delete(GetVisualElementPath() + "/primitives",true);
                 DownloadAndExtract("https://www.sculpting-vis.org/wp-content/uploads/2018/09/primitives.zip",GetVisualElementPath());
             }
 
@@ -141,6 +142,74 @@ namespace SculptingVis
 
         }
 
+ 
+    public static string SerializeVector3(Vector3 v)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(v.x).Append(" ").Append(v.y).Append(" ").Append(v.z);
+
+        return sb.ToString();
+    }
+    public static Vector3 DeserializeVector3(string aData)
+    {
+        Vector3 result = new Vector3();
+
+            string[] values = aData.Split(' ');
+            if (values.Length != 3)
+                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
+            result = new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+        return result;
+ }
+
+        public void SaveView(string filepath) {
+            JSONObject json = new JSONObject();
+            json.AddField("cameraFieldOfView",sceneCamera.fieldOfView);
+            json.AddField("cameraPosition",SerializeVector3(sceneCamera.transform.localPosition));
+            json.AddField("cameraRotation",SerializeVector3(sceneCamera.transform.localEulerAngles));
+            json.AddField("cameraScale",SerializeVector3(sceneCamera.transform.localScale));
+            json.AddField("pivotPosition",SerializeVector3(cameraPivot.transform.localPosition));
+            json.AddField("pivotRotation",SerializeVector3(cameraPivot.transform.localEulerAngles));
+            json.AddField("pivotScale",SerializeVector3(cameraPivot.transform.localScale));
+
+
+            json.AddField("dataVerticalPivotPosition",SerializeVector3(dataVerticalPivot.transform.localPosition));
+            json.AddField("dataVerticalPivotRotation",SerializeVector3(dataVerticalPivot.transform.localEulerAngles));
+            json.AddField("dataVerticalPivotScale",SerializeVector3(dataVerticalPivot.transform.localScale));
+
+            json.AddField("dataHorizontalPivotPosition",SerializeVector3(dataHorizontalPivot.transform.localPosition));
+            json.AddField("dataHorizontalPivotRotation",SerializeVector3(dataHorizontalPivot.transform.localEulerAngles));
+            json.AddField("dataHorizontalPivotScale",SerializeVector3(dataHorizontalPivot.transform.localScale));
+
+            string text = json.ToString();
+
+            System.IO.File.WriteAllText(filepath, text);       
+        }
+
+        public void LoadView(string filepath) {
+
+            string contents = File.ReadAllText(filepath);
+
+            JSONObject json = new JSONObject(contents);
+            float f;
+            json.GetField(out f, "cameraFieldOfView", 35);
+            sceneCamera.fieldOfView = f;
+            cameraPivot.transform.localPosition = DeserializeVector3(json.GetField( "pivotPosition").str);
+            cameraPivot.transform.localEulerAngles = DeserializeVector3(json.GetField( "pivotRotation").str);
+            cameraPivot.transform.localScale = DeserializeVector3(json.GetField( "pivotScale").str);
+
+            sceneCamera.transform.localPosition = DeserializeVector3(json.GetField( "cameraPosition").str);
+            sceneCamera.transform.localEulerAngles = DeserializeVector3(json.GetField( "cameraRotation").str);
+            sceneCamera.transform.localScale = DeserializeVector3(json.GetField( "cameraScale").str);
+
+         
+            dataHorizontalPivot.transform.localPosition = DeserializeVector3(json.GetField( "dataHorizontalPivotPosition").str);
+            dataHorizontalPivot.transform.localEulerAngles = DeserializeVector3(json.GetField( "dataHorizontalPivotRotation").str);
+            dataHorizontalPivot.transform.localScale = DeserializeVector3(json.GetField( "dataHorizontalPivotScale").str);
+            dataVerticalPivot.transform.localPosition = DeserializeVector3(json.GetField( "dataVerticalPivotPosition").str);
+            dataVerticalPivot.transform.localEulerAngles = DeserializeVector3(json.GetField( "dataVerticalPivotRotation").str);
+            dataVerticalPivot.transform.localScale = DeserializeVector3(json.GetField( "dataVerticalPivotScale").str);
+        }
         public void SaveState(string filepath) {
 
             JSONObject json = new JSONObject();
