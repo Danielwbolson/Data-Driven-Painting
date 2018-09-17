@@ -153,10 +153,10 @@
 				}
 				float4x4 transform = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, GetAnchorPosition(pointIndex).x,GetAnchorPosition(pointIndex).y,GetAnchorPosition(pointIndex).z,1);
 
-				float3 bitangent = cross(tangent,normal);
+				float3 bitangent = cross(normal,tangent);
 				transform[0].xyz = bitangent;
-				transform[1].xyz = tangent;
-				transform[2].xyz = normal;
+				transform[1].xyz = normal;
+				transform[2].xyz = tangent;
 				transform[3].w = 1;
 				transform = transpose(transform);
 				transform = mul(_CanvasInnerScene,transform);
