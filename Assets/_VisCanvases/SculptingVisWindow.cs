@@ -765,7 +765,9 @@ public class SculptingVisWindow : EditorWindow
 
                 GenericMenu menu = new GenericMenu();
             
-                menu.AddItem(new GUIContent("Download data (This will take several minutes)"), false, Download,"astro");
+                //menu.AddItem(new GUIContent("Download data (This will take several minutes)"), false, Download,"astro");
+                EditorUtility.DisplayDialog("Move your supernove data","You'll need to find the file vti0040-all-velocity-floats.vti (available at https://drive.google.com/file/d/1b63WQJR41f6KHy4eMxIxoNsLcMbVl6U7) and place it at " + GetStyleController().GetAstroPath(),"Will do!");
+
                 menu.ShowAsContext();
         }
 
