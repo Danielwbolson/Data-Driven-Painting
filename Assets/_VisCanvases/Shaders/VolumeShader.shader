@@ -255,7 +255,7 @@
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
-                	if (traveled > len ||  a < 0.001 || (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
+                	if (traveled > len || a < 0.0001|| (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
                 		continue;
 
 
@@ -269,7 +269,7 @@
 					float opacitymapU = O.x;
 					if(_flipOpacitymap)
 						opacitymapU = 1-opacitymapU;
-					opacitymapU = clamp(opacitymapU,0.01,0.99);
+					opacitymapU = clamp(opacitymapU,0.001,0.999);
 
 
 					float4 T = tex2D(_ColorMap,float2(colormapU,0.5));

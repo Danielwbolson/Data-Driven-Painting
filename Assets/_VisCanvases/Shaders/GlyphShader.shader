@@ -56,6 +56,8 @@
 		float _glyphScale = 1;
 		float _OpacityMultiplier;
 		float _opacityThreshold;
+		float _glyphPercent;
+
 		int _useColormap;
 		int _useOpacitymap;
 		int _flipColormap;
@@ -124,9 +126,9 @@
 	        UNITY_INITIALIZE_OUTPUT(Input,o);
 			
 		#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
-
-		int pointIndex =unity_InstanceID;//_AnchorTopology[unity_InstanceID].y;
-		int cellIndex =  _AnchorTopology[unity_InstanceID].x;
+		
+		int pointIndex = (int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1) );//_AnchorTopology[unity_InstanceID].y;
+		int cellIndex =  _AnchorTopology[(int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1))].x;
 
 			v.vertex.xyz *= (_glyphScale * (_VariableBoundsMax_0.x - _VariableBoundsMin_0.x));
 
@@ -142,8 +144,8 @@
 				}
 				if( VariableIsAssigned(2)){
 					tangent = normalize(GetData(2, cellIndex, pointIndex, GetAnchorPosition(pointIndex)));
-					float x = (((562*unity_InstanceID%1000+234)%100)/100.0)*2-1;
-					float y = (((786*unity_InstanceID%1000+124)%100)/100.0)*2-1;
+					float x = (((562*pointIndex%1000+234)%100)/100.0)*2-1;
+					float y = (((786*pointIndex%1000+124)%100)/100.0)*2-1;
 
 					normal = normalize(float3(x,0,y));
 
