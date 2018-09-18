@@ -133,6 +133,7 @@
 			if( VariableIsAssigned(0)) {
 				//float3 B = 
 				float3 tangent = float3(0,1,0);
+
 				float3 normal = float3(0,0,1);
 
 				if (_faceCamera) {
@@ -141,6 +142,10 @@
 				}
 				if( VariableIsAssigned(2)){
 					tangent = normalize(GetData(2, cellIndex, pointIndex, GetAnchorPosition(pointIndex)));
+					float x = (((562*unity_InstanceID%1000+234)%100)/100.0)*2-1;
+					float y = (((786*unity_InstanceID%1000+124)%100)/100.0)*2-1;
+
+					normal = normalize(float3(x,0,y));
 
 					if (_faceCamera) {
 						tangent.xyz = mul(_CanvasInnerScene, tangent.xyz);

@@ -160,8 +160,8 @@ namespace SculptingVis
 
             Material canvasMaterial = GetCanvasMaterial(canvas, _volumeMaterial);
             // _volumeVariable.Bind(canvasMaterial, 0, 0);
-            _colorModifier._variable.Bind(_volumeMaterial, 0, 0);
-            _opacityModifier._variable.Bind(_volumeMaterial, 0, 0);
+            _colorModifier._variable.Bind(_volumeMaterial, 0, 0, _colorModifier.lowerBound(), _colorModifier.upperBound());
+            _opacityModifier._variable.Bind(_volumeMaterial, 0, 0, _opacityModifier.lowerBound(), _opacityModifier.upperBound());
 
             Graphics.DrawMesh(_volumeCubeMesh,canvas.GetInnerSceneTransformMatrix()*Matrix4x4.TRS(GetBounds().center,Quaternion.identity,GetBounds().size),canvasMaterial,0);
 

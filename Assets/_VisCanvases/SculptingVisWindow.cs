@@ -318,6 +318,15 @@ public class SculptingVisWindow : EditorWindow
         GetStyleController().UpdateRemoteAssets((string)tag);
     }
 
+    void LoadState() {
+        _socketHooks.Clear();
+        _sockets.Clear();
+        GetStyleController().Reset();
+        _columns = null;
+        string path = EditorUtility.OpenFilePanel("Load visualization",Application.persistentDataPath,"sculptvis");
+        GetStyleController().LoadState(path);
+    }
+
     void ClearSocket(object socket) {
          GetStyleController().ClearSocket((StyleSocket)socket);
         Repaint();
@@ -812,12 +821,13 @@ public class SculptingVisWindow : EditorWindow
         }
 
         if(GUILayout.Button("Load State")) {
-            _socketHooks.Clear();
-            _sockets.Clear();
-            GetStyleController().Reset();
-            _columns = null;
-            string path = EditorUtility.OpenFilePanel("Load visualization",Application.persistentDataPath,"sculptvis");
-            GetStyleController().LoadState(path);
+
+              GenericMenu menu = new GenericMenu();
+            
+                menu.AddItem(new GUIContent("Clear this scene and load a state?"), false, LoadState);
+                menu.ShowAsContext();
+
+          
         }
         GUILayout.EndHorizontal();
 

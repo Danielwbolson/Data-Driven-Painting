@@ -78,12 +78,14 @@ namespace SculptingVis {
 		public override Object GetInput() {
 			return _inputVariable;
 		}
-
 		public void Bind(Material material,int instanceID, int timestep) {
+			Bind(material,instanceID,timestep,LowerBound,UpperBound);
+		}
+		public void Bind(Material material,int instanceID, int timestep, float lowerBound, float upperBound) {
 			string slot = /*IsAnchor()?"Anchor":*/ (""+ GetSlot());
 			material.SetVector("_VariableDefaultValue_" + slot,new Vector3(0,0,1));
-			material.SetFloat("_VariableMinOverride_"+slot,LowerBound);
-			material.SetFloat("_VariableMaxOverride_" +slot, UpperBound);
+			material.SetFloat("_VariableMinOverride_"+slot,lowerBound);
+			material.SetFloat("_VariableMaxOverride_" +slot, upperBound);
 			if(_inputVariable != null) {
 				material.SetInt("_VariableAssigned_" + slot, 1);
 				_inputVariable.GetStream(_anchorVariable == null? null : (DataVariable)_anchorVariable.GetInput(),instanceID,timestep).Bind(material,GetSlot());

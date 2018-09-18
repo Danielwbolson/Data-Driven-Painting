@@ -240,6 +240,7 @@
 					progress += R;
 
 				}
+				[unroll(200)]
 				for (; progress < stepCount; progress += 1) {
 					// test.xyz = backCoord;
 				traveled = progress  * 0.01f;

@@ -74,6 +74,21 @@ namespace SculptingVis
             base.UpdateModule(updatedSocket);
 
         }
+        public float lowerBoundNormalized() {
+            return ((MinMax<float>)_variableRange.GetInput()).lowerValue;
+        }
+
+        public float upperBoundNormalized() {
+            return ((MinMax<float>)_variableRange.GetInput()).upperBound;
+        }
+        public float lowerBound() {
+            return ((Objectify<float>)_variableDataMin.GetInput()).value;
+        }
+
+        public float upperBound() {
+            return ((Objectify<float>)_variableDataMax.GetInput()).value;
+        }
+
         public StyleModifier Init(VariableSocket _anchorVariableSocket, StyleModule module, int slot = -1 )
         {
 

@@ -266,8 +266,8 @@ namespace SculptingVis
 
                         Material canvasMaterial = GetCanvasMaterial(canvas, _pointMaterial);
                         _anchorVariable.Bind(_pointMaterial, 0, 0);
-                        _colorModifier._variable.Bind(_pointMaterial, 0, 0);
-                        _opacityModifier._variable.Bind(_pointMaterial, 0, 0);
+                        _colorModifier._variable.Bind(_pointMaterial, 0, 0,_colorModifier.lowerBound(),_colorModifier.upperBound());
+                        _opacityModifier._variable.Bind(_pointMaterial, 0, 0,_opacityModifier.lowerBound(),_opacityModifier.upperBound());
                         _directionVariable.Bind(_pointMaterial, 0, 0);
 
                         //Graphics.DrawMesh(instanceMesh, canvas.GetInnerSceneTransformMatrix(), canvasMaterial, 0);
