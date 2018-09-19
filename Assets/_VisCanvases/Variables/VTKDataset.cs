@@ -147,6 +147,7 @@ public class VTKDataset : Dataset {
 	}
 	public void SetDataset(VTK.vtkDataSet dataset) {
 		_dataset = dataset;
+		RefreshTimestamp();
 	}
 	public override bool LoadDataset() {
 		if(_datasetPath != "" ) {
@@ -163,6 +164,7 @@ public class VTKDataset : Dataset {
 		}
 		if(!GetVTKDataset().IsVoid())
 			populateVariables();
+		RefreshTimestamp();
 		return !GetVTKDataset().IsVoid();
 	}
 	protected override bool validateVariable(DataVariable variable) {

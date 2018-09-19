@@ -31,6 +31,18 @@ public abstract class Dataset : ScriptableObject {
 	// 	if(_streams== null) _streams = CreateInstance<DatastreamDirectory>();
 	// 	return _streams;
 	// }
+
+	long _lastRefreshedTime = 0;
+
+	long GetCurrentTime() {
+		return System.DateTime.Now.Ticks;
+	}
+	public void RefreshTimestamp() {
+		_lastRefreshedTime = GetCurrentTime();
+	}
+	public long GetTimestamp() {
+		return _lastRefreshedTime;
+	}
 	protected virtual bool validateVariable(DataVariable variable) {
 		return !variable.IsAnchor()? ((_variables!= null) && _variables.Contains(variable)) : GetAnchor() == variable;
 	} 
