@@ -659,6 +659,10 @@ float3 GetVariableBoundsMax(int variableSlot) {
 
 float3 GetNormalizedDataSpace(int variableSlot, float3 innerSceneSpace) {
     float4 normdataSpace = mul(GetVariableBoundsMatrixInv(variableSlot),innerSceneSpace);
+    normdataSpace.x = map(innerSceneSpace.x,GetVariableBoundsMin(variableSlot).x,GetVariableBoundsMax(variableSlot).x,0,1);
+    normdataSpace.y = map(innerSceneSpace.y,GetVariableBoundsMin(variableSlot).y,GetVariableBoundsMax(variableSlot).y,0,1);
+    normdataSpace.z = map(innerSceneSpace.z,GetVariableBoundsMin(variableSlot).z,GetVariableBoundsMax(variableSlot).z,0,1);
+
     return normdataSpace;
 }
 float3 WorldToDataSpace(float3 worldPos) {
@@ -678,17 +682,17 @@ float3 NormalizeData(int variableSlot, float3 data) {
     if(GetVariableComponents(variableSlot) == 1) {
         float3 MIN = GetVariableMin(variableSlot);
         float3 MAX = GetVariableMax(variableSlot);
-        if(abs(MIN.x-MAX.x) < 0.0000001)
+        if(abs(MIN.x-MAX.x) == 0)
             result.x = MIN.x; 
         else 
             result.x = clamp(map(data.x,MIN.x,MAX.x,0,1),0,1);
 
-        if(abs(MIN.y-MAX.y) < 0.0000001)
+        if(abs(MIN.y-MAX.y) == 0)
             result.y = MIN.y; 
         else 
             result.y = map(data.y,MIN.y,MAX.y,0,1); 
 
-        if(abs(MIN.z-MAX.z) < 0.0000001)
+        if(abs(MIN.z-MAX.z) == 0)
             result.z = MIN.z; 
         else 
             result.z = map(data.z,MIN.z,MAX.z,0,1); 
@@ -711,6 +715,7 @@ float3 GetAnchorPosition(int vertexId) {
 }
 float3 GetData(int variableSlot, int cellId, int vertexId, float3 dataPos) {
     float3 normdataPos = GetNormalizedDataSpace(variableSlot,dataPos);
+
     if(true || _SampleAtCenter) {
         dataPos = GetAnchorPosition(vertexId);
 		normdataPos = GetNormalizedDataSpace(variableSlot,dataPos);

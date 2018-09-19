@@ -499,9 +499,9 @@ namespace SculptingVis {
             string slot = /*GetVariable().IsAnchor()? "Anchor":*/("" + bindSlot);
             int dim = GetVariable().GetDomainDimensionality();
             material.SetInt("_VariableDomainDimensionality_" + slot, dim);
-            material.SetMatrix("_VariableBoundsMatrixInv_" + slot, Matrix4x4.TRS(GetVariable().GetBounds().center, Quaternion.identity, GetVariable().GetBounds().size).inverse);
-            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
-            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
+            material.SetMatrix("_VariableBoundsMatrixInv_" + slot, (Matrix4x4.TRS(GetVariable().GetBounds().center, Quaternion.identity, Vector3.one)*Matrix4x4.TRS(Vector3.one, Quaternion.identity, GetVariable().GetBounds().size)).inverse );
+            material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
+            material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
 
             material.SetVector("_VariableBoundsMin_" + slot, GetVariable().GetBounds().min);
             material.SetVector("_VariableBoundsMax_" + slot, GetVariable().GetBounds().max);

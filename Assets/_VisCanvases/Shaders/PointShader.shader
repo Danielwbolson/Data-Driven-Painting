@@ -139,7 +139,7 @@ Shader "Unlit/PointShader"
 				// c.rgb = normDataSpace*100%100/100.0;
 				if(VariableIsAssigned(3)) {
 					float3 opacityVal = NormalizeData(1,GetData(1,cellIndex,pointIndex,WorldToDataSpace(i.worldPos)));
-					StippleTransparency(i.vertex,_ScreenParams,opacityVal.x);
+					StippleTransparency(i.vertex,_ScreenParams,opacityVal.x,0,0);
 				}
 
 
