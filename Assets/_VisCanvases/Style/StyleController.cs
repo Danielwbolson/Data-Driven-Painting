@@ -966,6 +966,7 @@ namespace SculptingVis
         // Update is called once per frame
         void Update()
         {
+            sceneCamera.backgroundColor = backdropColor;
             // foreach(var dataset in GetDatasets()) {
             //     dataset.Update();
             // }

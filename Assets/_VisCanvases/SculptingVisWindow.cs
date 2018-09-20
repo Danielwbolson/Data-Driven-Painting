@@ -869,9 +869,36 @@ public class SculptingVisWindow : EditorWindow
             date = date.Replace("/","-");
             date = date.Replace(" ","_");
             date = date.Replace(":","-");
-            ScreenCapture.CaptureScreenshot(screenshotpath + "/" + date + ".png", 1);
+            // ScreenCapture.CaptureScreenshot(screenshotpath + "/" + date + ".png", 1);
+            // zzTransparencyCapture.captureScreenshot(screenshotpath + "/" + date  + "_alpha"+ ".png");
+            RenderTexture rt = new RenderTexture(Camera.main.pixelWidth, Camera.main.pixelHeight,32);
+            Color temp = Camera.main.backgroundColor;
+            Camera.main.backgroundColor = new Color(0,0,0,0);
+            Camera.main.targetTexture = rt;
+            Texture2D image = new Texture2D(Camera.main.pixelWidth, Camera.main.pixelHeight, TextureFormat.ARGB32, false);
+            Camera.main.Render();
 
-            GetStyleController().Report();
+            RenderTexture.active = rt;
+            image.ReadPixels(new Rect(0, 0, Camera.main.pixelWidth, Camera.main.pixelHeight), 0, 0);
+            image.Apply();
+
+            Camera.main.targetTexture = null;
+            RenderTexture.active = null; // JC: added to avoid errors
+            Destroy(rt);
+
+            byte[] bytes = image.EncodeToPNG();
+            string filename = screenshotpath + "/" + date + ".png";
+            if (File.Exists(filename)) {
+                File.WriteAllBytes(filename, bytes);
+            } else {
+                File.WriteAllBytes(filename, bytes);
+            }
+
+            Debug.Log(string.Format("Took screenshot to: {0}", filename));
+
+            Debug.Log("Capture!!");
+                        Camera.main.backgroundColor = temp;
+
         }
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();

@@ -255,7 +255,7 @@
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
-                	if (traveled > len || O.x < 0.001|| (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
+                	if (traveled > len || O.x < 0.001|| (uvw.x <= _plane2min.x || uvw.x >= _plane2max.x || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= _plane2min.z || uvw.z >= _plane2max.z) )
                 		continue;
 
 
