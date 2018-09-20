@@ -207,7 +207,7 @@
 
                 float3 uvw = float3(0,0,0);
 
-                int stepCount = 150;
+                int stepCount = 200;
                 float3 dist = backCoord - frontCoord;
                 float len = length(dist);
 
@@ -255,7 +255,7 @@
 					
 					float a = V.x;//map(V.x, _DataMin0.x, _DataMax0.x,0,1);
 
-                	if (traveled > len ||  a < 0.001 || (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
+                	if (traveled > len || O.x < 0.001|| (uvw.x <= 0 || uvw.x >= 1 || uvw.y <= _plane2min.y || uvw.y >= _plane2max.y || uvw.z <= 0 || uvw.z >= 1) )
                 		continue;
 
 
@@ -269,11 +269,11 @@
 					float opacitymapU = O.x;
 					if(_flipOpacitymap)
 						opacitymapU = 1-opacitymapU;
-					opacitymapU = clamp(opacitymapU,0.01,0.99);
+					opacitymapU = clamp(opacitymapU,0.001,0.999);
 
 
 					float4 T = tex2D(_ColorMap,float2(colormapU,0.5));
-					float A = tex2D(_OpacityMap,opacitymapU).r*_OpacityMultiplier;
+					float A = tex2D(_OpacityMap,opacitymapU).r * _OpacityMultiplier;
 
 					float4 src = 0;
 	        		float alpha = A;

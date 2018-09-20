@@ -147,6 +147,7 @@ public class VTKDataset : Dataset {
 	}
 	public void SetDataset(VTK.vtkDataSet dataset) {
 		_dataset = dataset;
+		RefreshTimestamp();
 	}
 	public override bool LoadDataset() {
 		if(_datasetPath != "" ) {
@@ -163,6 +164,7 @@ public class VTKDataset : Dataset {
 		}
 		if(!GetVTKDataset().IsVoid())
 			populateVariables();
+		RefreshTimestamp();
 		return !GetVTKDataset().IsVoid();
 	}
 	protected override bool validateVariable(DataVariable variable) {
@@ -202,17 +204,21 @@ public class VTKDataset : Dataset {
 
 	public override Vector3 GetMin(DataVariable variable) {
 		Vector3 result = new Vector3();
-		if(variable is VTKDataVariable)
-		if(GetAbstractArray((VTKDataVariable)variable).IsA("vtkDataArray")) {
-			VTK.vtkDataArray da = VTK.vtkDataArray.SafeDownCast(GetAbstractArray((VTKDataVariable)variable));
-			double[] r = new double[2];
-			da.GetRange(r,0);
-			result.x = (float)r[0];
-			da.GetRange(r,1);
-			result.y = (float)r[0];
-			da.GetRange(r,2);
-			result.z = (float)r[0];
+		if(variable is VTKDataVariable){
+			if(GetAbstractArray((VTKDataVariable)variable).IsA("vtkDataArray")) {
+				VTK.vtkDataArray da = VTK.vtkDataArray.SafeDownCast(GetAbstractArray((VTKDataVariable)variable));
+				double[] r = new double[2];
+				da.GetRange(r,0);
+				result.x = (float)r[0];
+				da.GetRange(r,1);
+				result.y = (float)r[0];
+				da.GetRange(r,2);
+				result.z = (float)r[0];
+			} 
+		} else if(variable is VTKAnchorDataVariable) {
+			result  = variable.GetBounds().min;
 		}
+		
 
 		return result;
 	}
@@ -228,6 +234,8 @@ public class VTKDataset : Dataset {
 			result.y = (float)r[1];
 			da.GetRange(r,2);
 			result.z = (float)r[1];
+		} else if(variable is VTKAnchorDataVariable) {
+			result  = variable.GetBounds().max;
 		}
 
 		return result;

@@ -63,6 +63,10 @@ namespace SculptingVis
         [SerializeField]
         public StyleTypeSocket<Range<int>> _maxGlyphs;
 
+
+        [SerializeField]
+        public StyleTypeSocket<Range<float>> _percentGlyphs;
+
         [SerializeField]
         public StyleTypeSocket<Range<float>> _glyphScaleInput;
 
@@ -203,6 +207,7 @@ namespace SculptingVis
             _pointMaterial.SetInt("_flipOpacitymap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
            // _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
 
+            _pointMaterial.SetFloat("_glyphPercent", (Range<float>)_percentGlyphs.GetInput());
 
             _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());
             _pointMaterial.SetInt("_useMesh",1);
@@ -258,7 +263,7 @@ namespace SculptingVis
                         }
 
                         args[0] = (uint)instanceMesh.GetIndexCount(0);
-                        args[1] = (uint)Mathf.Min((uint)stream.GetNumberOfElements(), (int)(Range<int>)_maxGlyphs.GetInput());
+                        args[1] = (uint)Mathf.Min((uint)stream.GetNumberOfElements(), Mathf.Floor((int)(Range<int>)_maxGlyphs.GetInput() * (float)(Range<float>)_percentGlyphs.GetInput()));
                         args[2] = (uint)instanceMesh.GetIndexStart(0);
                         args[3] = (uint)instanceMesh.GetBaseVertex(0);
                         argsBuffer.SetData(args);
@@ -305,6 +310,10 @@ namespace SculptingVis
             _maxGlyphs = (new StyleTypeSocket<Range<int>>()).Init("Max glyphs", this);
             _maxGlyphs.SetDefaultInputObject((new Range<int>(0, 60000, 10000)));
             AddSubmodule(_maxGlyphs);
+
+            _percentGlyphs = (new StyleTypeSocket<Range<float>>()).Init("Percent of glyphs", this);
+            _percentGlyphs.SetDefaultInputObject((new Range<float>(0, 1, 1)));
+            AddSubmodule(_percentGlyphs);
 
             _anchorVariable = new VariableSocket();
             _anchorVariable.Init("Anchor",this,0);

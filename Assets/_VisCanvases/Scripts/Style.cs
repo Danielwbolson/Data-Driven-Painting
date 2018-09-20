@@ -51,7 +51,7 @@ namespace SculptingVis {
             if (_layers != null && _layers.Count > 0) {
                 int numLayers = _layers.Count;
                 for (int i = 0; i < numLayers; i++) {
-                    if (_layers[i].HasBounds()) {
+                    if (_layers[i].HasBounds() && _layers[i].IsActive()) {
                         if (empty) {
                             allLayerBounds = _layers[i].GetBounds();
                             empty = false;

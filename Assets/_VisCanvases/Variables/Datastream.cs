@@ -265,7 +265,7 @@ namespace SculptingVis {
                 _cachedSeed = ((PointAnchorDatastreamChannel)_rootChannel).GetSeed();
             }
 
-            if (true || _dataBuffer == null || stuffChanged || _lastComputeBuffer < _lastRefreshedTime) {
+            if ( _dataBuffer == null || stuffChanged || _lastComputeBuffer < GetVariable().GetDataSet().GetTimestamp()) {
                 _lastComputeBuffer = GetCurrentTime();
 
                 long numberOfElements = GetNumberOfElements();
@@ -297,7 +297,7 @@ namespace SculptingVis {
                     //Debug.Log("Uploading Buffer of length " + (int)numberOfElements * (int)numberOfComponents + " (" + data.Length + ")");
 
 
-
+                    if(_dataBuffer != null) _dataBuffer.Dispose();
                     _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
 
                     _dataBuffer.SetData(data);
@@ -310,13 +310,14 @@ namespace SculptingVis {
                     if (ds.IsA("vtkPointSet")) {
                         VTK.vtkPointSet ps = VTK.vtkPointSet.SafeDownCast(ds);
                         Marshal.Copy(ps.GetPoints().GetVoidPointer(0), data, 0, data.Length);
+                        if(_dataBuffer!=null) _dataBuffer.Dispose();
                         _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
                         _dataBuffer.SetData(data);
 
                     }
                 } else if (_rootChannel is PointAnchorDatastreamChannel) {
                     if (_dataBuffer == null || _dataBuffer.count < (int)numberOfElements * (int)numberOfComponents) {
-                        if (_dataBuffer != null) _dataBuffer.Release();
+                        if (_dataBuffer != null) _dataBuffer.Dispose();
                         _dataBuffer = new ComputeBuffer((int)numberOfElements * (int)numberOfComponents, sizeof(float));
 
                     }
@@ -499,9 +500,9 @@ namespace SculptingVis {
             string slot = /*GetVariable().IsAnchor()? "Anchor":*/("" + bindSlot);
             int dim = GetVariable().GetDomainDimensionality();
             material.SetInt("_VariableDomainDimensionality_" + slot, dim);
-            material.SetMatrix("_VariableBoundsMatrixInv_" + slot, Matrix4x4.TRS(GetVariable().GetBounds().center, Quaternion.identity, GetVariable().GetBounds().size).inverse);
-            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
-            if (!GetVariable().IsAnchor()) material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
+            material.SetMatrix("_VariableBoundsMatrixInv_" + slot, (Matrix4x4.TRS(GetVariable().GetBounds().center, Quaternion.identity, Vector3.one)*Matrix4x4.TRS(Vector3.one, Quaternion.identity, GetVariable().GetBounds().size)).inverse );
+            material.SetVector("_VariableMin_" + slot, GetVariable().GetMin());
+            material.SetVector("_VariableMax_" + slot, GetVariable().GetMax());
 
             material.SetVector("_VariableBoundsMin_" + slot, GetVariable().GetBounds().min);
             material.SetVector("_VariableBoundsMax_" + slot, GetVariable().GetBounds().max);

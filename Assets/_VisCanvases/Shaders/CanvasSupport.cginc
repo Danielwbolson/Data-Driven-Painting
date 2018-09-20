@@ -69,7 +69,7 @@ fixed4 MarkBounds(float3 worldPos, fixed4 currentColor) {
     }
     return result;
 }
-void StippleTransparency(float4 screenPos, float4 screenParams, half transparency) {
+void StippleTransparency(float4 screenPos, float4 screenParams, half transparency, int offset_x, int offset_y) {
     float4x4 thresholdMatrix =
     {  1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0, 11.0 / 17.0,
       13.0 / 17.0,  5.0 / 17.0, 15.0 / 17.0,  7.0 / 17.0,
@@ -79,12 +79,12 @@ void StippleTransparency(float4 screenPos, float4 screenParams, half transparenc
     float4x4 _RowAccess = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
     float2 pos = screenPos.xy / screenPos.w;
     pos *= screenParams.xy; // pixel position
-    clip(transparency - thresholdMatrix[fmod(pos.x, 4)] * _RowAccess[fmod(pos.y, 4)]);
+    clip(transparency - thresholdMatrix[fmod(pos.x+offset_x, 4)] * _RowAccess[fmod(pos.y+offset_x, 4)]);
 }
 
 void StippleCrop(float3 worldPos,float4 screenPos, float4 screenParams) {
     half t = 1-OutOfBounds(_CanvasBoundsExtent,_CanvasBoundsExtentThreshold,mul(_CanvasInverse,float4(worldPos.x,worldPos.y,worldPos.z,1)));
-    StippleTransparency(screenPos,screenParams, t);
+    StippleTransparency(screenPos,screenParams, t,0,0);
 }
 
 #define ALPHA_CROP(canvasPosition) ALPHA_TRANSPARENCY(OutOfBounds(_CanvasBoundsExtent,_CanvasBoundsExtentThreshold,canvasPosition))
