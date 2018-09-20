@@ -242,6 +242,9 @@ namespace SculptingVis
             protected vtkDataArray  srcArray;
             protected vtkFloatArray dstArray;
 
+            protected bool is_scalar;
+            public bool get_is_scalar() { return is_scalar; }
+
             public interpolator() {}
 
             public vtkFloatArray get_vtk() { return dstArray; }
@@ -254,6 +257,7 @@ namespace SculptingVis
         {
             public override void initialize(vtkDataArray s) 
             {
+                is_scalar = true;
                 srcArray = s;
                 dstArray = vtkFloatArray.New();
                 dstArray.SetNumberOfComponents(1);
@@ -270,6 +274,7 @@ namespace SculptingVis
         {
             public override void initialize(vtkDataArray s) 
             {
+                is_scalar = false;
                 srcArray = s;
                 dstArray = vtkFloatArray.New();
                 dstArray.SetNumberOfComponents(3);
@@ -327,16 +332,45 @@ namespace SculptingVis
             public vtkUnstructuredGrid create_vtu()
             {
 
-                /*
-                StreamWriter wrtr = new StreamWriter("/Users/gda/m-h.csv", false);
-                wrtr.WriteLine("X,Y,Z");
-                for (int i = 0; i < points.GetNumberOfPoints(); i++)
+                string saveFileName = System.Environment.GetEnvironmentVariable("MH_SAVE_FILE");
+                if (! string.IsNullOrEmpty(saveFileName))
                 {
-                    Vector3 p = points.GetPoint(i);
-                    wrtr.WriteLine(string.Format("{0},{1},{2}", p.x, p.y, p.z));
+                    StreamWriter wrtr = new StreamWriter(saveFileName, false);
+
+                    string header = "i,X,Y,Z";
+                    foreach (var interp in interpolators)
+                    {
+                        if (interp.Value.get_is_scalar())
+                            header = header + "," + interp.Key;
+                        else
+                            header = header + "," + interp.Key + "_x," + interp.Key + "_y," + interp.Key + "_z";
+                    }
+
+                    wrtr.WriteLine(header);
+
+                    for (int i = 0; i < points.GetNumberOfPoints(); i++)
+                    {
+                        Vector3 p = points.GetPoint(i);
+                        string line = string.Format("{0},{1},{2},{3}", i, p.x, p.y, p.z);
+                        foreach (var interp in interpolators)
+                        {
+                            vtkDataArray darray = interp.Value.get_vtk();
+                            if (interp.Value.get_is_scalar())
+                            {
+                                double s = darray.GetTuple1(i);
+                                line = line + "," + s;
+                            }
+                            else
+                            {
+                                Vector3 v = darray.GetVector(i);
+                                line = line + "," + v.x + "," + v.y + "," + v.z;
+                            }
+                        }
+                        wrtr.WriteLine(line);
+                    }
+
+                    wrtr.Close();
                 }
-                wrtr.Close();
-                */
 
                 vtkUnstructuredGrid ug = vtkUnstructuredGrid.New();
                 ug.SetPoints(points);
@@ -441,6 +475,7 @@ namespace SculptingVis
                 }
             }
 
+            Debug.Log("MH produced " + interpolators.get_number_of_samples() + " points");
             if (interpolators.get_number_of_samples() == 0)
             {
                 mh_sampler.interpolant(mh_sampler.center(), corner_indices, dxyz);
