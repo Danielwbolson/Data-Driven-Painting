@@ -42,6 +42,9 @@ namespace SculptingVis
         public StyleScaleModifier _scaleModifer;
 
         [SerializeField]
+        public StyleAspectRatioModifier _aspectModifer;
+
+        [SerializeField]
         public VariableSocket _directionVariable;
 
         // [SerializeField]
@@ -182,7 +185,17 @@ namespace SculptingVis
                     _scaleModifer._variable.UpperBound = rightVal;
                 }
         
+                v = ((Variable)_aspectModifer._variable.GetInput());
+                if(v != null) {
+                    MinMax<float> selectedRange = ((MinMax<float>)_aspectModifer._variableRange.GetInput());
 
+                    float leftVal = map(selectedRange.lowerValue,0,1,v.GetMin().x,v.GetMax().x);
+
+                    float rightVal = map(selectedRange.upperValue,0,1,v.GetMin().x,v.GetMax().x);
+
+                    _aspectModifer._variable.LowerBound = leftVal;
+                    _aspectModifer._variable.UpperBound = rightVal;
+                }
             // _opacityVariable.LowerBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).lowerValue;
             // _opacityVariable.UpperBound = ((MinMax<float>)_opacitydataRangeInput.GetInput()).upperValue;
 
@@ -190,26 +203,33 @@ namespace SculptingVis
             //if (_colorMapInput.GetInput() != null)
             _pointMaterial.SetTexture("_ColorMap", ((Colormap)_colorModifier._colormapSocket.GetInput()).GetTexture());
             _pointMaterial.SetTexture("_OpacityMap", ((Colormap)_opacityModifier._opacitymapSocket.GetInput()).GetTexture());
-            //_pointMaterial.SetFloat("_ScaleMin", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
-            //_pointMaterial.SetFloat("_ScaleMax", ((MinMax<float>)_opacityModifier._opacitySocket.GetInput()).lowerValue);
+            _pointMaterial.SetFloat("_ScaleMin", ((MinMax<float>)_scaleModifer._scaleRangeSocket.GetInput()).lowerValue);
+            _pointMaterial.SetFloat("_ScaleMax", ((MinMax<float>)_scaleModifer._scaleRangeSocket.GetInput()).upperValue);
+            _pointMaterial.SetFloat("_AspectMin", ((MinMax<float>)_aspectModifer._aspectRatioRangeSocket.GetInput()).lowerValue);
+            _pointMaterial.SetFloat("_AspectMax", ((MinMax<float>)_aspectModifer._aspectRatioRangeSocket.GetInput()).upperValue);
 
 
             _pointMaterial.SetColor("_Color", (Objectify<Color>)_colorModifier._colorSocket.GetInput());
             _pointMaterial.SetFloat("_Opacity", (Range<float>)_opacityModifier._opacitySocket.GetInput());
-            //_pointMaterial.SetFloat("_Scale", (Range<float>)_opacityModifier._opacitySocket.GetInput());
+            _pointMaterial.SetFloat("_Scale", (Range<float>)_scaleModifer._scaleSocket.GetInput());
+            _pointMaterial.SetFloat("_Aspect", (Range<float>)_aspectModifer._aspectRatioSocket.GetInput());
 
 
             _pointMaterial.SetInt("_useColormap", (Range<bool>)_colorModifier._useVariable.GetInput()?1:0);
             _pointMaterial.SetInt("_useOpacitymap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
-           // _pointMaterial.SetInt("_useScalemap", (Range<bool>)_opacityModifier._useVariable.GetInput()?1:0);
+            _pointMaterial.SetInt("_useScalemap", (Range<bool>)_scaleModifer._useVariable.GetInput()?1:0);
+            _pointMaterial.SetInt("_useAspectmap", (Range<bool>)_aspectModifer._useVariable.GetInput()?1:0);
 
             _pointMaterial.SetInt("_flipColormap", (Range<bool>)_colorModifier._flipColormapSocket.GetInput()?1:0);
             _pointMaterial.SetInt("_flipOpacitymap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
-           // _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_opacityModifier._flipOpacityMapSocket.GetInput()?1:0);
+            _pointMaterial.SetInt("_flipScalemap", (Range<bool>)_scaleModifer._flipScaleSocket.GetInput()?1:0);
+            _pointMaterial.SetInt("_flipAspectmap", (Range<bool>)_aspectModifer._flipAspectRatioRangeSocket.GetInput()?1:0);
+
+            _pointMaterial.SetInt("_AspectConstrainRadially", (Range<bool>)_aspectModifer._contrainRadiallySocket.GetInput()?1:0);
 
             _pointMaterial.SetFloat("_glyphPercent", (Range<float>)_percentGlyphs.GetInput());
 
-            _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());
+            // _pointMaterial.SetFloat("_glyphScale", (Range<float>)_glyphScaleInput.GetInput());
             _pointMaterial.SetInt("_useMesh",1);
             _pointMaterial.SetInt("_useThumbnail", 0);
             // _pointMaterial.SetColor("_Color", (Objectify<Color>)_colorModifier._colorSocket.GetInput());
@@ -273,6 +293,10 @@ namespace SculptingVis
                         _anchorVariable.Bind(_pointMaterial, 0, 0);
                         _colorModifier._variable.Bind(_pointMaterial, 0, 0,_colorModifier.lowerBound(),_colorModifier.upperBound());
                         _opacityModifier._variable.Bind(_pointMaterial, 0, 0,_opacityModifier.lowerBound(),_opacityModifier.upperBound());
+                        _scaleModifer._variable.Bind(_pointMaterial, 0, 0,_scaleModifer.lowerBound(),_scaleModifer.upperBound());
+                        _aspectModifer._variable.Bind(_pointMaterial, 0, 0,_aspectModifer.lowerBound(),_aspectModifer.upperBound());
+
+                        
                         _directionVariable.Bind(_pointMaterial, 0, 0);
 
                         //Graphics.DrawMesh(instanceMesh, canvas.GetInnerSceneTransformMatrix(), canvasMaterial, 0);
@@ -338,8 +362,12 @@ namespace SculptingVis
             AddSubmodule(_opacityModifier);
 
             _scaleModifer = CreateInstance<StyleScaleModifier>();
-            _scaleModifer.Init(_anchorVariable,this,1);
+            _scaleModifer.Init(_anchorVariable,this,4);
             AddSubmodule(_scaleModifer);
+
+            _aspectModifer = CreateInstance<StyleAspectRatioModifier>();
+            _aspectModifer.Init(_anchorVariable,this,5);
+            AddSubmodule(_aspectModifer);
 
             // _opacityVariable = new VariableSocket();
             // _opacityVariable.Init("Opacity",this,3);

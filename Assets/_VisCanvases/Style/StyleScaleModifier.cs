@@ -27,7 +27,7 @@ namespace SculptingVis
         {
             base.Init(anchorSocket, module, slot);
             _scaleSocket = (new StyleTypeSocket<Range<float>>()).Init("Constant Scale", this);
-            _scaleSocket.SetDefaultInputObject(new Range<float>(0,1,1));
+            _scaleSocket.SetDefaultInputObject(new Range<float>(0,0.1f,0.05f));
             _scaleSocket.HideIfTrue(_useVariable);
 
             AddSubmodule(_scaleSocket);

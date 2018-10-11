@@ -285,7 +285,12 @@ public class SculptingVisWindow : EditorWindow
 
                     float a = A;
                     float b = B;
+                    float x = EditorGUIUtility.labelWidth;
+                    EditorGUIUtility.labelWidth = 30;
+                    GUILayout.Label("" + a,GUILayout.Width(30));
                     EditorGUILayout.MinMaxSlider(ref a,ref b,((MinMax<float>)socket.GetInput()).lowerBound,((MinMax<float>)socket.GetInput()).upperBound);
+                    GUILayout.Label("" + b,GUILayout.Width(30));
+                    EditorGUIUtility.labelWidth = x;
                     if(A != a || B != b) {
                         ((MinMax<float>)socket.GetInput()).lowerValue = a;
                         ((MinMax<float>)socket.GetInput()).upperValue = b;

@@ -405,16 +405,24 @@ SubShader {
 		int _useThumbnail;
 		int _faceCamera = 1;
 
-		float _glyphScale = 1;
+		float _Scale = 1;
+		float _Aspect = 1;
+
 		float _OpacityMultiplier;
 		float _opacityThreshold;
 		float _glyphPercent;
 
 		int _useColormap;
 		int _useOpacitymap;
+		int _useScalemap;
+		int _useAspectmap;
+
 		int _flipColormap;
 		int _flipOpacitymap;
+		int _flipScalemap;
+		int _flipAspectmap;
 		int _hasBumpMap;
+
 
 			int _usePlane1;
 			int _usePlane2;
@@ -432,6 +440,11 @@ SubShader {
 
 		sampler2D _ColorMap;
 		sampler2D _OpacityMap;
+		float _ScaleMin;
+		float _ScaleMax;
+		float _AspectMin;
+		float _AspectMax;
+		int _AspectConstrainRadially;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -479,10 +492,38 @@ SubShader {
 			
 		#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
 		
-		int pointIndex = (int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1) );//_AnchorTopology[unity_InstanceID].y;
-		int cellIndex =  _AnchorTopology[(int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1))].x;
+			int pointIndex = (int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1) );//_AnchorTopology[unity_InstanceID].y;
+			int cellIndex =  _AnchorTopology[(int)(unity_InstanceID*(_glyphPercent > 0? (1.0/_glyphPercent):1))].x;
+			float scale = _Scale;
+			float aspect = _Aspect;
 
-			v.vertex.xyz *= (_glyphScale * (_VariableBoundsMax_0.x - _VariableBoundsMin_0.x));
+			if(_useScalemap == 1) {
+				float3 dataVal = GetData(4,cellIndex,pointIndex,GetAnchorPosition(pointIndex));
+				float3 normalizedDataVal = NormalizeData(4,dataVal);
+				if(!_flipScalemap) 
+					scale = map(normalizedDataVal.x,0,1,_ScaleMin,_ScaleMax);
+				else
+					scale = map(normalizedDataVal.x,0,1,_ScaleMax,_ScaleMin);
+			}
+
+			v.vertex.xyz *= (scale * (_VariableBoundsMax_0.x - _VariableBoundsMin_0.x));
+			
+			
+			if(_useAspectmap == 1) {
+				float3 dataVal = GetData(5,cellIndex,pointIndex,GetAnchorPosition(pointIndex));
+				float3 normalizedDataVal = NormalizeData(5,dataVal);
+				if(!_flipAspectmap) 
+					aspect = map(normalizedDataVal.x,0,1,_AspectMin,_AspectMax);
+				else
+					aspect = map(normalizedDataVal.x,0,1,_AspectMax,_AspectMin);
+			}
+
+
+			if(_AspectConstrainRadially) {
+				v.vertex.z *= aspect;
+			} else {
+				v.vertex.xy *= aspect;
+			}
 
 			if( VariableIsAssigned(0)) {
 				//float3 B = 
@@ -546,7 +587,6 @@ SubShader {
 				 //v.vertex.xyz = mul(transform, v.vertex.xyz);
 				 //v.normal.xyz = mul(transform,v.normal.xyz);
 
-				// v.vertex.x *=0.2;
 
 
 				//v.vertex.x += pointIndex;
