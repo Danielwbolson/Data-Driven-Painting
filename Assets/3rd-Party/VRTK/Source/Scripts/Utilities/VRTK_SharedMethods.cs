@@ -332,12 +332,8 @@ namespace VRTK
         /// <returns>The total GPU time utilized last frame as measured by the VR subsystem.</returns>
         public static float GetGPUTimeLastFrame()
         {
-#if UNITY_5_6_OR_NEWER
             float gpuTimeLastFrame;
             return (XRStats.TryGetGPUTimeLastFrame(out gpuTimeLastFrame) ? gpuTimeLastFrame : 0f);
-#else
-            return XRStats.gpuTimeLastFrame;
-#endif
         }
 
         /// <summary>

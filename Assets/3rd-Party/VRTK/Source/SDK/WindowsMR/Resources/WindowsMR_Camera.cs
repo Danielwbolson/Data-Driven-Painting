@@ -40,14 +40,14 @@
 
         protected virtual void Update()
         {
-            if (XRDevice.GetTrackingSpaceType() != TrackingSpaceType.RoomScale && forceRoomScaleTracking)
+            if (XRDevice.GetTrackingSpaceType() != UnityEngine.XR.TrackingSpaceType.RoomScale && forceRoomScaleTracking)
             {
-                XRDevice.SetTrackingSpaceType(TrackingSpaceType.RoomScale);
+                XRDevice.SetTrackingSpaceType(UnityEngine.XR.TrackingSpaceType.RoomScale);
             }
 
-            if (XRDevice.GetTrackingSpaceType() != TrackingSpaceType.Stationary && !forceRoomScaleTracking)
+            if (XRDevice.GetTrackingSpaceType() != UnityEngine.XR.TrackingSpaceType.Stationary && !forceRoomScaleTracking)
             {
-                XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
+                XRDevice.SetTrackingSpaceType(UnityEngine.XR.TrackingSpaceType.Stationary);
             }
 
         }

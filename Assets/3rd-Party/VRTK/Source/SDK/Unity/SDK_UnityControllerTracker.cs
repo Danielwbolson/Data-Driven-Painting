@@ -6,7 +6,7 @@ namespace VRTK
     using UnityEngine.XR;
 #else
     using UnityEngine.VR;
-    using XRNode = UnityEngine.VR.VRNode;
+    using XRNode = UnityEngine.XR.XRNode;
 #endif
 
     /// <summary>
@@ -57,8 +57,8 @@ namespace VRTK
 
         protected virtual void FixedUpdate()
         {
-            transform.localPosition = InputTracking.GetLocalPosition(nodeType);
-            transform.localRotation = InputTracking.GetLocalRotation(nodeType);
+            transform.localPosition = UnityEngine.XR.InputTracking.GetLocalPosition(nodeType);
+            transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(nodeType);
         }
     }
 }

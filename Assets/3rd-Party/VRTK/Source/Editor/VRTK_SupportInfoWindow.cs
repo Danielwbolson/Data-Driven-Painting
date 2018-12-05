@@ -113,22 +113,14 @@ namespace VRTK
                     foreach (BuildTargetGroup targetGroup in VRTK_SharedMethods.GetValidBuildTargetGroups())
                     {
                         bool isVREnabled;
-#if UNITY_5_5_OR_NEWER
                         isVREnabled = VREditor.GetVREnabledOnTargetGroup(targetGroup);
-#else
-                        isVREnabled = VREditor.GetVREnabled(targetGroup);
-#endif
                         if (!isVREnabled)
                         {
                             continue;
                         }
 
                         string[] vrEnabledDevices;
-#if UNITY_5_5_OR_NEWER
                         vrEnabledDevices = VREditor.GetVREnabledDevicesOnTargetGroup(targetGroup);
-#else
-                        vrEnabledDevices = VREditor.GetVREnabledDevices(targetGroup);
-#endif
                         Append(targetGroup, string.Join(", ", vrEnabledDevices));
                     }
                 }

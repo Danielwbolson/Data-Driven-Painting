@@ -4,9 +4,7 @@ namespace VRTK
     using UnityEngine;
     using System;
     using System.Collections.Generic;
-#if UNITY_5_5_OR_NEWER
     using UnityEngine.AI;
-#endif
 
     /// <summary>
     /// Provides a base that all pointer renderers can inherit from.

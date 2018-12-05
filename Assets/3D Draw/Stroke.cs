@@ -6,6 +6,8 @@ public class Stroke : MonoBehaviour {
 
     [HideInInspector]
     public List<Vertex> vertex_list;
+    private List<Vertex> from;
+    private List<Vertex> to;
 
     [HideInInspector]
     public float buffer;
@@ -26,6 +28,8 @@ public class Stroke : MonoBehaviour {
     private Color _endCol;
 
     private float strokeLen;
+    private bool lerp = false;
+    private float fraction = 0;
 
     // Use this for initialization
     void Awake() {
@@ -33,6 +37,9 @@ public class Stroke : MonoBehaviour {
         _endCol = new Color(0.7f, 0, 0.7f, 1f);
 
         vertex_list = new List<Vertex>();
+        from = new List<Vertex>();
+        to = new List<Vertex>();
+
         verts = new List<Vector3>();
         tris = new List<int>();
         cols = new List<Color>();
@@ -45,6 +52,27 @@ public class Stroke : MonoBehaviour {
         _mr.material = _mat;
 
         _mesh.subMeshCount = 1;
+        strokeLen = 0;
+    }
+
+    void Update() {
+        if (lerp) {
+            if (fraction < 1) {
+                for (int i = 0; i < vertex_list.Count; i++) {
+                    Vertex v = new Vertex {
+                        position = Vector3.Lerp(from[i].position, to[i].position, fraction),
+                        orientation = Quaternion.Lerp(from[i].orientation, to[i].orientation, fraction)
+                    };
+
+                    vertex_list[i] = v;
+                }
+                Refresh();
+                fraction += Time.deltaTime * 0.5f;
+            } else {
+                fraction = 0;
+                lerp = false;
+            }
+        }
     }
 
     public void AddVertex(Vertex v) {
@@ -161,7 +189,9 @@ public class Stroke : MonoBehaviour {
         // Of same length as stroke
         List<Streamline> streamLines = new List<Streamline>();
 
-        for (int i = 0; i < vertex_list.Count; i++) {
+        int increment = vertex_list.Count % 20;
+
+        for (int i = 0; i < vertex_list.Count; i+=increment) {
             // Generate a streamline per vertex, given the data
             Streamline s = GenerateStreamline(vertex_list[i].position, f, vertex_list.Count);
             streamLines.Add(s);
@@ -193,12 +223,9 @@ public class Stroke : MonoBehaviour {
         }
 
         // Streamlines[i] is our chosen streamline, we need to refresh to this streamline
-        for (int i = 0; i < vertex_list.Count; i++) {
-            vertex_list[i] = streamLines[index].positions[i];
-        }
-
-        // Finally, refresh the stroke to the new position
-        Refresh();
+        lerp = true;
+        from = new List<Vertex>(vertex_list);
+        to = new List<Vertex>(streamLines[index].positions);
     }
 
     int ClosestPoint(Vector3 p, List<Vertex> l) {
