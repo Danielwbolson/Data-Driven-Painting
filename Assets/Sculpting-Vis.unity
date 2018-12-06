@@ -145,6 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f564efede72ab4044916861db4a0de14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dataSwitch: 2
   positions: []
   primaryDirections: []
   mat: {fileID: 2100000, guid: 68c488501986d134db24f1ceaf5b705c, type: 2}

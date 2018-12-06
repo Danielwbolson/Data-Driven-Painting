@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FakeData : MonoBehaviour {
 
+    public int dataSwitch;
+
     public List<Vector3> positions;
     public List<Vector3> primaryDirections;
     public Material mat;
@@ -20,45 +22,109 @@ public class FakeData : MonoBehaviour {
     void Start() {
         positions = new List<Vector3>(new Vector3[width * width * width]);
 
-        // i : vert, j : horizontal, k : forward
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < width; j++) {
-                for (int k = 0; k < width; k++) {
+        if (dataSwitch == 0) {
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
 
-                    float phi = Random.Range(0, 2 * 3.14159f);
-                    float cosTheta = Random.Range(-1f, 1f);
-                    float u = Random.Range(0f, 1f);
+                        float phi = Random.Range(0, 2 * 3.14159f);
+                        float cosTheta = Random.Range(-1f, 1f);
+                        float u = Random.Range(0f, 1f);
 
-                    float theta = Mathf.Acos(cosTheta);
-                    float r = width / 10.0f * Mathf.Sqrt(u);
+                        float theta = Mathf.Acos(cosTheta);
+                        float r = width / 10.0f * Mathf.Sqrt(u);
 
-                    int ind = index(i, j, k);
-                    float x = r * Mathf.Sin(theta) * Mathf.Cos(phi);
-                    float y = r * Mathf.Sin(theta) * Mathf.Sin(phi);
-                    float z = r * Mathf.Cos(theta);
-                    positions[ind] = new Vector3(x, y, z);
+                        int ind = index(i, j, k);
+                        float x = r * Mathf.Sin(theta) * Mathf.Cos(phi);
+                        float y = r * Mathf.Sin(theta) * Mathf.Sin(phi);
+                        float z = r * Mathf.Cos(theta);
+                        positions[ind] = new Vector3(x, y, z);
 
-                    if (x > maxX) maxX = x;
-                    if (x < minX) minX = x;
-                    if (y > maxY) maxY = y;
-                    if (y < minY) minY = y;
-                    if (z > maxZ) maxZ = z;
-                    if (z < minZ) minZ = z;
+                        if (x > maxX) maxX = x;
+                        if (x < minX) minX = x;
+                        if (y > maxY) maxY = y;
+                        if (y < minY) minY = y;
+                        if (z > maxZ) maxZ = z;
+                        if (z < minZ) minZ = z;
+                    }
                 }
             }
-        }
 
-        primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
-        // i : vert, j : horizontal, k : forward
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < width; j++) {
-                for (int k = 0; k < width; k++) {
-                    primaryDirections[index(i, j, k)] =
-                        Vector3.Normalize(
-                            Vector3.Cross(
-                                positions[index(i, j, k)],
-                                gameObject.transform.up) + 
-                                new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
+            primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        primaryDirections[index(i, j, k)] =
+                            Vector3.Normalize(
+                                Vector3.Cross(
+                                    positions[index(i, j, k)],
+                                    gameObject.transform.up) +
+                                    new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
+                    }
+                }
+            }
+        } else if (dataSwitch == 1) {
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        int ind = index(i, j, k);
+                        float x = i * 0.1f + Random.Range(0f, 0.1f);
+                        float y = j * 0.1f + Random.Range(0f, 0.1f);
+                        float z = k * 0.1f + Random.Range(0f, 0.1f);
+                        positions[ind] = new Vector3(x, y, z);
+
+                        if (x > maxX) maxX = x;
+                        if (x < minX) minX = x;
+                        if (y > maxY) maxY = y;
+                        if (y < minY) minY = y;
+                        if (z > maxZ) maxZ = z;
+                        if (z < minZ) minZ = z;
+                    }
+                }
+            }
+
+            primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        primaryDirections[index(i, j, k)] =
+                            Vector3.Normalize(new Vector3(i * i, j * j, k * k));
+                    }
+                }
+            }
+        } else if (dataSwitch == 2) {
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        int ind = index(i, j, k);
+                        float x = i * 0.1f + Random.Range(0f, 0.1f);
+                        float y = j * 0.1f + Random.Range(0f, 0.1f);
+                        float z = k * 0.1f + Random.Range(0f, 0.1f);
+                        positions[ind] = new Vector3(x, y, z);
+
+                        if (x > maxX) maxX = x;
+                        if (x < minX) minX = x;
+                        if (y > maxY) maxY = y;
+                        if (y < minY) minY = y;
+                        if (z > maxZ) maxZ = z;
+                        if (z < minZ) minZ = z;
+                    }
+                }
+            }
+
+            primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        primaryDirections[index(i, j, k)] =
+                            Vector3.Normalize(new Vector3(i * Mathf.Abs(j - width / 2.0f), j * Mathf.Abs(i - width / 2.0f), 1));
+                    }
                 }
             }
         }
@@ -73,6 +139,10 @@ public class FakeData : MonoBehaviour {
                     g.transform.localScale = new Vector3(0.04f, 0.04f, 0.04f);
 
                     g.GetComponent<MeshRenderer>().material = mat;
+                    if (Random.Range(0, 2) == 0)
+                        g.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+                    else
+                        g.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.2f);
                 }
             }
         }

@@ -284,12 +284,31 @@ public class Stroke : MonoBehaviour {
 
             l++;
         }
+        Vector3 initDir;
+        if (vertex_list.Count > 1) {
+            initDir = vertex_list[1].position - vertex_list[0].position;
 
-        // Get our list of vertices in order for streamline
-        negative.RemoveAt(0);
-        negative.Reverse();
-        negative.AddRange(positive);
-        s.positions = negative;
+            // Stroke and data go the same direction
+            if (Vector3.Dot(initDir, positive[0].orientation * gameObject.transform.forward) > 0) {
+                // Get our list of vertices in order for streamline
+                negative.RemoveAt(0);
+                negative.Reverse();
+                negative.AddRange(positive);
+                s.positions = negative;
+            } else {
+                // Get our list of vertices in order for streamline
+                positive.RemoveAt(0);
+                positive.Reverse();
+                positive.AddRange(negative);
+                s.positions = positive;
+            }
+        } else {
+            // Get our list of vertices in order for streamline
+            negative.RemoveAt(0);
+            negative.Reverse();
+            negative.AddRange(positive);
+            s.positions = negative;
+        }
 
         return s;
     }
