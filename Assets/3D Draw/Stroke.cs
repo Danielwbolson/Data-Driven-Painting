@@ -189,11 +189,11 @@ public class Stroke : MonoBehaviour {
         // Of same length as stroke
         List<Streamline> streamLines = new List<Streamline>();
 
-        int increment = vertex_list.Count % 20;
+        int increment = vertex_list.Count / Mathf.CeilToInt(vertex_list.Count / 20.0f);
 
         for (int i = 0; i < vertex_list.Count; i+=increment) {
             // Generate a streamline per vertex, given the data
-            Streamline s = GenerateStreamline(vertex_list[i].position, f, vertex_list.Count);
+            Streamline s = GenerateStreamline(vertex_list[i], f, vertex_list.Count);
             streamLines.Add(s);
         }
 
@@ -249,7 +249,7 @@ public class Stroke : MonoBehaviour {
     }
 
     // First points, then curves
-    Streamline GenerateStreamline(Vector3 p, FakeData f, int length) {
+    Streamline GenerateStreamline(Vertex p, FakeData f, int length) {
         Streamline s = new Streamline();
         List<Vertex> positive = new List<Vertex>();
         List<Vertex> negative = new List<Vertex>();
@@ -257,9 +257,10 @@ public class Stroke : MonoBehaviour {
         buffer = strokeLen / length;
 
         // Get all valid, interpolated data-points in POSITIVE direction of streamline
-        Vertex dataVert = BilinearVertex(p, f);
+        Vertex dataVert = BilinearVertex(p.position, f);
         Vector3 dir = dataVert.orientation * gameObject.transform.forward;
         int l = 0;
+
         while (l < (length / 2.0f + 0.001f)) {
             positive.Add(dataVert);
 
@@ -271,7 +272,7 @@ public class Stroke : MonoBehaviour {
         }
 
         // Get all valid, interpolated data-points in NEGATIVE direction of streamline
-        dataVert = BilinearVertex(p, f);
+        dataVert = BilinearVertex(p.position, f);
         dir = -(dataVert.orientation * gameObject.transform.forward);
         l = 0;
         while (l < (length / 2.0f + 0.001f)) {
@@ -312,7 +313,7 @@ public class Stroke : MonoBehaviour {
 
         Vertex v = new Vertex {
             position = p,
-            orientation = Quaternion.FromToRotation(gameObject.transform.forward, pDir) // Quaternion.Euler(pDir)
+            orientation = Quaternion.FromToRotation(gameObject.transform.forward, pDir)
         };
 
         return v;

@@ -24,8 +24,18 @@ public class FakeData : MonoBehaviour {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < width; j++) {
                 for (int k = 0; k < width; k++) {
+
+                    float phi = Random.Range(0, 2 * 3.14159f);
+                    float cosTheta = Random.Range(-1f, 1f);
+                    float u = Random.Range(0f, 1f);
+
+                    float theta = Mathf.Acos(cosTheta);
+                    float r = width / 10.0f * Mathf.Sqrt(u);
+
                     int ind = index(i, j, k);
-                    float x = i * 0.1f; float y = j * 0.1f; float z = k * 0.1f;
+                    float x = r * Mathf.Sin(theta) * Mathf.Cos(phi);
+                    float y = r * Mathf.Sin(theta) * Mathf.Sin(phi);
+                    float z = r * Mathf.Cos(theta);
                     positions[ind] = new Vector3(x, y, z);
 
                     if (x > maxX) maxX = x;
@@ -43,8 +53,12 @@ public class FakeData : MonoBehaviour {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < width; j++) {
                 for (int k = 0; k < width; k++) {
-                    primaryDirections[index(i, j, k)] = 
-                        Vector3.Normalize(new Vector3(1, j / (float)width, 1));
+                    primaryDirections[index(i, j, k)] =
+                        Vector3.Normalize(
+                            Vector3.Cross(
+                                positions[index(i, j, k)],
+                                gameObject.transform.up) + 
+                                new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
                 }
             }
         }
