@@ -133,6 +133,38 @@ public class FakeData : MonoBehaviour {
                     }
                 }
             }
+        } else if (dataSwitch == 3) {
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        int ind = index(i, j, k);
+                        float x = i * 0.05f + Random.Range(0f, 0.1f);
+                        float y = j * 0.05f + Random.Range(0f, 0.1f);
+                        float z = k * 0.05f + Random.Range(0f, 0.1f);
+                        positions[ind] = new Vector3(x, y, z);
+                        positions[ind] += transform.position;
+
+                        if (x > maxX) maxX = x;
+                        if (x < minX) minX = x;
+                        if (y > maxY) maxY = y;
+                        if (y < minY) minY = y;
+                        if (z > maxZ) maxZ = z;
+                        if (z < minZ) minZ = z;
+                    }
+                }
+            }
+
+            primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
+            // i : vert, j : horizontal, k : forward
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < width; j++) {
+                    for (int k = 0; k < width; k++) {
+                        primaryDirections[index(i, j, k)] =
+                            Vector3.Normalize(new Vector3(i - width / 2.0f, j - width / 2.0f, k - width / 2.0f));
+                    }
+                }
+            }
         }
 
         matrices = new List<Matrix4x4>(new Matrix4x4[width * width * width]);
