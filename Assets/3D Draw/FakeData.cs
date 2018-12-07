@@ -8,7 +8,9 @@ public class FakeData : MonoBehaviour {
 
     public List<Vector3> positions;
     public List<Vector3> primaryDirections;
+    private List<Matrix4x4> matrices;
     public Material mat;
+    public Mesh mesh;
     private const int width = 20;
 
     float maxX = -Mathf.Infinity;
@@ -33,13 +35,14 @@ public class FakeData : MonoBehaviour {
                         float u = Random.Range(0f, 1f);
 
                         float theta = Mathf.Acos(cosTheta);
-                        float r = width / 10.0f * Mathf.Sqrt(u);
+                        float r = width / 40.0f * Mathf.Sqrt(u);
 
                         int ind = index(i, j, k);
                         float x = r * Mathf.Sin(theta) * Mathf.Cos(phi);
                         float y = r * Mathf.Sin(theta) * Mathf.Sin(phi);
                         float z = r * Mathf.Cos(theta);
                         positions[ind] = new Vector3(x, y, z);
+                        positions[ind] += transform.position;
 
                         if (x > maxX) maxX = x;
                         if (x < minX) minX = x;
@@ -59,9 +62,9 @@ public class FakeData : MonoBehaviour {
                         primaryDirections[index(i, j, k)] =
                             Vector3.Normalize(
                                 Vector3.Cross(
-                                    positions[index(i, j, k)],
+                                    positions[index(i, j, k)] - transform.position,
                                     gameObject.transform.up) +
-                                    new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
+                                    new Vector3(Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f)));
                     }
                 }
             }
@@ -71,10 +74,11 @@ public class FakeData : MonoBehaviour {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < width; k++) {
                         int ind = index(i, j, k);
-                        float x = i * 0.1f + Random.Range(0f, 0.1f);
-                        float y = j * 0.1f + Random.Range(0f, 0.1f);
-                        float z = k * 0.1f + Random.Range(0f, 0.1f);
+                        float x = i * 0.05f + Random.Range(0f, 0.1f);
+                        float y = j * 0.05f + Random.Range(0f, 0.1f);
+                        float z = k * 0.05f + Random.Range(0f, 0.1f);
                         positions[ind] = new Vector3(x, y, z);
+                        positions[ind] += transform.position;
 
                         if (x > maxX) maxX = x;
                         if (x < minX) minX = x;
@@ -87,12 +91,13 @@ public class FakeData : MonoBehaviour {
             }
 
             primaryDirections = new List<Vector3>(new Vector3[width * width * width]);
+            float t = 0.1f;
             // i : vert, j : horizontal, k : forward
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < width; k++) {
                         primaryDirections[index(i, j, k)] =
-                            Vector3.Normalize(new Vector3(i * i, j * j, k * k));
+                            Vector3.Normalize(new Vector3(j, -i, k));
                     }
                 }
             }
@@ -102,10 +107,11 @@ public class FakeData : MonoBehaviour {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < width; k++) {
                         int ind = index(i, j, k);
-                        float x = i * 0.1f + Random.Range(0f, 0.1f);
-                        float y = j * 0.1f + Random.Range(0f, 0.1f);
-                        float z = k * 0.1f + Random.Range(0f, 0.1f);
+                        float x = i * 0.05f + Random.Range(0f, 0.1f);
+                        float y = j * 0.05f + Random.Range(0f, 0.1f);
+                        float z = k * 0.05f + Random.Range(0f, 0.1f);
                         positions[ind] = new Vector3(x, y, z);
+                        positions[ind] += transform.position;
 
                         if (x > maxX) maxX = x;
                         if (x < minX) minX = x;
@@ -123,28 +129,29 @@ public class FakeData : MonoBehaviour {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < width; k++) {
                         primaryDirections[index(i, j, k)] =
-                            Vector3.Normalize(new Vector3(i * Mathf.Abs(j - width / 2.0f), j * Mathf.Abs(i - width / 2.0f), 1));
+                            Vector3.Normalize(new Vector3(i * Mathf.Abs(j - width / 2.0f), j * Mathf.Abs(k - width / 2.0f), k * Mathf.Abs(i - width / 2.0f)));
                     }
                 }
             }
         }
 
+        matrices = new List<Matrix4x4>(new Matrix4x4[width * width * width]);
+
         // i : vert, j : horizontal, k : forward
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < width; j++) {
                 for (int k = 0; k < width; k++) {
-                    GameObject g = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-                    g.transform.position = positions[index(i, j, k)];
-                    g.transform.up = primaryDirections[index(i, j, k)];
-                    g.transform.localScale = new Vector3(0.04f, 0.04f, 0.04f);
-
-                    g.GetComponent<MeshRenderer>().material = mat;
-                    if (Random.Range(0, 2) == 0)
-                        g.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
-                    else
-                        g.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.2f);
+                    matrices[index(i, j, k)] = Matrix4x4.Translate(positions[index(i, j, k)]);
+                    matrices[index(i, j, k)] *= Matrix4x4.Rotate(Quaternion.LookRotation(primaryDirections[index(i, j, k)], Vector3.up));
+                    matrices[index(i, j, k)] *= Matrix4x4.Scale(new Vector3(0.005f, 0.005f, 0.02f));
                 }
             }
+        }
+    }
+
+    void Update() {
+        for (int i = 0; i < matrices.Count; i++) {
+            Graphics.DrawMesh(mesh, matrices[i], mat, 0);
         }
     }
 
