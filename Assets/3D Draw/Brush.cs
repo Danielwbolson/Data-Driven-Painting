@@ -67,7 +67,7 @@ public class Brush : MonoBehaviour {
         }
 
         // IF the user has stopped drawing, reset our variable
-        if (Input.GetMouseButtonUp(0) || (!vrtk_use.IsUseButtonPressed() && _currDrawing)) {
+        if (Input.GetMouseButtonUp(0) && (!vrtk_use.IsUseButtonPressed() && _currDrawing)) {
             _currDrawing = false;
             StartCoroutine(_stroke.MorphToData(fd));
         }
