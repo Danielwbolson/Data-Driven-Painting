@@ -22,7 +22,7 @@ public class Stroke : MonoBehaviour {
     private List<Color> cols;
 
     private int _numSides = 32;
-    private float _width = 0.05f;
+    private float _width = 0.02f;
 
     private Color _startCol;
     private Color _endCol;
@@ -182,19 +182,20 @@ public class Stroke : MonoBehaviour {
      *   - Use Drawing With The Flow algorithm to determine the most simlar streamline
      * Animate morphing from stroke to selected streamline
      */
-    public void MorphToData(FakeData f) {
+    public IEnumerator MorphToData(FakeData f) {
         // This is the current stoke from the user
 
         // Generate a streamline through all vertex points in stroke
         // Of same length as stroke
         List<Streamline> streamLines = new List<Streamline>();
 
-        int increment = vertex_list.Count / 20 > 0 ? vertex_list.Count / 20 : 1;
+        int increment = Mathf.CeilToInt(vertex_list.Count / 20.0f);
 
         for (int i = 0; i < vertex_list.Count; i+=increment) {
             // Generate a streamline per vertex, given the data
-            Streamline s = GenerateStreamline(vertex_list[i], f, i, vertex_list.Count);
+            Streamline s = GenerateStreamline(vertex_list[i], f, vertex_list.Count, i);
             streamLines.Add(s);
+            yield return null;
         }
 
         // Calculate similarity for each streamline thru function from Drawing with the Flow
@@ -237,7 +238,7 @@ public class Stroke : MonoBehaviour {
             float dist = Vector3.Distance(p, l[i].position);
 
             // check for divide by 0
-            if (float.IsNaN(dist)) continue;
+            if (dist == 0) continue;
 
             // 4 closest points in 4 quadrants around point
             if (dist < min) {
@@ -249,102 +250,124 @@ public class Stroke : MonoBehaviour {
     }
 
     // First points, then curves
-    Streamline GenerateStreamline(Vertex p, FakeData f, int index, int length) {
-
-        // Initalization for streamline
+    Streamline GenerateStreamline(Vertex p, FakeData f, int length, int vertIndex) {
         Streamline s = new Streamline();
         List<Vertex> positive = new List<Vertex>();
         List<Vertex> negative = new List<Vertex>();
 
         buffer = strokeLen / length;
-        bool strokeWithData;
-        int count = 0;
 
-        // See if stroke at this point is going in similar direction to data
-        Vertex dataVert = BilinearVertex(p.position, f);
-        Vector3 dataDir = dataVert.orientation * gameObject.transform.forward;
-
-        Vector3 pDir = p.orientation * gameObject.transform.forward;
-
-        if (Vector3.Dot(dataDir, pDir) > 0) {
-            strokeWithData = true;
-        } else {
-            strokeWithData = false;
+        // Need to use strokeDir to determine which direction we go each distance
+        // Get average direction to account for slipups of user
+        Vector3 avgStrokeDir = new Vector3();
+        for (int i = 0; i < vertex_list.Count / 10; i++) {
+            avgStrokeDir += vertex_list[i + 1].position - vertex_list[i].position;
         }
 
-        // If the user is drawing in the direction of the data
-        if (strokeWithData) {
+        // Get all valid, interpolated data-points in POSITIVE direction of streamline
+        Vertex dataVert = BilinearVertex(p.position, f);
+        Vector3 dir = dataVert.orientation * gameObject.transform.forward;
 
-            // Negative dir of data
-            while(count <= index) {
+        if (Vector3.Dot(avgStrokeDir, dir) > 0) {
+            // Initial Stroke goes in same direction of the data
+            int l = 0;
+
+            // Get all valid, interpolated data-points in NEGATIVE direction of streamline
+            while (l <= vertIndex) {
                 negative.Add(dataVert);
 
-                Vector3 pos = dataVert.position + buffer * -dataDir;
+                Vector3 pos = dataVert.position + buffer * dir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = -(dataVert.orientation * gameObject.transform.forward);
+                dir = -(dataVert.orientation * gameObject.transform.forward);
 
-                count++;
+                l++;
             }
 
+            // Get all valid, interpolated data-points in POSITIVE direction of streamline
             dataVert = BilinearVertex(p.position, f);
-            dataDir = dataVert.orientation * gameObject.transform.forward;
-
-            // Positive dir of data
-            while (index < length) {
+            dir = -(dataVert.orientation * gameObject.transform.forward);
+            l = length - 1;
+            while (l >= vertIndex) {
                 positive.Add(dataVert);
 
-                Vector3 pos = dataVert.position + buffer * dataDir;
+                Vector3 pos = dataVert.position + buffer * dir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dir = dataVert.orientation * gameObject.transform.forward;
 
-                index++;
+                l--;
             }
-
             // Get our list of vertices in order for streamline
-            if (negative.Count > 0) {
-                negative.RemoveAt(0);
-                negative.Reverse();
-            }
+            negative.RemoveAt(0);
+            negative.Reverse();
             negative.AddRange(positive);
             s.positions = negative;
+        } else {
+            // Initial stroke goes in opposite direction of data
+            int l = 0;
 
-        } else { // If the user is drawing in the opposite direction of the data
-
-            // Positive dir of data
-            while (count <= index) {
+            while (l <= vertIndex) {
                 positive.Add(dataVert);
 
-                Vector3 pos = dataVert.position + buffer * dataDir;
+                Vector3 pos = dataVert.position + buffer * dir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dir = dataVert.orientation * gameObject.transform.forward;
 
-                count++;
+                l++;
             }
 
+            // Get all valid, interpolated data-points in NEGATIVE direction of streamline
             dataVert = BilinearVertex(p.position, f);
-            dataDir = -(dataVert.orientation * gameObject.transform.forward);
-
-            // Negative dir of data
-            while (index < length) {
+            dir = -(dataVert.orientation * gameObject.transform.forward);
+            l = length - 1;
+            while (l >= vertIndex) {
                 negative.Add(dataVert);
 
-                Vector3 pos = dataVert.position + buffer * dataDir;
+                Vector3 pos = dataVert.position + buffer * dir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = -(dataVert.orientation * gameObject.transform.forward);
+                dir = -(dataVert.orientation * gameObject.transform.forward);
 
-                index++;
+                l--;
             }
-
             // Get our list of vertices in order for streamline
-            if (positive.Count > 0) {
-                positive.RemoveAt(0);
-                positive.Reverse();
-            }
+            positive.RemoveAt(0);
+            positive.Reverse();
             positive.AddRange(negative);
             s.positions = positive;
         }
 
-        return s;
+            //if (negative.Count > 1 && positive.Count > 1) {
+
+            //    // Get average direction to account for slipups of user
+            //    Vector3 avgStreamlineDir = new Vector3();
+            //    Vector3 avgDataDir = new Vector3();
+
+            //    for (int i = 0; i < vertex_list.Count / 10 && negative.Count - 1 - (i+1) >= 0; i++) {
+            //        avgStreamlineDir += negative[negative.Count - 1 - (i + 1)].position - negative[negative.Count - 1 - i].position;
+            //        avgDataDir += negative[negative.Count - 1 - i].orientation * transform.forward;
+            //    }
+
+            //    // Stroke and data go the same direction
+            //    if (Vector3.Dot(avgStrokeDir, avgStreamlineDir) > 0 /*&& Vector3.Dot(avgStrokeDir, avgDataDir) > 0*/) {
+            //        // Get our list of vertices in order for streamline
+            //        negative.RemoveAt(0);
+            //        negative.Reverse();
+            //        negative.AddRange(positive);
+            //        s.positions = negative;
+            //    } else {
+            //        // Get our list of vertices in order for streamline
+            //        positive.RemoveAt(0);
+            //        positive.Reverse();
+            //        positive.AddRange(negative);
+            //        s.positions = positive;
+            //    }
+            //} else if (negative.Count <= 1) {
+            //    s.positions = positive;
+            //} else {
+            //    negative.Reverse();
+            //    s.positions = negative;
+            //}
+
+            return s;
     }
 
     Vertex BilinearVertex(Vector3 p, FakeData f) {
@@ -366,7 +389,7 @@ public class Stroke : MonoBehaviour {
 
         Vertex v = new Vertex {
             position = p,
-            orientation = Quaternion.FromToRotation(gameObject.transform.forward, pDir) // Quaternion.Euler(pDir)
+            orientation = Quaternion.FromToRotation(gameObject.transform.forward, pDir)
         };
 
         return v;

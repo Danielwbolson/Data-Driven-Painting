@@ -145,9 +145,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f564efede72ab4044916861db4a0de14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dataSwitch: 3
   positions: []
   primaryDirections: []
   mat: {fileID: 2100000, guid: 68c488501986d134db24f1ceaf5b705c, type: 2}
+  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &130338161
 Transform:
   m_ObjectHideFlags: 0
@@ -155,7 +157,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 130338159}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.5, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -624,6 +626,24 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1662914902777460, guid: 163a3eb8b5c9b3e45aa2660c5e0748f8,
     type: 2}
   m_PrefabInternal: {fileID: 2097199525}
+--- !u!1 &922604912 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1096677107502058, guid: 163a3eb8b5c9b3e45aa2660c5e0748f8,
+    type: 2}
+  m_PrefabInternal: {fileID: 2097199525}
+--- !u!114 &922604917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 922604912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e333de2dc312a4baf9e4d50cb7a86432, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _layerRenderStrategy: {fileID: 0}
+  _dataMaterial: {fileID: 0}
 --- !u!1001 &927901465
 Prefab:
   m_ObjectHideFlags: 0

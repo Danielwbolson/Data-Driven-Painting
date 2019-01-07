@@ -6,19 +6,22 @@ public class Brush : MonoBehaviour {
 
     GameObject painting;
     private Stroke _stroke;
+    private Stroke streamline;
     private Vertex _cursorPosition;
     private Vertex _recentCursorPosition;
 
-    private float _drawBuffer = 0.01f;
+    private float _drawBuffer = 0.005f;
 
     private bool _currDrawing = false;
 
     public FakeData fd;
+    private VRTK.VRTK_InteractUse vrtk_use;
 
     void Start() {
         painting = new GameObject("Painting");
 
         fd = GameObject.Find("DummyDataHandler").GetComponent<FakeData>();
+        vrtk_use = GetComponent<VRTK.VRTK_InteractUse>();
     }
 
     // Update is called once per frame
@@ -31,7 +34,7 @@ public class Brush : MonoBehaviour {
         }
 
         // If we are starting our drawing
-        if (Input.GetMouseButtonDown(0)) {
+        if (!_currDrawing && (Input.GetMouseButtonDown(0) || vrtk_use.IsUseButtonPressed())) {
             // Create a gameobject that will be our drawing (Painting?)
             GameObject stroke = new GameObject("Stroke");
             stroke.transform.parent = painting.transform;
@@ -64,9 +67,9 @@ public class Brush : MonoBehaviour {
         }
 
         // IF the user has stopped drawing, reset our variable
-        if (Input.GetMouseButtonUp(0)) {
+        if (Input.GetMouseButtonUp(0) || (!vrtk_use.IsUseButtonPressed() && _currDrawing)) {
             _currDrawing = false;
-            _stroke.MorphToData(fd);
+            StartCoroutine(_stroke.MorphToData(fd));
         }
     }
 }
