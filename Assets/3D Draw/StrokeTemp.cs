@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stroke : MonoBehaviour {
+public class StrokeTemp : MonoBehaviour {
 
     [HideInInspector]
     public List<Vertex> vertex_list;
@@ -78,7 +78,7 @@ public class Stroke : MonoBehaviour {
     public void AddVertex(Vertex v) {
         if (vertex_list.Count > 0) {
             strokeLen += Vector3.Distance(vertex_list[vertex_list.Count - 1].position, v.position);
-        } 
+        }
         vertex_list.Add(v);
 
         Refresh();
@@ -191,7 +191,7 @@ public class Stroke : MonoBehaviour {
 
         int increment = vertex_list.Count / 20 > 0 ? vertex_list.Count / 20 : 1;
 
-        for (int i = 0; i < vertex_list.Count; i+=increment) {
+        for (int i = 0; i < vertex_list.Count; i += increment) {
             // Generate a streamline per vertex, given the data
             Streamline s = GenerateStreamline(vertex_list[i], f, i, vertex_list.Count);
             streamLines.Add(s);
@@ -205,9 +205,9 @@ public class Stroke : MonoBehaviour {
                 int cp = ClosestPoint(vertex_list[j].position, streamLines[i].positions);
 
                 Vector3 d = vertex_list[j].position - streamLines[i].positions[cp].position;
-                similarities[i] += 10 * Vector3.Dot(d, d) + 
+                similarities[i] += 10 * Vector3.Dot(d, d) +
                     1 * Vector3.Dot(
-                        vertex_list[j].orientation * gameObject.transform.forward, 
+                        vertex_list[j].orientation * gameObject.transform.forward,
                         streamLines[i].positions[cp].orientation * gameObject.transform.forward);
             }
         }
@@ -276,7 +276,7 @@ public class Stroke : MonoBehaviour {
         if (strokeWithData) {
 
             // Negative dir of data
-            while(count <= index) {
+            while (count <= index) {
                 negative.Add(dataVert);
 
                 Vector3 pos = dataVert.position + buffer * -dataDir;
@@ -358,7 +358,7 @@ public class Stroke : MonoBehaviour {
         float dist_3 = Vector3.Distance(p, f.positions[cpIndex[3]]);
         float total = dist_0 + dist_1 + dist_2 + dist_3;
 
-        Vector3 pDir = 
+        Vector3 pDir =
             (dist_0 / total) * f.primaryDirections[cpIndex[0]] +
             (dist_1 / total) * f.primaryDirections[cpIndex[1]] +
             (dist_2 / total) * f.primaryDirections[cpIndex[2]] +
@@ -390,7 +390,7 @@ public class Stroke : MonoBehaviour {
             } else if (dist < min[1] && l[i].x < p.x && l[i].y > p.y) {
                 min[1] = dist;
                 indexPoints[1] = i;
-            } else if(dist < min[2] && l[i].x > p.x && l[i].y > p.y) {
+            } else if (dist < min[2] && l[i].x > p.x && l[i].y > p.y) {
                 min[2] = dist;
                 indexPoints[2] = i;
             } else if (dist < min[3] && l[i].x > p.x && l[i].y < p.y) {
