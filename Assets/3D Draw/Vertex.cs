@@ -4,5 +4,5 @@ using UnityEngine;
 
 public struct Vertex {
     public Vector3 position;
-    public Quaternion orientation;
+    public Vector3 direction;
 }

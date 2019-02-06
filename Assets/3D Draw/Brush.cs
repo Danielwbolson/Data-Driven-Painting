@@ -7,8 +7,9 @@ public class Brush : MonoBehaviour {
     GameObject painting;
     private Stroke _stroke;
     private Stroke streamline;
-    private Vertex _cursorPosition;
-    private Vertex _recentCursorPosition;
+    private Vector3 _cursorPosition;
+    private Vector3 _recentCursorPosition;
+    private Vector3 _lastVertexPosition;
 
     private float _drawBuffer = 0.005f;
 
@@ -27,11 +28,8 @@ public class Brush : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        // If we are in drawing mode, update our cursor every frame
-        if (_currDrawing) {
-            _cursorPosition.position = transform.position;
-            _cursorPosition.orientation = transform.rotation;
-        }
+        // Update our cursor position every frame
+        _cursorPosition = transform.position;
 
         // If we are starting our drawing
         if (!_currDrawing && (Input.GetMouseButtonDown(0) || vrtk_use.IsUseButtonPressed())) {
@@ -42,34 +40,37 @@ public class Brush : MonoBehaviour {
             // Set our variable for currently drawing
             _currDrawing = true;
 
-            // Set our cursor position to our current position
-            _cursorPosition = new Vertex {
-                position = transform.position,
-                orientation = transform.rotation
-            };
-
-            // Cache our cursor position
-            _recentCursorPosition = _cursorPosition;
+            // Cache this position for deciding when to add the next vertex
+            _lastVertexPosition = _cursorPosition;
 
             // Start our stroke
             _stroke = stroke.AddComponent<Stroke>();
             _stroke.buffer = _drawBuffer;
-            _stroke.AddVertex(_cursorPosition);
+
+            Vertex v = new Vertex {
+                position = _cursorPosition,
+                direction = Vector3.Normalize(_cursorPosition - _recentCursorPosition)
+            };
+
+            _stroke.AddVertex(v);
         }
 
         // If we are still drawing and have moved far enough away from our last position, continue drawing
-        if (_currDrawing && Vector3.Distance(_cursorPosition.position, _recentCursorPosition.position) > _drawBuffer) {
-            // Reset our cached position to the current one
-            _recentCursorPosition = _cursorPosition;
-
+        if (_currDrawing && Vector3.Distance(_cursorPosition, _lastVertexPosition) > _drawBuffer) {
             // Extend our drawing
-            _stroke.AddVertex(_cursorPosition);
+            Vertex v = new Vertex {
+                position = _cursorPosition,
+                direction = Vector3.Normalize(_cursorPosition - _recentCursorPosition)
+            };
+
+            _stroke.AddVertex(v);
         }
 
         // IF the user has stopped drawing, reset our variable
-        if (Input.GetMouseButtonUp(0) && (!vrtk_use.IsUseButtonPressed() && _currDrawing)) {
+        if (Input.GetMouseButtonUp(0) && !vrtk_use.IsUseButtonPressed() && _currDrawing) {
             _currDrawing = false;
             StartCoroutine(_stroke.MorphToData(fd));
         }
+        _recentCursorPosition = _cursorPosition;
     }
 }

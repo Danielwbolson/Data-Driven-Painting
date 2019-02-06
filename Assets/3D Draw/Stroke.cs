@@ -61,7 +61,7 @@ public class Stroke : MonoBehaviour {
                 for (int i = 0; i < vertex_list.Count; i++) {
                     Vertex v = new Vertex {
                         position = Vector3.Lerp(from[i].position, to[i].position, fraction),
-                        orientation = Quaternion.Lerp(from[i].orientation, to[i].orientation, fraction)
+                        direction = Vector3.Lerp(from[i].direction, to[i].direction, fraction)
                     };
 
                     vertex_list[i] = v;
@@ -112,9 +112,9 @@ public class Stroke : MonoBehaviour {
 
         // first cross-section
         Vector3 center = vertex_list[0].position;
-        Quaternion rot = vertex_list[0].orientation;
+        Quaternion dir = Quaternion.LookRotation(vertex_list[0].direction);
         for (int i = 0; i < _numSides; i++) {
-            Vector3 offset = rot * poly[i];
+            Vector3 offset = dir * poly[i];
             Vector3 v = offset + center;
             verts.Add(v);
             cols.Add(_startCol);
@@ -123,7 +123,7 @@ public class Stroke : MonoBehaviour {
         // rest of cross sections
         for (int i = 1; i < count; i++) {
             center = vertex_list[i].position;
-            rot = vertex_list[i].orientation;
+            dir = Quaternion.LookRotation(vertex_list[i].direction);
 
             // Calculate which cross section this is
             int n = i * _numSides;
@@ -135,7 +135,7 @@ public class Stroke : MonoBehaviour {
 
             for (int j = 0; j < _numSides; j++) {
                 // Rotate at origin and then move to location
-                Vector3 offset = rot * poly[j];
+                Vector3 offset = dir * poly[j];
                 Vector3 v = offset + center;
                 verts.Add(v);
                 cols.Add(color);
@@ -207,9 +207,9 @@ public class Stroke : MonoBehaviour {
 
                 Vector3 d = vertex_list[j].position - streamLines[i].positions[cp].position;
                 similarities[i] += 10 * Vector3.Dot(d, d) + 
-                    1 * Vector3.Dot(
-                        vertex_list[j].orientation * gameObject.transform.forward, 
-                        streamLines[i].positions[cp].orientation * gameObject.transform.forward);
+                    1 * Mathf.Abs(Vector3.Dot(
+                        vertex_list[j].direction, 
+                        streamLines[i].positions[cp].direction));
             }
         }
 
@@ -227,6 +227,8 @@ public class Stroke : MonoBehaviour {
         lerp = true;
         from = new List<Vertex>(vertex_list);
         to = new List<Vertex>(streamLines[index].positions);
+
+        Debug.Log(streamLines[index].withData);
     }
 
     int ClosestPoint(Vector3 p, List<Vertex> l) {
@@ -262,11 +264,9 @@ public class Stroke : MonoBehaviour {
 
         // See if stroke at this point is going in similar direction to data
         Vertex dataVert = BilinearVertex(p.position, f);
-        Vector3 dataDir = dataVert.orientation * gameObject.transform.forward;
+        Vector3 dataDir = Vector3.Normalize(dataVert.direction);
 
-        Vector3 pDir = p.orientation * gameObject.transform.forward;
-
-        if (Vector3.Dot(dataDir, pDir) > 0) {
+        if (Vector3.Dot(dataDir, p.direction) > 0) {
             strokeWithData = true;
         } else {
             strokeWithData = false;
@@ -281,13 +281,13 @@ public class Stroke : MonoBehaviour {
 
                 Vector3 pos = dataVert.position + buffer * -dataDir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dataDir = dataVert.direction;
 
                 count++;
             }
 
             dataVert = BilinearVertex(p.position, f);
-            dataDir = dataVert.orientation * gameObject.transform.forward;
+            dataDir = dataVert.direction;
 
             // Positive dir of data
             while (index < length) {
@@ -295,7 +295,7 @@ public class Stroke : MonoBehaviour {
 
                 Vector3 pos = dataVert.position + buffer * dataDir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dataDir = dataVert.direction;
 
                 index++;
             }
@@ -316,13 +316,13 @@ public class Stroke : MonoBehaviour {
 
                 Vector3 pos = dataVert.position + buffer * dataDir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dataDir = dataVert.direction;
 
                 count++;
             }
 
             dataVert = BilinearVertex(p.position, f);
-            dataDir = dataVert.orientation * gameObject.transform.forward;
+            dataDir = dataVert.direction;
 
             // Negative dir of data
             while (index < length) {
@@ -330,7 +330,7 @@ public class Stroke : MonoBehaviour {
 
                 Vector3 pos = dataVert.position + buffer * -dataDir;
                 dataVert = BilinearVertex(pos, f);
-                dataDir = dataVert.orientation * gameObject.transform.forward;
+                dataDir = dataVert.direction;
 
                 index++;
             }
@@ -343,7 +343,7 @@ public class Stroke : MonoBehaviour {
             positive.AddRange(negative);
             s.positions = positive;
         }
-
+        s.withData = strokeWithData;
         return s;
     }
 
@@ -366,7 +366,7 @@ public class Stroke : MonoBehaviour {
 
         Vertex v = new Vertex {
             position = p,
-            orientation = Quaternion.FromToRotation(gameObject.transform.forward, pDir)
+            direction = pDir
         };
 
         return v;

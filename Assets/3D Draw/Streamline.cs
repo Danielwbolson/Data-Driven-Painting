@@ -2,4 +2,5 @@
 
 public struct Streamline { 
     public List<Vertex> positions;
+    public bool withData;
 }
